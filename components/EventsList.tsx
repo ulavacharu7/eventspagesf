@@ -49,14 +49,14 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
     : themes[0];
 
   return (
-    <div className={`w-full h-full relative overflow-hidden flex flex-col justify-between p-3.5 sm:p-4 text-white bg-neutral-950/45 border border-white/10 rounded-xl`}>
+    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-4 text-white bg-neutral-950/45 border border-white/10 rounded-[12px]">
       <div className={`absolute inset-0 z-0 ${activeTheme.bg}`} />
-      <div className="z-10 flex flex-col gap-1">
-        <h5 className="text-xs sm:text-sm font-black uppercase leading-snug tracking-tight line-clamp-3">
+      <div className="z-10 flex flex-col gap-1.5">
+        <h5 className="text-sm font-semibold font-tight leading-snug tracking-tight line-clamp-3">
           {event.title}
         </h5>
       </div>
-      <div className="z-10 flex flex-col text-[10px] sm:text-xs font-mono uppercase tracking-wider opacity-90 border-t border-white/20 pt-1.5">
+      <div className="z-10 flex flex-col text-xs font-mono tracking-wider opacity-90 border-t border-white/20 pt-2">
         <span>{event.startDate}</span>
       </div>
     </div>
@@ -66,6 +66,7 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
 const EventsList: React.FC = () => {
   const [events, setEvents] = useState<EventData[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -78,7 +79,26 @@ const EventsList: React.FC = () => {
       .catch(() => setIsLoaded(true));
   }, []);
 
-  const filteredEvents = events.filter((e) => {
+  const isEventCompleted = (event: EventData) => {
+    if (!event.startDate) return false;
+    const eventDate = new Date(event.startDate);
+    if (isNaN(eventDate.getTime())) return false;
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return eventDate < now;
+  };
+
+  const upcomingCount = events.filter((e) => !isEventCompleted(e)).length;
+  const pastCount = events.filter((e) => isEventCompleted(e)).length;
+
+  const tabFilteredEvents = events.filter((e) => {
+    if (activeTab === 'upcoming') {
+      return !isEventCompleted(e);
+    }
+    return isEventCompleted(e);
+  });
+
+  const filteredEvents = tabFilteredEvents.filter((e) => {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return true;
     return (
@@ -90,148 +110,207 @@ const EventsList: React.FC = () => {
   });
 
   return (
-    <section className="w-full bg-[#161618] text-white py-12 px-4 sm:px-8 lg:px-12">
-      <div className="max-w-7xl mx-auto flex flex-col gap-6">
+    <section className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-[#131313] text-white select-none">
+      <div className="max-w-6xl mx-auto flex flex-col gap-6">
         
-        {/* Header & Search Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2e2e34] pb-5">
-          <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] animate-gradient-flow">
-            Upcoming Events
-          </h2>
+        {/* Header & Controls */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-white/10">
+          <div className="flex flex-col gap-1">
+            <h2 className="font-instrument-serif text-2xl sm:text-3xl lg:text-4xl font-normal tracking-[-0.6px] text-white">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d946ef] via-[#f97316] to-[#fbbf24]">
+                Upcoming
+              </span>{" "}
+              Events
+            </h2>
+            <p className="font-tight text-xs sm:text-sm text-white/50 font-normal leading-relaxed max-w-lg">
+              Discover summits, hackathons, workshops, and tech gatherings hosted across student chapters.
+            </p>
+          </div>
 
-          <div className="relative w-full sm:w-72 md:w-80">
-            <GoSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search events by title or location..."
-              className="w-full bg-[#1c1c1f] border border-[#2e2e34] focus:border-neutral-500 text-white placeholder-neutral-500 text-xs sm:text-sm rounded-full pl-10 pr-4 py-2 outline-none transition-all"
-            />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Filter Tabs (Upcoming first, Past second) */}
+            <div className="flex items-center gap-1 bg-[#18181c] border border-white/10 rounded-[10px] p-1 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveTab('upcoming')}
+                className={`px-3.5 py-1.5 rounded-[7px] text-xs font-tight font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'upcoming'
+                    ? 'bg-white text-[#101010] shadow-sm font-semibold'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span>Upcoming Events</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${activeTab === 'upcoming' ? 'bg-neutral-900/10 text-neutral-900 font-bold' : 'bg-white/10 text-white/50'}`}>
+                  {upcomingCount}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('past')}
+                className={`px-3.5 py-1.5 rounded-[7px] text-xs font-tight font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'past'
+                    ? 'bg-white text-[#101010] shadow-sm font-semibold'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span>Past Events</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${activeTab === 'past' ? 'bg-neutral-900/10 text-neutral-900 font-bold' : 'bg-white/10 text-white/50'}`}>
+                  {pastCount}
+                </span>
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="relative w-full sm:w-64">
+              <GoSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search events or city..."
+                className="w-full bg-[#18181c]/80 border border-white/10 focus:border-white/30 text-white placeholder-white/40 text-xs sm:text-sm rounded-[10px] pl-10 pr-4 py-2 outline-none transition-all font-tight shadow-sm"
+              />
+            </div>
           </div>
         </div>
 
         {/* Loading Skeleton */}
         {!isLoaded ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {[1, 2, 3, 4].map((i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="bg-[#1c1c1f] border border-[#2e2e34] rounded-xl sm:rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 animate-pulse select-none"
+                className="bg-[#18181c]/60 border border-white/10 rounded-[18px] p-4 flex flex-col gap-3.5 animate-pulse select-none"
               >
-                {/* Left Side: Skeleton Image */}
-                <div className="w-full aspect-square sm:w-36 sm:h-36 md:w-44 md:h-44 bg-[#222226] border border-[#333339] rounded-xl flex-shrink-0" />
+                {/* 1200x1200 Aspect-Square Skeleton Image Frame */}
+                <div className="w-full aspect-square bg-white/5 border border-white/10 rounded-[14px]" />
 
-                {/* Right Side: Skeleton Details */}
-                <div className="flex-1 w-full min-w-0 flex flex-col justify-between h-full py-0.5 gap-3">
-                  <div className="flex flex-col gap-2.5">
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 h-4 bg-[#222226] rounded-full" />
-                      <div className="w-20 h-3.5 bg-[#222226] rounded" />
-                    </div>
-                    
-                    <div className="w-4/5 h-5 bg-[#222226] rounded mt-1" />
-                    <div className="w-3/5 h-3.5 bg-[#222226] rounded" />
-                    
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="w-3.5 h-3.5 bg-[#222226] rounded-full" />
-                      <div className="w-28 h-3.5 bg-[#222226] rounded" />
-                    </div>
-                  </div>
+                <div className="flex flex-col gap-2">
+                  <div className="h-3.5 bg-white/5 rounded w-1/3" />
+                  <div className="h-5 bg-white/5 rounded w-4/5" />
+                  <div className="h-3 bg-white/5 rounded w-1/2" />
+                </div>
 
-                  <div className="flex items-center justify-between pt-2.5 border-t border-[#2e2e34]/70">
-                    <div className="w-14 h-4 bg-[#222226] rounded" />
-                    <div className="w-16 h-5 bg-[#222226] rounded-full" />
-                  </div>
+                <div className="flex items-center justify-between pt-3 border-t border-white/10 mt-1">
+                  <div className="w-16 h-4 bg-white/5 rounded" />
+                  <div className="w-20 h-7 bg-white/5 rounded-[8px]" />
                 </div>
               </div>
             ))}
           </div>
         ) : filteredEvents.length === 0 ? (
-          /* Empty State: "No Events Found" */
-          <div className="bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl p-10 sm:p-14 text-center flex flex-col items-center justify-center gap-4 shadow-xl">
-            <div className="w-14 h-14 rounded-2xl bg-[#222226] border border-[#2e2e34] text-neutral-400 flex items-center justify-center">
+          /* Empty State */
+          <div className="bg-[#18181c]/50 border border-white/10 rounded-[18px] p-12 sm:p-16 text-center flex flex-col items-center justify-center gap-4 shadow-xl backdrop-blur-xl">
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 text-white/50 flex items-center justify-center">
               <GoCalendar className="w-7 h-7" />
             </div>
 
             <div className="flex flex-col gap-1 max-w-sm">
-              <h3 className="text-lg font-bold text-white tracking-tight">No Events Found</h3>
-              <p className="text-xs text-[#9a9aa0] leading-relaxed">
-                {searchQuery ? `No events match "${searchQuery}". Try a different keyword!` : 'There are no active events published yet. Create your first event to get started!'}
+              <h3 className="font-instrument-serif text-2xl text-white font-normal tracking-[-0.4px]">
+                {activeTab === 'upcoming' ? 'No Upcoming Events' : 'No Past Events'}
+              </h3>
+              <p className="font-tight text-xs text-white/50 leading-relaxed font-normal">
+                {searchQuery
+                  ? `No events match "${searchQuery}". Try a different keyword!`
+                  : activeTab === 'upcoming'
+                    ? 'There are no upcoming events scheduled at this moment. Host the first one!'
+                    : 'There are no past events recorded yet.'}
               </p>
             </div>
 
             {searchQuery ? (
               <button
+                type="button"
                 onClick={() => setSearchQuery('')}
-                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-[#222226] border border-[#333339] hover:bg-[#2c2c32] text-white text-xs font-normal rounded-full transition-all duration-200 cursor-pointer shadow-sm"
+                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-white/10 border border-white/15 hover:bg-white/20 text-white text-xs font-tight font-medium rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
                 <span>Clear Search</span>
               </button>
             ) : (
               <a
                 href="/create-event"
-                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-[#222226] border border-[#333339] hover:bg-[#2c2c32] text-white text-xs font-normal rounded-md transition-all duration-200 cursor-pointer shadow-sm"
+                className="mt-2 relative inline-flex h-9 w-fit shrink-0 items-center justify-center rounded-[8px] border border-solid border-white/20 bg-white px-4 font-tight text-xs font-medium text-[#101010] shadow-[0px_2px_6px_rgba(0,0,0,0.22)] transition-all hover:opacity-90 active:scale-[0.97] cursor-pointer"
               >
-                <GoPlus className="w-3.5 h-3.5 text-neutral-300" />
-                <span>Create Your First Event</span>
+                <GoPlus className="w-3.5 h-3.5 mr-1" />
+                <span>Host an Event</span>
               </a>
             )}
           </div>
         ) : (
-          /* Real Published Events List */
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          /* Real Published Events Grid (1200x1200 Square Poster Frame) */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => {
+              const ended = isEventCompleted(event);
               return (
                 <div
                   key={event.id}
                   onClick={() => window.location.href = `/events/${event.id}`}
-                  className="group bg-[#1c1c1f]/90 hover:bg-[#222226] border border-[#2e2e34] hover:border-neutral-500/40 rounded-xl sm:rounded-2xl transition-all duration-300 p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-4 sm:gap-5 cursor-pointer shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+                  className="group bg-[#18181c]/70 hover:bg-[#1f1f25] border border-white/10 hover:border-white/25 rounded-[18px] p-4 flex flex-col transition-all duration-200 cursor-pointer shadow-md hover:shadow-2xl hover:translate-y-[-3px]"
                 >
-                  {/* Left Side: Image */}
-                  <div className="w-full aspect-square sm:w-36 sm:h-36 md:w-44 md:h-44 bg-[#161618] border border-[#333339] rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden select-none shadow-md">
+                  {/* Top: 1200x1200 1:1 Aspect-Square Poster Container */}
+                  <div className="relative w-full aspect-square bg-[#131316] border border-white/10 group-hover:border-white/20 rounded-[14px] overflow-hidden select-none flex-shrink-0 mb-3.5 shadow-sm">
                     <EventImage event={event} />
+                    
+                    {/* Top Left Ticket Code */}
+                    <span className="absolute top-3 left-3 text-[10px] font-mono bg-black/70 backdrop-blur-md border border-white/15 px-2.5 py-0.5 rounded-[6px] text-white/90 tracking-wider font-medium shadow-sm">
+                      {event.ticketCode}
+                    </span>
+
+                    {/* Top Right Status Badge */}
+                    {ended ? (
+                      <span className="absolute top-3 right-3 text-[10px] font-mono uppercase bg-black/80 text-white/80 border border-white/20 px-2.5 py-0.5 rounded-[6px] tracking-wider font-semibold backdrop-blur-md shadow-sm">
+                        Ended
+                      </span>
+                    ) : (
+                      <span className="absolute top-3 right-3 text-[10px] font-tight bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-[6px] font-medium backdrop-blur-md shadow-sm flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        Upcoming
+                      </span>
+                    )}
                   </div>
 
-                  {/* Right Side: content details */}
-                  <div className="flex-1 w-full min-w-0 flex flex-col justify-between self-stretch py-0.5">
+                  {/* Body: Event Details */}
+                  <div className="flex-1 flex flex-col justify-between">
                     <div className="flex flex-col gap-1.5 min-w-0">
-                      <div className="flex items-center gap-2.5 flex-wrap">
-                        <span className="text-[10px] font-mono bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full text-neutral-300 tracking-wider">
-                          {event.ticketCode}
-                        </span>
-                        <span className="text-xs text-neutral-400 font-mono flex items-center gap-1">
-                          <GoCalendar className="w-3.5 h-3.5 text-neutral-500" />
+                      {/* Date & Location Row */}
+                      <div className="flex items-center justify-between text-xs text-white/50 font-tight">
+                        <span className="flex items-center gap-1.5 text-white/70">
+                          <GoCalendar className="w-3.5 h-3.5 text-white/40" />
                           {event.startDate}
+                        </span>
+                        <span className="truncate max-w-[130px] text-right font-normal">
+                          {event.location?.split(',')[0] || 'Online'}
                         </span>
                       </div>
                       
-                      <h4 className="text-base sm:text-lg md:text-xl font-bold text-white group-hover:text-amber-400 transition-colors line-clamp-2 mt-1 leading-snug">
+                      {/* Title */}
+                      <h3 className="text-base sm:text-lg font-semibold font-tight text-white group-hover:text-white transition-colors line-clamp-2 leading-snug tracking-[-0.3px] mt-0.5">
                         {event.title}
-                      </h4>
+                      </h3>
 
-                      <span className="text-xs sm:text-sm text-neutral-400 font-medium truncate">
-                        By {event.organizer || 'Infinity Event Organizer'}
+                      {/* Organizer */}
+                      <span className="text-xs text-white/50 font-tight truncate">
+                        By {event.organizer || 'Student Forge'}
                       </span>
-
-                      <div className="flex items-center gap-1.5 text-xs sm:text-sm text-neutral-400 font-normal truncate mt-1">
-                        <GoLocation className="w-3.5 h-3.5 flex-shrink-0 text-neutral-400" />
-                        <span className="truncate">{event.location || 'Online'}</span>
-                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#2e2e34]/70">
+                    {/* Footer: Price & Details Action */}
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Price:</span>
-                        <span className="text-sm sm:text-base font-bold text-white">{event.price || 'Free'}</span>
+                        <span className="text-[10px] uppercase font-mono text-white/40 tracking-wider">Price:</span>
+                        <span className="text-sm font-semibold font-tight text-white">
+                          {event.price?.startsWith('₹') ? event.price : (event.price === 'Free' || !event.price ? 'Free' : `₹${event.price}`)}
+                        </span>
                       </div>
 
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-neutral-300 group-hover:bg-white group-hover:text-neutral-900 group-hover:border-white transition-all duration-300 shadow-sm">
+                      <div className="inline-flex items-center gap-1.5 rounded-[8px] border border-solid border-white/15 bg-white/5 px-3 py-1.5 font-tight text-xs font-medium text-white/80 group-hover:bg-white group-hover:text-[#101010] group-hover:border-white transition-all shadow-sm">
                         <span>Details</span>
-                        <GoArrowRight className="w-3.5 h-3.5" />
+                        <GoArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                       </div>
                     </div>
                   </div>
+
                 </div>
               );
             })}

@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 import puppeteer from 'puppeteer';
 import QRCode from 'qrcode';
 
-const LOGO_URL = 'https://ik.imagekit.io/dypkhqxip/events%20loho';
+const LOGO_URL = 'https://ik.imagekit.io/dypkhqxip/sf-events-svg?updatedAt=1787505496001';
 
 interface GuestInviteMailParams {
   to: string;

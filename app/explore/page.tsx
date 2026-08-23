@@ -250,14 +250,17 @@ export default function ExplorePage() {
       {/* Subtle grid texture */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#1e1e22_1px,transparent_1px),linear-gradient(to_bottom,#1e1e22_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-30" />
 
-      <div className="w-full max-w-5xl mx-auto py-12 sm:py-20 px-4 sm:px-8 flex-1 flex flex-col gap-14 z-10 relative">
+      <div className="w-full max-w-5xl mx-auto pt-12 sm:pt-16 md:pt-20 pb-16 px-4 sm:px-8 flex-1 flex flex-col gap-10 z-10 relative">
 
         {/* ── Hero ── */}
-        <div className="flex flex-col gap-3">
-          <h1 className="text-3xl sm:text-4xl font-normal tracking-tight text-white">
-            Discover Events
+        <div className="flex flex-col gap-2">
+          <h1 className="font-instrument-serif text-2xl sm:text-3xl lg:text-4xl font-normal tracking-[-0.6px] text-white leading-tight">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d946ef] via-[#f97316] to-[#fbbf24]">
+              Discover
+            </span>{" "}
+            Events
           </h1>
-          <p className="text-sm sm:text-base text-[#6a6a76] font-normal leading-relaxed max-w-xl">
+          <p className="text-xs sm:text-sm text-[#8a8a96] font-normal leading-relaxed max-w-lg">
             Explore popular events near you, browse by category, or check out some of the great community gatherings.
           </p>
 

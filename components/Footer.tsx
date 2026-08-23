@@ -29,11 +29,12 @@ const Footer: React.FC<FooterProps> = ({ isLight = false }) => {
           {/* Left: Spark Logo & Links */}
           <div className="flex items-center gap-6 text-xs sm:text-sm font-normal">
             {/* Logo */}
-            <a href="/" className="flex items-center" aria-label="Home">
+            <a href="/" className="flex items-center group" aria-label="Home">
               <img
-                src="https://ik.imagekit.io/dypkhqxip/events%20loho"
+                src="https://ik.imagekit.io/dypkhqxip/sf-events-svg?updatedAt=1787505496001"
                 alt="Student Forge Events"
-                className={`h-8 w-auto object-contain select-none opacity-80 hover:opacity-100 transition-opacity ${isLight ? 'invert brightness-50' : ''}`}
+                className="h-12 sm:h-14 w-auto object-contain select-none opacity-90 group-hover:opacity-100 transition-opacity"
+                style={{ filter: isLight ? 'brightness(0.3)' : 'brightness(0) invert(0.88)' }}
                 draggable={false}
               />
             </a>

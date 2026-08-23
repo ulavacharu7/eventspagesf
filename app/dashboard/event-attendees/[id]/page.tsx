@@ -278,26 +278,30 @@ export default function EventAttendeesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#161618] text-white flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-[#131313] text-white flex flex-col font-tight select-none">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 flex flex-col gap-6">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-12 sm:pt-16 md:pt-20 pb-12 flex flex-col gap-6">
         
         {/* Navigation Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-5">
           <div className="flex flex-col gap-1.5">
             <button 
               onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors pb-1 text-left cursor-pointer w-fit bg-transparent border-none outline-none"
+              className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors text-left cursor-pointer w-fit bg-transparent border-none outline-none"
             >
-              <GoArrowLeft className="w-3.5 h-3.5" /> Back to Admin Dashboard
+              <GoArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
             </button>
-            <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <GoPeople className="text-[#ff6b6b]" /> Event Attendees
+            <h1 className="font-instrument-serif text-2xl sm:text-3xl text-white font-normal tracking-[-0.6px] leading-tight flex items-center gap-2">
+              <GoPeople className="text-[#ff6b6b] w-6 h-6" />
+              <span>Event</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d946ef] via-[#f97316] to-[#fbbf24]">
+                Attendees
+              </span>
             </h1>
             {event && (
-              <p className="text-xs text-neutral-400 font-medium">
-                Guest list for <span className="text-white font-semibold">&quot;{event.title}&quot;</span>
+              <p className="text-xs sm:text-sm text-white/50 font-normal">
+                Guest list for <span className="text-white font-medium">&quot;{event.title}&quot;</span>
               </p>
             )}
           </div>
@@ -307,7 +311,7 @@ export default function EventAttendeesPage() {
             <button
               onClick={handleExportPDF}
               disabled={!!exporting || registrations.length === 0}
-              className="px-4 py-2.5 bg-[#1c1c1f] hover:bg-[#27272b] disabled:opacity-40 disabled:cursor-not-allowed text-neutral-200 hover:text-white text-xs font-bold rounded-xl border border-[#2e2e34] hover:border-[#44444a] transition-all cursor-pointer shadow-sm flex items-center gap-2"
+              className="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed text-white/80 hover:text-white text-xs font-semibold rounded-[8px] border border-white/10 transition-all cursor-pointer shadow-sm flex items-center gap-2 active:scale-95"
             >
               <GoDownload className="w-3.5 h-3.5 text-rose-400" />
               {exporting === 'PDF' ? 'Exporting…' : 'Export PDF'}
@@ -315,7 +319,7 @@ export default function EventAttendeesPage() {
             <button
               onClick={handleExportXLS}
               disabled={!!exporting || registrations.length === 0}
-              className="px-4 py-2.5 bg-[#1c1c1f] hover:bg-[#27272b] disabled:opacity-40 disabled:cursor-not-allowed text-neutral-200 hover:text-white text-xs font-bold rounded-xl border border-[#2e2e34] hover:border-[#44444a] transition-all cursor-pointer shadow-sm flex items-center gap-2"
+              className="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed text-white/80 hover:text-white text-xs font-semibold rounded-[8px] border border-white/10 transition-all cursor-pointer shadow-sm flex items-center gap-2 active:scale-95"
             >
               <GoDownload className="w-3.5 h-3.5 text-emerald-400" />
               {exporting === 'XLS' ? 'Exporting…' : 'Export XLS'}
@@ -325,26 +329,26 @@ export default function EventAttendeesPage() {
 
         {/* Quick Event Summary Strip */}
         {event && (
-          <div className="bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl p-4 flex flex-wrap gap-4 text-xs text-neutral-400">
-            <div className="flex items-center gap-1.5"><GoCalendar className="w-3.5 h-3.5 text-neutral-500" /> Date: <span className="text-white font-medium">{event.startDate} at {event.startTime}</span></div>
-            <div className="flex items-center gap-1.5"><GoLocation className="w-3.5 h-3.5 text-neutral-500" /> Venue: <span className="text-white font-medium truncate max-w-[200px]">{event.location || 'Online'}</span></div>
-            <div className="flex items-center gap-1.5"><GoTag className="w-3.5 h-3.5 text-neutral-500" /> Price: <span className="text-white font-medium">{event.price}</span></div>
-            <div className="ml-auto bg-[#222226] border border-[#2e2e34] px-2.5 py-1 rounded text-neutral-300 font-medium">Total Registered: <span className="text-[#ff6b6b] font-bold">{registrations.length}</span></div>
+          <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-4 flex flex-wrap gap-4 text-xs text-white/50">
+            <div className="flex items-center gap-1.5"><GoCalendar className="w-3.5 h-3.5 text-white/40" /> Date: <span className="text-white font-medium">{event.startDate} at {event.startTime}</span></div>
+            <div className="flex items-center gap-1.5"><GoLocation className="w-3.5 h-3.5 text-white/40" /> Venue: <span className="text-white font-medium truncate max-w-[200px]">{event.location || 'Online'}</span></div>
+            <div className="flex items-center gap-1.5"><GoTag className="w-3.5 h-3.5 text-white/40" /> Price: <span className="text-white font-medium">{event.price}</span></div>
+            <div className="ml-auto bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-white/80 font-medium">Total Registered: <span className="text-[#ff6b6b] font-bold">{registrations.length}</span></div>
           </div>
         )}
 
         {/* Search Bar */}
-        <div className="bg-[#1c1c1f] border border-[#2e2e34] focus-within:border-neutral-700 rounded-xl p-3 flex items-center gap-3 transition-colors">
-          <GoSearch className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+        <div className="bg-[#18181c]/80 border border-white/10 focus-within:border-white/30 rounded-xl p-3 flex items-center gap-3 transition-colors shadow-sm">
+          <GoSearch className="w-4 h-4 text-white/40 flex-shrink-0" />
           <input
             type="text"
             placeholder="Search attendee by name, email, or ticket ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent text-xs text-white placeholder-neutral-500 outline-none w-full"
+            className="bg-transparent text-xs text-white placeholder-white/30 outline-none w-full"
           />
           {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="p-0.5 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors cursor-pointer bg-transparent border-none">
+            <button onClick={() => setSearchQuery('')} className="p-0.5 rounded hover:bg-white/10 text-white/40 hover:text-white transition-colors cursor-pointer bg-transparent border-none">
               <GoX className="w-3 h-3" />
             </button>
           )}
@@ -354,17 +358,17 @@ export default function EventAttendeesPage() {
         {loading ? (
           <div className="flex flex-col gap-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl animate-pulse" />
+              <div key={i} className="h-20 bg-[#18181c]/60 border border-white/10 rounded-2xl animate-pulse" />
             ))}
           </div>
         ) : filteredRegs.length === 0 ? (
-          <div className="bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl p-16 text-center flex flex-col items-center justify-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#222226] border border-[#2e2e34] flex items-center justify-center text-neutral-500">
+          <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-16 text-center flex flex-col items-center justify-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40">
               <GoPeople className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">No attendees found</p>
-              <p className="text-xs text-neutral-500 mt-1">
+              <h3 className="font-instrument-serif text-xl sm:text-2xl text-white font-normal">No attendees found</h3>
+              <p className="text-xs text-white/50 mt-1 font-normal">
                 {searchQuery ? 'Try adjusting your search terms.' : 'Attendees who register will appear here.'}
               </p>
             </div>
@@ -372,25 +376,25 @@ export default function EventAttendeesPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {filteredRegs.map((reg) => (
-              <div key={reg.id} className="flex flex-col md:flex-row md:items-center justify-between bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl p-4 gap-4 shadow-sm hover:border-[#3a3a42] transition-colors animate-fade-in">
+              <div key={reg.id} className="flex flex-col md:flex-row md:items-center justify-between bg-[#18181c]/80 border border-white/10 rounded-2xl p-4 gap-4 shadow-sm hover:border-white/20 transition-colors animate-fade-in">
                 <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                  <div className="w-10 h-10 rounded-full bg-[#222226] border border-[#2e2e34] flex items-center justify-center text-xs font-bold text-neutral-300 flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-bold text-white/80 flex-shrink-0">
                     {reg.name?.substring(0, 2).toUpperCase() || 'U'}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-xs font-bold text-white truncate max-w-[200px]">{reg.name || 'Anonymous'}</p>
+                      <p className="text-xs font-semibold text-white truncate max-w-[200px]">{reg.name || 'Anonymous'}</p>
                       {reg.status === 'PENDING' ? (
-                        <span className="text-[8px] bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded font-mono font-semibold animate-pulse">
+                        <span className="text-[9px] bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded-full font-mono font-semibold animate-pulse">
                           Pending Approval
                         </span>
                       ) : (
-                        <span className="text-[8px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono font-semibold">
+                        <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-semibold">
                           Approved
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-neutral-400 font-mono truncate mt-0.5">{reg.email}</p>
+                    <p className="text-[11px] text-white/40 font-mono truncate mt-0.5">{reg.email}</p>
 
                     {reg.answers && (() => {
                       try {

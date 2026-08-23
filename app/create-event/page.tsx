@@ -176,7 +176,7 @@ export default function CreateEventPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const activeTheme = themes[currentThemeIdx];
-  const isLightBg = !uploadedImageSrc && currentCustomColor === 'None' && !!activeTheme.isLight;
+  const isLightBg = false;
 
   // Protect route: user must be authenticated to host/create an event
   useEffect(() => {
@@ -488,82 +488,30 @@ export default function CreateEventPage() {
   const filteredAll = filterTz(allTimezonesList);
 
   return (
-    <main className={`relative min-h-screen bg-[#161618] text-white flex flex-col justify-between antialiased ${getFontFamilyClass(currentFont)}`}>
-      {/* Ambient Page Background Glow based on theme */}
-      {!uploadedImageSrc && currentCustomColor === 'None' && (
-        currentThemeIdx === 7 ? (
-          <div className="fixed inset-0 z-0 opacity-90 pointer-events-none">
-            <PixelBlast
-              variant="circle"
-              pixelSize={6}
-              color="#B497CF"
-              patternScale={3}
-              patternDensity={1.2}
-              pixelSizeJitter={0.5}
-              enableRipples
-              rippleSpeed={0.4}
-              rippleThickness={0.12}
-              rippleIntensityScale={1.5}
-              liquid
-              liquidStrength={0.12}
-              liquidRadius={1.2}
-              liquidWobbleSpeed={5}
-              speed={0.6}
-              edgeFade={0.25}
-              transparent
-            />
-          </div>
-        ) : currentThemeIdx === 8 ? (
-          <div className="fixed inset-0 z-0 pointer-events-none">
-            <Grainient
-              color1="#FF9FFC"
-              color2="#5227FF"
-              color3="#B497CF"
-              timeSpeed={0.25}
-              colorBalance={0.0}
-              warpStrength={1.0}
-              warpFrequency={5.0}
-              warpSpeed={2.0}
-              warpAmplitude={50.0}
-              blendAngle={0.0}
-              blendSoftness={0.05}
-              rotationAmount={500.0}
-              noiseScale={2.0}
-              grainAmount={0.1}
-              grainScale={2.0}
-              grainAnimated={false}
-              contrast={1.5}
-              gamma={1.0}
-              saturation={1.0}
-              centerX={0.0}
-              centerY={0.0}
-              zoom={0.9}
-            />
-          </div>
-        ) : (
-          <div className={`fixed inset-0 z-0 opacity-90 pointer-events-none ${activeTheme.bg}`} />
-        )
-      )}
+    <main className={`relative min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased ${getFontFamilyClass(currentFont)} font-tight select-none overflow-x-hidden`}>
+      {/* Ambient background glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(217,70,239,0.05),transparent_70%)]" />
 
       <Navbar />
 
-      <div className="w-full max-w-5xl mx-auto py-8 sm:py-12 px-4 sm:px-8 flex-1 flex flex-col justify-center relative z-10">
+      <div className="w-full max-w-5xl mx-auto pt-12 sm:pt-16 md:pt-20 pb-12 px-4 sm:px-8 flex-1 flex flex-col justify-center relative z-10">
         
         {/* Page Top Breadcrumb Navigation & Title */}
-        <div className={`flex items-center justify-between border-b pb-5 mb-8 ${isLightBg ? 'border-neutral-400/30' : 'border-[#2e2e34]'}`}>
-          <div className="flex flex-col gap-1.5">
-            <nav className={`flex items-center gap-2 text-xs font-normal ${isLightBg ? 'text-neutral-700' : 'text-[#8a8a90]'}`}>
-              <a href="/" className={`transition-colors ${isLightBg ? 'hover:text-black' : 'hover:text-white'}`}>Home</a>
-              <span>/</span>
-              <a href="/events" className={`transition-colors ${isLightBg ? 'hover:text-black' : 'hover:text-white'}`}>Events</a>
-              <span>/</span>
-              <span className={`font-medium ${isLightBg ? 'text-neutral-900 font-semibold' : 'text-white'}`}>Create Event</span>
-            </nav>
+        <div className="flex flex-col gap-2.5 pb-4 mb-6 border-b border-white/10">
+          <nav className="flex items-center gap-1.5 text-[11px] font-mono text-white/40">
+            <a href="/" className="hover:text-white transition-colors">Home</a>
+            <span className="opacity-30">/</span>
+            <a href="/events" className="hover:text-white transition-colors">Events</a>
+            <span className="opacity-30">/</span>
+            <span className="text-white/80">Create Event</span>
+          </nav>
 
-            <h1 className={`text-xl sm:text-2xl font-semibold tracking-tight ${isLightBg ? 'text-neutral-900' : 'text-[#f4f4f5]'}`}>
-              Create an Event
-            </h1>
-          </div>
+          <h1 className="font-instrument-serif text-2xl sm:text-3xl lg:text-4xl text-white font-normal tracking-[-0.6px] leading-tight">
+            Create an{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d946ef] via-[#f97316] to-[#fbbf24]">
+              Event
+            </span>
+          </h1>
         </div>
 
         {isSubmitted ? (

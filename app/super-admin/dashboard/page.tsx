@@ -488,10 +488,10 @@ export default function SuperAdminDashboardPage() {
         <div className="flex items-center gap-3">
           <a href="/super-admin/dashboard" className="flex items-center cursor-pointer select-none">
             <img
-              src="https://ik.imagekit.io/dypkhqxip/events%20loho"
+              src="https://ik.imagekit.io/dypkhqxip/sf-events-svg?updatedAt=1787505496001"
               alt="Events Logo"
-              className="h-10 w-auto object-contain"
-              style={{ filter: 'brightness(0) invert(1)' }}
+              className="h-10 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+              style={{ filter: 'brightness(0) invert(0.88)' }}
               draggable={false}
             />
           </a>

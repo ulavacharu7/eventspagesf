@@ -187,18 +187,18 @@ export default function HelpPage() {
       {/* Grid texture */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#232329_1px,transparent_1px),linear-gradient(to_bottom,#232329_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_40%_at_50%_0%,#000_60%,transparent_100%)] opacity-15" />
 
-      <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 py-10 sm:py-16 flex-1 flex flex-col md:flex-row gap-10 sm:gap-14 z-10 relative">
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 md:pt-20 pb-16 flex-1 flex flex-col md:flex-row gap-8 sm:gap-12 z-10 relative">
         
         {/* Left Sidebar Menu */}
-        <aside className="w-full md:w-60 flex-shrink-0 flex flex-col border-b md:border-b-0 md:border-r border-[#232329] pb-6 md:pb-0 md:pr-6 gap-2">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-[#5a5a64] px-4 mb-2">Help Center</p>
+        <aside className="w-full md:w-60 flex-shrink-0 flex flex-col border-b md:border-b-0 md:border-r border-[#232329] pb-4 md:pb-0 md:pr-6 gap-1.5">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-[#5a5a64] px-4 mb-1">Help Center</p>
           {sections.map((sec) => {
             const isActive = activeSection === sec.id;
             return (
               <button
                 key={sec.id}
                 onClick={() => setActiveSection(sec.id)}
-                className={`w-full text-left text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer font-normal border ${
+                className={`w-full text-left text-xs py-2 px-3.5 rounded-lg transition-all cursor-pointer font-normal border ${
                   isActive
                     ? 'bg-white/5 border-white/10 text-white font-medium shadow-sm'
                     : 'border-transparent text-[#6a6a76] hover:text-white hover:bg-white/[0.02]'
@@ -211,12 +211,12 @@ export default function HelpPage() {
         </aside>
 
         {/* Right Content Area */}
-        <article className="flex-1 flex flex-col gap-6 min-h-[450px]">
+        <article className="flex-1 flex flex-col gap-5 min-h-[400px]">
           {currentSection && (
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2 pb-6 border-b border-[#232329]">
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5 pb-4 border-b border-[#232329]">
                 {/* Breadcrumb */}
-                <nav className="flex items-center gap-1.5 text-[11px] text-[#5a5a64] font-normal tracking-wide">
+                <nav className="flex items-center gap-1.5 text-[11px] font-mono text-[#5a5a64]">
                   <a href="/" className="hover:text-white transition-colors">Home</a>
                   <span className="opacity-40">/</span>
                   <a href="/help" className="hover:text-white transition-colors">Help</a>
@@ -224,13 +224,13 @@ export default function HelpPage() {
                   <span className="text-[#8a8a96]">{currentSection.label}</span>
                 </nav>
 
-                <h1 className="text-3xl sm:text-4xl font-normal tracking-tight leading-tight">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] animate-gradient-flow">
+                <h1 className="font-instrument-serif text-2xl sm:text-3xl lg:text-4xl font-normal tracking-[-0.6px] leading-tight text-white">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d946ef] via-[#f97316] to-[#fbbf24]">
                     {currentSection.title.split(' ')[0]}
                   </span>{' '}
-                  <span className="text-white">{currentSection.title.split(' ').slice(1).join(' ')}</span>
+                  <span>{currentSection.title.split(' ').slice(1).join(' ')}</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-[#6a6a76] font-normal leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#8a8a96] font-normal leading-relaxed">
                   {currentSection.subtitle}
                 </p>
               </div>

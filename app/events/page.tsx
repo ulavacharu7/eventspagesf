@@ -4,32 +4,45 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { GoLocation, GoCalendar, GoPlus, GoSearch, GoArrowRight } from 'react-icons/go';
+import { GoLocation, GoCalendar, GoSearch, GoPlus, GoArrowRight, GoChevronRight } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
-import { isEventCompleted } from '@/lib/utils';
 
 const themes = [
-  { name: 'Minimal', bg: 'bg-[#f4f4f5]' },
-  { name: 'Quantum', bg: 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600' },
-  { name: 'Warp', bg: 'bg-black border border-[#2e2e34]' },
-  { name: 'Emoji', bg: 'bg-[#b497cf]' },
-  { name: 'Confetti', bg: 'bg-gradient-to-tr from-purple-600 to-pink-500' },
-  { name: 'Pattern', bg: 'bg-gradient-to-tr from-indigo-600 to-teal-600' },
-  { name: 'Seasonal', bg: 'bg-gradient-to-tr from-rose-500 to-amber-500' },
-  { name: 'PixelBlast', bg: 'bg-[#141416]' },
-  { name: 'Grainient', bg: 'bg-gradient-to-tr from-[#FF9FFC] via-[#5227FF] to-[#B497CF]' },
+  { name: 'Minimal', bg: 'bg-[#f4f4f5]', textColor: 'text-black', subText: '*HOW LUCKY YOU ARE' },
+  { name: 'Quantum', bg: 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600', textColor: 'text-white', subText: '*BUILD THE UNKNOWN' },
+  { name: 'Warp', bg: 'bg-black border border-[#2e2e34]', textColor: 'text-white', subText: '*JOIN THE FUTURE' },
+  { name: 'Emoji', bg: 'bg-[#b497cf]', textColor: 'text-white', subText: '*STUDENT FORGE EVENTS' },
+  { name: 'Confetti', bg: 'bg-gradient-to-tr from-purple-600 to-pink-500', textColor: 'text-white', subText: '*PARTY TIME' },
+  { name: 'Pattern', bg: 'bg-gradient-to-tr from-indigo-600 to-teal-600', textColor: 'text-white', subText: '*PATTERN CREATION' },
+  { name: 'Seasonal', bg: 'bg-gradient-to-tr from-rose-500 to-amber-500', textColor: 'text-white', subText: '*CREATORS GATHERING' },
+  { name: 'PixelBlast', bg: 'bg-[#141416]', textColor: 'text-[#B497CF]', subText: '*PIXELBLAST INTERACTIVE' },
+  { name: 'Grainient', bg: 'bg-gradient-to-tr from-[#FF9FFC] via-[#5227FF] to-[#B497CF]', textColor: 'text-white', subText: '*GRAINIENT ANIMATED' }
 ];
 
 const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
   const [error, setError] = useState(false);
 
-  if (event.coverImage && !error) {
+  const getFirstImage = () => {
+    if (event.coverImage) {
+      const first = event.coverImage.split(',')[0].trim();
+      if (first) return first;
+    }
+    const titleLower = (event.title || '').toLowerCase();
+    if (event.id === 'cmsbpnls8000004lfw3buf1a7' || titleLower.includes('student forge') || titleLower.includes('platform launch')) {
+      return 'https://ik.imagekit.io/dypkhqxip/mainbannersf';
+    }
+    return null;
+  };
+
+  const coverSrc = getFirstImage();
+
+  if (coverSrc && !error) {
     return (
       <img
-        src={event.coverImage}
+        src={coverSrc}
         alt={event.title}
         onError={() => setError(true)}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
       />
     );
   }
@@ -39,15 +52,15 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
     : themes[0];
 
   return (
-    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-3">
+    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-3.5 text-white bg-neutral-950/45 border border-white/10 rounded-[10px]">
       <div className={`absolute inset-0 z-0 ${activeTheme.bg}`} />
-      <div className="z-10">
-        <h5 className="text-[11px] font-semibold uppercase leading-tight tracking-tight line-clamp-3 text-white">
+      <div className="z-10 flex flex-col gap-1">
+        <h5 className="text-xs font-semibold font-tight leading-snug tracking-tight line-clamp-3">
           {event.title}
         </h5>
       </div>
-      <div className="z-10 text-[6px] font-mono uppercase tracking-widest opacity-60 border-t border-white/20 pt-1.5 text-white">
-        {event.startDate}
+      <div className="z-10 flex flex-col text-[10px] font-mono tracking-wider opacity-90 border-t border-white/20 pt-1">
+        <span>{event.startDate}</span>
       </div>
     </div>
   );
@@ -56,9 +69,9 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
 export default function EventsPage() {
   const router = useRouter();
   const [events, setEvents] = useState<EventData[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'upcoming'>('all');
-  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     fetch('/api/events')
@@ -70,70 +83,87 @@ export default function EventsPage() {
       .catch(() => setIsLoaded(true));
   }, []);
 
-  const filteredEvents = events.filter((e) =>
+  const isEventCompleted = (event: EventData) => {
+    if (!event.startDate) return false;
+    const eventDate = new Date(event.startDate);
+    if (isNaN(eventDate.getTime())) return false;
+    const now = new Date();
+    return eventDate < now;
+  };
+
+  const displayedEvents = events.filter((e) => {
+    if (activeTab === 'upcoming') {
+      return !isEventCompleted(e);
+    }
+    return true;
+  });
+
+  const filteredEvents = displayedEvents.filter((e) =>
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    e.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
     e.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
     e.ticketCode.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <main className="relative min-h-screen bg-[#161618] text-white flex flex-col justify-between antialiased font-sans overflow-x-hidden">
+    <main className="relative min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased font-tight select-none overflow-x-hidden">
       <Navbar />
 
-      {/* Subtle grid texture */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#232329_1px,transparent_1px),linear-gradient(to_bottom,#232329_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_40%_at_50%_0%,#000_60%,transparent_100%)] opacity-15" />
+      <div className="w-full max-w-6xl mx-auto pt-12 sm:pt-16 md:pt-20 pb-20 px-4 sm:px-8 flex-1 flex flex-col gap-6 z-10 relative">
 
-      <div className="w-full max-w-5xl mx-auto py-10 sm:py-16 px-4 sm:px-8 flex-1 flex flex-col gap-10 z-10 relative">
+        {/* Header */}
+        <div className="flex flex-col gap-2.5 pb-4 border-b border-white/10">
+          
+          <nav className="flex items-center gap-1.5 text-[11px] font-mono text-white/40">
+            <a href="/" className="hover:text-white transition-colors">Home</a>
+            <GoChevronRight className="w-3 h-3 opacity-30" />
+            <span className="text-white/80">Events</span>
+          </nav>
+          
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <h1 className="font-instrument-serif text-2xl sm:text-3xl lg:text-4xl text-white font-normal tracking-[-0.6px] leading-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d946ef] via-[#f97316] to-[#fbbf24]">
+                  Events
+                </span>{" "}
+                & Gatherings
+              </h1>
+              <p className="font-tight text-xs sm:text-sm text-white/50 font-normal leading-relaxed max-w-lg">
+                Discover summits, hackathons, workshops, and student tech community events.
+              </p>
+            </div>
 
-        {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 pb-6 border-b border-[#232329]">
-          <div className="flex flex-col gap-2">
-            <nav className="flex items-center gap-1.5 text-[11px] text-[#5a5a64] font-normal tracking-wide">
-              <a href="/" className="hover:text-white transition-colors">Home</a>
-              <span className="opacity-40">/</span>
-              <span className="text-[#8a8a96]">Events</span>
-            </nav>
-            <h1 className="text-3xl sm:text-4xl font-normal tracking-tight leading-tight">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] animate-gradient-flow">
-                Events
-              </span>
-              <span className="text-white"> & Gatherings</span>
-            </h1>
-            <p className="text-sm text-[#6a6a72] font-normal leading-relaxed max-w-md">
-              Discover hackathons, workshops, and summits hosted by student tech communities.
-            </p>
+            <a
+              href="/create-event"
+              className="relative inline-flex h-8.5 w-fit shrink-0 items-center justify-center rounded-[8px] border border-solid border-white/20 bg-white px-3.5 font-tight text-xs font-medium text-[#101010] shadow-[0px_2px_6px_rgba(0,0,0,0.22)] transition-all hover:opacity-90 active:scale-[0.97] cursor-pointer self-start sm:self-auto"
+            >
+              <GoPlus className="w-3.5 h-3.5 mr-1" />
+              <span>Host an Event</span>
+            </a>
           </div>
-
-          <a
-            href="/create-event"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 text-xs font-medium rounded-full hover:bg-white/90 transition-all duration-200 self-start sm:self-auto whitespace-nowrap"
-          >
-            <GoPlus className="w-3.5 h-3.5" />
-            Host an Event
-          </a>
         </div>
 
-        {/* ── Search & Filter ── */}
+        {/* Search & Filter */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="flex-1 bg-[#1c1c1f] border border-[#2a2a30] focus-within:border-[#3a3a42] rounded-xl px-4 py-2.5 flex items-center gap-3 transition-colors">
-            <GoSearch className="w-3.5 h-3.5 text-[#5a5a64] flex-shrink-0" />
+          <div className="flex-1 bg-[#18181c]/80 border border-white/10 focus-within:border-white/30 rounded-[10px] px-4 py-2.5 flex items-center gap-3 transition-colors">
+            <GoSearch className="w-4 h-4 text-white/40 flex-shrink-0" />
             <input
               type="text"
               placeholder="Search events, locations, or ticket codes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent text-sm text-white placeholder-[#44444e] outline-none w-full font-normal"
+              className="bg-transparent text-sm text-white placeholder-white/40 outline-none w-full font-tight"
             />
           </div>
 
-          <div className="flex items-center gap-1 bg-[#1c1c1f] border border-[#2a2a30] rounded-xl p-1 flex-shrink-0">
+          <div className="flex items-center gap-1 bg-[#18181c] border border-white/10 rounded-[8px] p-1 flex-shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab('all')}
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-[6px] text-xs font-tight font-medium transition-all cursor-pointer ${
                 activeTab === 'all'
-                  ? 'bg-[#2a2a30] text-white shadow-sm'
-                  : 'text-[#5a5a64] hover:text-[#9a9aa8]'
+                  ? 'bg-white text-[#101010] shadow-sm'
+                  : 'text-white/60 hover:text-white'
               }`}
             >
               All ({events.length})
@@ -141,49 +171,41 @@ export default function EventsPage() {
             <button
               type="button"
               onClick={() => setActiveTab('upcoming')}
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-[6px] text-xs font-tight font-medium transition-all cursor-pointer ${
                 activeTab === 'upcoming'
-                  ? 'bg-[#2a2a30] text-white shadow-sm'
-                  : 'text-[#5a5a64] hover:text-[#9a9aa8]'
+                  ? 'bg-white text-[#101010] shadow-sm'
+                  : 'text-white/60 hover:text-white'
               }`}
             >
-              Upcoming ({events.length})
+              Upcoming ({displayedEvents.length})
             </button>
           </div>
         </div>
 
-        {/* Results count */}
-        {isLoaded && filteredEvents.length > 0 && (
-          <p className="text-xs text-[#5a5a64] font-normal -mt-5">
-            Showing <span className="text-[#8a8a96]">{filteredEvents.length}</span> event{filteredEvents.length !== 1 ? 's' : ''}
-            {searchQuery && <> matching <span className="text-amber-400/80">&ldquo;{searchQuery}&rdquo;</span></>}
-          </p>
-        )}
-
-        {/* ── Content ── */}
+        {/* Content */}
         {!isLoaded ? (
           /* Skeleton */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-[#1c1c1f] rounded-2xl border border-[#2a2a30] animate-pulse overflow-hidden">
-                <div className="aspect-square bg-[#222226]" />
+              <div key={i} className="bg-[#18181c]/60 rounded-[16px] border border-white/10 animate-pulse overflow-hidden">
+                <div className="aspect-square bg-white/5" />
                 <div className="p-4 flex flex-col gap-3">
-                  <div className="h-3 bg-[#2a2a30] rounded w-3/4" />
-                  <div className="h-2.5 bg-[#2a2a30] rounded w-1/2" />
-                  <div className="h-2.5 bg-[#2a2a30] rounded w-2/3" />
+                  <div className="h-3.5 bg-white/5 rounded w-3/4" />
+                  <div className="h-3 bg-white/5 rounded w-1/2" />
+                  <div className="h-3 bg-white/5 rounded w-2/3" />
                 </div>
               </div>
             ))}
           </div>
         ) : filteredEvents.length === 0 ? (
           /* Empty state */
-          <div className="bg-[#1a1a1d] border border-[#2a2a30] rounded-2xl p-14 sm:p-20 text-center flex flex-col items-center justify-center gap-5">
-            <div className="w-16 h-16 rounded-2xl bg-[#222226] border border-[#2e2e34] text-[#4a4a54] flex items-center justify-center">
+          <div className="bg-[#18181c]/60 border border-white/10 rounded-[16px] p-12 sm:p-16 text-center flex flex-col items-center justify-center gap-4 shadow-xl backdrop-blur-xl">
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 text-white/50 flex items-center justify-center">
               <GoCalendar className="w-7 h-7" />
             </div>
-            <div className="flex flex-col gap-1.5 max-w-xs">
-              <h3 className="text-base font-medium text-white tracking-tight">No events found</h3>
-              <p className="text-xs text-[#5a5a64] leading-relaxed font-normal">
+            <div className="flex flex-col gap-1.5 max-w-sm">
+              <h3 className="font-instrument-serif text-2xl text-white font-normal tracking-[-0.4px]">No Events Found</h3>
+              <p className="font-tight text-xs text-white/50 leading-relaxed font-normal">
                 {searchQuery
                   ? `No events match "${searchQuery}". Try a different search.`
                   : 'No published events yet. Be the first to host one!'}
@@ -191,69 +213,89 @@ export default function EventsPage() {
             </div>
             <a
               href="/create-event"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-neutral-900 text-xs font-medium rounded-full hover:bg-white/90 transition-all duration-200"
+              className="mt-2 relative inline-flex h-9 w-fit shrink-0 items-center justify-center rounded-[8px] border border-solid border-white/20 bg-white px-4 font-tight text-xs font-medium text-[#101010] shadow-[0px_2px_6px_rgba(0,0,0,0.22)] transition-all hover:opacity-90 active:scale-[0.97] cursor-pointer"
             >
-              <GoPlus className="w-3.5 h-3.5" />
-              Create an Event
+              <GoPlus className="w-3.5 h-3.5 mr-1" />
+              <span>Create an Event</span>
             </a>
           </div>
         ) : (
           /* Event card grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredEvents.map((event) => (
-              <div
-                key={event.id}
-                onClick={() => router.push(`/events/${event.id}`)}
-                className="group bg-[#1a1a1d] hover:bg-[#1e1e22] border border-[#262629] hover:border-[#35353c] rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
-                style={{ transform: 'translateZ(0)' }}
-              >
-                {/* Square 1:1 cover image */}
-                <div className="relative w-full aspect-square overflow-hidden bg-[#141416] flex-shrink-0">
-                  <EventImage event={event} />
-                  <span className="absolute top-3 left-3 text-[9px] font-mono bg-black/50 backdrop-blur-sm border border-white/10 px-2 py-1 rounded-md text-neutral-300 tracking-wide">
-                    {event.ticketCode}
-                  </span>
-                  {isEventCompleted(event) && (
-                    <span className="absolute top-3 right-3 text-[9px] font-mono uppercase bg-neutral-900/90 text-neutral-300 border border-neutral-700/80 px-2 py-1 rounded-md tracking-wider font-semibold shadow-md backdrop-blur-sm">
-                      Ended
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredEvents.map((event) => {
+              const ended = isEventCompleted(event);
+              return (
+                <div
+                  key={event.id}
+                  onClick={() => router.push(`/events/${event.id}`)}
+                  className="group bg-[#18181c]/70 hover:bg-[#1f1f25] border border-white/10 hover:border-white/25 rounded-[18px] p-4 flex flex-col transition-all duration-200 cursor-pointer shadow-md hover:shadow-2xl hover:translate-y-[-3px]"
+                >
+                  {/* Top: 1200x1200 1:1 Aspect-Square Poster Container */}
+                  <div className="relative w-full aspect-square bg-[#131316] border border-white/10 group-hover:border-white/20 rounded-[14px] overflow-hidden select-none flex-shrink-0 mb-3.5 shadow-sm">
+                    <EventImage event={event} />
+                    
+                    {/* Top Left Ticket Code */}
+                    <span className="absolute top-3 left-3 text-[10px] font-mono bg-black/70 backdrop-blur-md border border-white/15 px-2.5 py-0.5 rounded-[6px] text-white/90 tracking-wider font-medium shadow-sm">
+                      {event.ticketCode}
                     </span>
-                  )}
-                </div>
 
-                {/* Card body */}
-                <div className="flex flex-col flex-1 p-4 gap-3">
-
-                  <div className="flex items-center gap-1.5 text-[10px] text-[#5a5a64] font-normal">
-                    <GoCalendar className="w-3 h-3 flex-shrink-0" />
-                    <span>{event.startDate}</span>
+                    {/* Top Right Status Badge */}
+                    {ended ? (
+                      <span className="absolute top-3 right-3 text-[10px] font-mono uppercase bg-black/80 text-white/80 border border-white/20 px-2.5 py-0.5 rounded-[6px] tracking-wider font-semibold backdrop-blur-md shadow-sm">
+                        Ended
+                      </span>
+                    ) : (
+                      <span className="absolute top-3 right-3 text-[10px] font-tight bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-[6px] font-medium backdrop-blur-md shadow-sm flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        Upcoming
+                      </span>
+                    )}
                   </div>
 
-                  <h4 className="text-sm font-medium text-white group-hover:text-neutral-100 transition-colors leading-snug line-clamp-2">
-                    {event.title}
-                  </h4>
+                  {/* Body: Event Details */}
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div className="flex flex-col gap-1.5 min-w-0">
+                      {/* Date & Location Row */}
+                      <div className="flex items-center justify-between text-xs text-white/50 font-tight">
+                        <span className="flex items-center gap-1.5 text-white/70">
+                          <GoCalendar className="w-3.5 h-3.5 text-white/40" />
+                          {event.startDate}
+                        </span>
+                        <span className="truncate max-w-[130px] text-right font-normal">
+                          {event.location?.split(',')[0] || 'Online'}
+                        </span>
+                      </div>
+                      
+                      {/* Title */}
+                      <h3 className="text-base sm:text-lg font-semibold font-tight text-white group-hover:text-white transition-colors line-clamp-2 leading-snug tracking-[-0.3px] mt-0.5">
+                        {event.title}
+                      </h3>
 
-                  <p className="text-xs text-[#5a5a64] font-normal truncate">
-                    by <span className="text-[#7a7a84]">{event.organizer || 'Student Forge'}</span>
-                  </p>
-
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#4a4a54] font-normal">
-                    <GoLocation className="w-3 h-3 flex-shrink-0 text-[#5a5a64]" />
-                    <span className="truncate">{event.location || 'Online'}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-[#232326]">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-[9px] uppercase tracking-widest font-mono text-[#4a4a54]">Price</span>
-                      <span className="text-sm font-medium text-white">{event.price || 'Free'}</span>
+                      {/* Organizer */}
+                      <span className="text-xs text-white/50 font-tight truncate">
+                        By {event.organizer || 'Student Forge'}
+                      </span>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-[#5a5a64] group-hover:text-amber-400/80 transition-colors font-normal">
-                      View details
-                      <GoArrowRight className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform" />
-                    </span>
+
+                    {/* Footer: Price & Details Action */}
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-[10px] uppercase font-mono text-white/40 tracking-wider">Price:</span>
+                        <span className="text-sm font-semibold font-tight text-white">
+                          {event.price?.startsWith('₹') ? event.price : (event.price === 'Free' || !event.price ? 'Free' : `₹${event.price}`)}
+                        </span>
+                      </div>
+
+                      <div className="inline-flex items-center gap-1.5 rounded-[8px] border border-solid border-white/15 bg-white/5 px-3 py-1.5 font-tight text-xs font-medium text-white/80 group-hover:bg-white group-hover:text-[#101010] group-hover:border-white transition-all shadow-sm">
+                        <span>Details</span>
+                        <GoArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
                   </div>
+
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

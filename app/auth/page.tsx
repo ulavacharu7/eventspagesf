@@ -1,33 +1,39 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { GoCheck, GoPerson, GoLock, GoMail, GoShieldCheck, GoArrowLeft, GoAlert } from 'react-icons/go';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { DotmSquare5 } from '@/components/ui/dotm-square-5';
+import { Mail, Lock, User, ArrowLeft, ArrowRight, ShieldCheck, Check, AlertCircle, Edit3 } from 'lucide-react';
 
-export default function AuthPage() {
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
-  
-  // Sign Up Multi-Step State (Step 1: Email -> Step 2: OTP Verification -> Step 3: Set Password)
+function AuthContent() {
+  const searchParams = useSearchParams();
+  const initialMode = searchParams.get('mode') === 'signup' ? 'signup' : 'login';
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>(initialMode);
+
+  useEffect(() => {
+    const qMode = searchParams.get('mode');
+    if (qMode === 'signup') setMode('signup');
+    else if (qMode === 'login') setMode('login');
+  }, [searchParams]);
+
+  // Sign Up Multi-Step State
   const [signupStep, setSignupStep] = useState<1 | 2 | 3>(1);
   const [forgotStep, setForgotStep] = useState<1 | 2 | 3>(1);
   const [sentCode, setSentCode] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
-  
+
   // Form Inputs
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // UI Messages
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Step 1: Send Verification Email
+  // Send Verification Email
   const handleSendVerificationCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -51,7 +57,6 @@ export default function AuthPage() {
 
       setSentCode(data.code);
       setSignupStep(2);
-      setSuccessMsg(`Verification code sent to ${email}`);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('An error occurred');
@@ -60,21 +65,20 @@ export default function AuthPage() {
     }
   };
 
-  // Step 2: Confirm OTP Verification Code
+  // Confirm OTP
   const handleVerifyOtp = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (enteredOtp.trim() !== sentCode.trim()) {
-      setError('Invalid 6-digit code. Please check your email notification and try again.');
+      setError('Invalid 6-digit code. Please check your email.');
       return;
     }
 
-    setSuccessMsg('Email verified! Now set your account password.');
     setSignupStep(3);
   };
 
-  // Step 3: Complete Registration (Set Password)
+  // Complete Registration
   const handleCompleteRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -104,7 +108,7 @@ export default function AuthPage() {
       setSuccessMsg('Account created successfully! Redirecting...');
       setTimeout(() => {
         window.location.href = '/';
-      }, 1200);
+      }, 1000);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('An error occurred');
@@ -113,7 +117,7 @@ export default function AuthPage() {
     }
   };
 
-  // Forgot Password - Step 1: Send OTP for Password Recovery
+  // Forgot Password - Step 1
   const handleSendForgotCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -137,7 +141,6 @@ export default function AuthPage() {
 
       setSentCode(data.code);
       setForgotStep(2);
-      setSuccessMsg(`Verification code sent to ${email}`);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('An error occurred');
@@ -146,21 +149,20 @@ export default function AuthPage() {
     }
   };
 
-  // Forgot Password - Step 2: Confirm Forgot OTP Code
+  // Forgot Password - Step 2
   const handleVerifyForgotOtp = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (enteredOtp.trim() !== sentCode.trim()) {
-      setError('Invalid 6-digit code. Please check your email notification and try again.');
+      setError('Invalid 6-digit code. Please check your email.');
       return;
     }
 
-    setSuccessMsg('Email verified! Now choose a new password.');
     setForgotStep(3);
   };
 
-  // Forgot Password - Step 3: Complete Password Reset
+  // Forgot Password - Step 3
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -186,7 +188,7 @@ export default function AuthPage() {
 
       if (!res.ok) throw new Error(data.error || 'Failed to reset password');
 
-      setSuccessMsg('Password reset successfully! Redirecting to sign in...');
+      setSuccessMsg('Password reset successfully! Redirecting...');
       setTimeout(() => {
         setMode('login');
         setForgotStep(1);
@@ -194,7 +196,7 @@ export default function AuthPage() {
         setSuccessMsg('');
         setPassword('');
         setConfirmPassword('');
-      }, 1500);
+      }, 1200);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('An error occurred');
@@ -203,7 +205,7 @@ export default function AuthPage() {
     }
   };
 
-  // Normal Sign In
+  // Sign In
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -224,7 +226,7 @@ export default function AuthPage() {
       setSuccessMsg('Signed in successfully! Redirecting...');
       setTimeout(() => {
         window.location.href = '/';
-      }, 1200);
+      }, 1000);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('An error occurred');
@@ -234,174 +236,108 @@ export default function AuthPage() {
   };
 
   return (
-    <main className="relative min-h-screen bg-[#161618] text-white flex flex-col justify-between antialiased font-sans overflow-x-hidden selection:bg-neutral-800 selection:text-white">
-      <Navbar />
+    <main className="relative min-h-screen bg-[#0d0d0f] text-white flex flex-col justify-center items-center px-4 py-12 antialiased font-tight select-none">
+      
+      {/* Top Left: Return Home */}
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-8 z-20">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-xs text-white/50 hover:text-white transition-colors bg-[#18181c]/80 border border-white/10 hover:border-white/20 px-3.5 py-1.5 rounded-full backdrop-blur-md"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Home</span>
+        </Link>
+      </div>
 
-      {/* Crisp grid background pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#232329_1px,transparent_1px),linear-gradient(to_bottom,#232329_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
-
-
-
-      {/* Centered Auth Card Workspace */}
-      <div className="w-full max-w-md mx-auto py-12 px-4 flex-1 flex flex-col justify-center z-10 relative">
+      {/* Auth Container Card */}
+      <div className="w-full max-w-[390px] mx-auto z-10 relative flex flex-col gap-6">
         
-        <div className="flex flex-col gap-6 relative">
+        {/* Brand Logo & Header */}
+        <div className="flex flex-col items-center text-center gap-3">
+          <Link href="/" className="inline-flex items-center justify-center p-1 transition-transform hover:scale-105">
+            <img
+              src="https://ik.imagekit.io/dypkhqxip/sf-events-svg?updatedAt=1787505496001"
+              alt="Student Forge"
+              className="h-9 w-auto object-contain opacity-90 hover:opacity-100"
+              style={{ filter: 'brightness(0) invert(0.88)' }}
+              draggable={false}
+            />
+          </Link>
 
-          {/* Header Icon & Title */}
-          <div className="flex flex-col items-center text-center gap-2.5">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-[#222226] to-[#161618] border border-white/10 text-amber-400 flex items-center justify-center shadow-lg shadow-black/40 ring-1 ring-amber-500/10">
-              {(mode === 'signup' && signupStep === 2) || (mode === 'forgot' && forgotStep === 2) ? (
-                <GoShieldCheck className="w-6 h-6 text-amber-400" />
-              ) : (
-                <GoPerson className="w-6 h-6 text-amber-400" />
-              )}
-            </div>
-
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+          <div className="flex flex-col gap-1.5 mt-1">
+            <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.8px] leading-tight">
               {mode === 'login'
                 ? 'Welcome Back'
                 : mode === 'signup'
                 ? (signupStep === 1
-                  ? 'Verify Your Email'
+                  ? 'Create an Account'
                   : signupStep === 2
-                  ? 'Enter Verification Code'
-                  : 'Set Account Password')
+                  ? 'Verify Email'
+                  : 'Set Password')
                 : (forgotStep === 1
-                  ? 'Verify Your Email'
+                  ? 'Reset Password'
                   : forgotStep === 2
-                  ? 'Enter Verification Code'
-                  : 'Reset Password')}
+                  ? 'Verify OTP'
+                  : 'New Password')}
             </h1>
-            <p className="text-xs text-neutral-400 max-w-[290px] leading-relaxed">
+
+            <p className="font-tight text-xs text-white/50 font-normal leading-relaxed max-w-xs">
               {mode === 'login'
-                ? 'Sign in to access your student event dashboard'
+                ? 'Sign in to access your event dashboard and passes'
                 : mode === 'signup'
                 ? (signupStep === 1
-                  ? 'Enter your email address to receive a 6-digit verification code'
+                  ? 'Enter your email to receive a verification code'
                   : signupStep === 2
-                  ? `Enter the 6-digit code sent to ${email}`
-                  : 'Create a password to finalize your account registration')
+                  ? 'Enter the 6-digit code to verify your email'
+                  : 'Set up your name and account password')
                 : (forgotStep === 1
-                  ? 'Enter your email address to verify your account and receive an OTP'
+                  ? 'Enter your email to receive a recovery code'
                   : forgotStep === 2
-                  ? `Enter the 6-digit code sent to ${email}`
-                  : 'Enter and confirm your new account password')}
+                  ? 'Enter the 6-digit code to verify your identity'
+                  : 'Enter and confirm your new password')}
             </p>
-
-            {/* Step Indicator Pills for Signup & Forgot */}
-            {mode !== 'login' && (
-              <div className="flex items-center gap-1.5 mt-1">
-                {[1, 2, 3].map((stepNum) => {
-                  const activeStep = mode === 'signup' ? signupStep : forgotStep;
-                  return (
-                    <div
-                      key={stepNum}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        activeStep === stepNum
-                          ? 'w-6 bg-gradient-to-r from-[#ffec27] to-[#f6602d]'
-                          : activeStep > stepNum
-                          ? 'w-3 bg-amber-500/50'
-                          : 'w-3 bg-white/10'
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-            )}
           </div>
+        </div>
 
-          {/* Mode Switcher Tabs */}
-          {mode !== 'forgot' ? (
-            <div className="flex items-center gap-1 bg-[#18181b] border border-white/10 rounded-2xl p-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('login');
-                  setError('');
-                  setSuccessMsg('');
-                  setSignupStep(1);
-                }}
-                className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all duration-200 cursor-pointer ${
-                  mode === 'login'
-                    ? 'bg-gradient-to-r from-[#2a2a2e] to-[#222226] text-white shadow-md border border-white/10'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
-              >
-                Sign In
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('signup');
-                  setError('');
-                  setSuccessMsg('');
-                  setSignupStep(1);
-                }}
-                className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all duration-200 cursor-pointer ${
-                  mode === 'signup'
-                    ? 'bg-gradient-to-r from-[#2a2a2e] to-[#222226] text-white shadow-md border border-white/10'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-start">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('login');
-                  setForgotStep(1);
-                  setError('');
-                  setSuccessMsg('');
-                }}
-                className="text-xs text-neutral-400 hover:text-white font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <GoArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Sign In</span>
-              </button>
-            </div>
-          )}
-
+        {/* Form Card */}
+        <div className="bg-[#141417] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-4">
+          
           {/* Feedback Messages */}
           {error && (
-            <div className="p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-xs text-rose-400 text-center flex items-center justify-center gap-1.5 animate-fade-in">
-              <GoAlert className="w-4 h-4 text-rose-400 flex-shrink-0" />
+            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-[12px] text-xs text-rose-300 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-xs text-emerald-400 text-center flex items-center justify-center gap-1.5 animate-fade-in font-medium">
-              <GoCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-[12px] text-xs text-emerald-300 flex items-center gap-2 font-medium">
+              <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
 
-          {/* FORMS */}
+          {/* SIGN IN FORM */}
           {mode === 'login' && (
-            /* Normal Sign In Form */
             <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Email Address</span>
-                <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                  <GoMail className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                <span className="text-[11px] font-mono text-white/40 pl-1">Email Address</span>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                   <input
                     type="email"
-                    placeholder="name@company.com"
+                    placeholder="student@university.edu"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                    className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Password</span>
+                <div className="flex items-center justify-between pl-1">
+                  <span className="text-[11px] font-mono text-white/40">Password</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -413,20 +349,20 @@ export default function AuthPage() {
                       setPassword('');
                       setConfirmPassword('');
                     }}
-                    className="text-[10px] uppercase font-mono text-neutral-400 hover:text-amber-400 transition-colors cursor-pointer"
+                    className="text-[11px] font-tight text-white/50 hover:text-white transition-colors cursor-pointer"
                   >
                     Forgot Password?
                   </button>
                 </div>
-                <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                  <GoLock className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                   <input
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                    className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                   />
                 </div>
               </div>
@@ -434,30 +370,30 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] hover:brightness-110 text-neutral-950 font-bold text-sm rounded-xl transition-all shadow-[0_4px_20px_rgba(246,96,45,0.25)] hover:shadow-[0_4px_25px_rgba(246,96,45,0.4)] cursor-pointer mt-2 flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50"
+                className="mt-2 h-11 w-full rounded-full bg-white text-zinc-950 font-tight font-semibold text-xs sm:text-sm transition-all hover:bg-zinc-100 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
               >
-                {isLoading ? <DotmSquare5 size={18} dotSize={2} speed={1.2} bloom colorPreset="grad-aurora" animated /> : 'Sign In'}
+                <span>{isLoading ? 'Signing in...' : 'Sign In'}</span>
+                {!isLoading && <ArrowRight className="w-4 h-4" />}
               </button>
             </form>
           )}
 
+          {/* SIGN UP FORM */}
           {mode === 'signup' && (
-            /* Multi-Step Sign Up Form */
             <>
               {signupStep === 1 && (
-                /* Step 1: Type Email only */
                 <form onSubmit={handleSendVerificationCode} className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Registered Email</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoMail className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                    <span className="text-[11px] font-mono text-white/40 pl-1">Email Address</span>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="email"
-                        placeholder="name@company.com"
+                        placeholder="student@university.edu"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                        className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
                   </div>
@@ -465,21 +401,38 @@ export default function AuthPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] hover:brightness-110 text-neutral-950 font-bold text-sm rounded-xl transition-all shadow-[0_4px_20px_rgba(246,96,45,0.25)] hover:shadow-[0_4px_25px_rgba(246,96,45,0.4)] cursor-pointer mt-2 flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50"
+                    className="mt-2 h-11 w-full rounded-full bg-white text-zinc-950 font-tight font-semibold text-xs sm:text-sm transition-all hover:bg-zinc-100 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                   >
-                    {isLoading ? <DotmSquare5 size={18} dotSize={2} speed={1.2} bloom colorPreset="grad-aurora" animated /> : 'Send Verification Code'}
+                    <span>{isLoading ? 'Sending code...' : 'Continue with Email'}</span>
+                    {!isLoading && <ArrowRight className="w-4 h-4" />}
                   </button>
                 </form>
               )}
 
               {signupStep === 2 && (
-                /* Step 2: Confirm 6-Digit OTP */
                 <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+                  {/* Clean indication banner with email & edit link */}
+                  <div className="bg-[#1a1a1f] border border-white/10 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[10px] text-white/40 font-mono uppercase tracking-wider">Sent code to</span>
+                        <span className="text-white font-medium truncate">{email}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSignupStep(1)}
+                      className="text-[11px] text-white/60 hover:text-white underline flex items-center gap-1 flex-shrink-0 cursor-pointer"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                      <span>Change</span>
+                    </button>
+                  </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">6-Digit Verification Code</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoShieldCheck className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <span className="text-[11px] font-mono text-white/40 pl-1 text-center">Enter 6-Digit Code</span>
+                    <div className="relative">
                       <input
                         type="text"
                         placeholder="123456"
@@ -487,76 +440,65 @@ export default function AuthPage() {
                         value={enteredOtp}
                         onChange={(e) => setEnteredOtp(e.target.value)}
                         required
-                        className="bg-transparent text-base font-mono tracking-widest text-white placeholder-neutral-500 outline-none w-full text-center"
+                        className="h-12 w-full rounded-full border border-white/10 bg-[#0d0d0f] text-center font-mono tracking-[0.4em] text-lg font-bold text-white placeholder-white/20 outline-none transition-all focus:border-white/30 focus:bg-[#111114]"
                         autoFocus
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setSignupStep(1)}
-                      className="px-4 py-3 bg-[#18181b] hover:bg-[#222226] text-neutral-300 text-xs font-medium rounded-xl border border-white/10 transition-colors cursor-pointer flex items-center gap-1.5"
-                    >
-                      <GoArrowLeft className="w-3.5 h-3.5" />
-                      <span>Back</span>
-                    </button>
-
-                    <button
-                      type="submit"
-                      className="flex-1 py-3 bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] hover:brightness-110 text-neutral-950 font-bold text-xs rounded-xl transition-colors cursor-pointer shadow-md"
-                    >
-                      Verify Email Code
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    className="mt-2 h-11 w-full rounded-full bg-white text-zinc-950 font-tight font-semibold text-xs sm:text-sm transition-all hover:bg-zinc-100 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <span>Verify & Continue</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </form>
               )}
 
               {signupStep === 3 && (
-                /* Step 3: Set Name and Password */
-                <form onSubmit={handleCompleteRegistration} className="flex flex-col gap-4">
+                <form onSubmit={handleCompleteRegistration} className="flex flex-col gap-3.5">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Full Name</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoPerson className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                    <span className="text-[11px] font-mono text-white/40 pl-1">Full Name</span>
+                    <div className="relative">
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="text"
                         placeholder="John Doe"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                        className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Create Password</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoLock className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                    <span className="text-[11px] font-mono text-white/40 pl-1">Password</span>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="password"
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                        className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Confirm Password</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoLock className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                    <span className="text-[11px] font-mono text-white/40 pl-1">Confirm Password</span>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="password"
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
-                        className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                        className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
                   </div>
@@ -564,32 +506,32 @@ export default function AuthPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] hover:brightness-110 text-neutral-950 font-bold text-sm rounded-xl transition-all shadow-[0_4px_20px_rgba(246,96,45,0.25)] hover:shadow-[0_4px_25px_rgba(246,96,45,0.4)] cursor-pointer mt-2 flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50"
+                    className="mt-2 h-11 w-full rounded-full bg-white text-zinc-950 font-tight font-semibold text-xs sm:text-sm transition-all hover:bg-zinc-100 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                   >
-                    {isLoading ? <DotmSquare5 size={18} dotSize={2} speed={1.2} bloom colorPreset="grad-aurora" animated /> : 'Complete Sign Up'}
+                    <span>{isLoading ? 'Creating...' : 'Complete Sign Up'}</span>
+                    {!isLoading && <ArrowRight className="w-4 h-4" />}
                   </button>
                 </form>
               )}
             </>
           )}
 
+          {/* FORGOT PASSWORD FORM */}
           {mode === 'forgot' && (
-            /* Multi-Step Forgot Password Form */
             <>
               {forgotStep === 1 && (
-                /* Step 1: Type Email only */
                 <form onSubmit={handleSendForgotCode} className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Account Email</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoMail className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                    <span className="text-[11px] font-mono text-white/40 pl-1">Account Email</span>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="email"
-                        placeholder="name@company.com"
+                        placeholder="student@university.edu"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                        className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
                   </div>
@@ -597,21 +539,38 @@ export default function AuthPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] hover:brightness-110 text-neutral-950 font-bold text-sm rounded-xl transition-all shadow-[0_4px_20px_rgba(246,96,45,0.25)] hover:shadow-[0_4px_25px_rgba(246,96,45,0.4)] cursor-pointer mt-2 flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50"
+                    className="mt-2 h-11 w-full rounded-full bg-white text-zinc-950 font-tight font-semibold text-xs sm:text-sm transition-all hover:bg-zinc-100 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                   >
-                    {isLoading ? <DotmSquare5 size={18} dotSize={2} speed={1.2} bloom colorPreset="grad-aurora" animated /> : 'Verify Email & Send OTP'}
+                    <span>{isLoading ? 'Sending code...' : 'Send Recovery Code'}</span>
+                    {!isLoading && <ArrowRight className="w-4 h-4" />}
                   </button>
                 </form>
               )}
 
               {forgotStep === 2 && (
-                /* Step 2: Confirm 6-Digit OTP */
                 <form onSubmit={handleVerifyForgotOtp} className="flex flex-col gap-4">
+                  {/* Clean indication banner */}
+                  <div className="bg-[#1a1a1f] border border-white/10 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[10px] text-white/40 font-mono uppercase tracking-wider">Sent code to</span>
+                        <span className="text-white font-medium truncate">{email}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setForgotStep(1)}
+                      className="text-[11px] text-white/60 hover:text-white underline flex items-center gap-1 flex-shrink-0 cursor-pointer"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                      <span>Change</span>
+                    </button>
+                  </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">6-Digit Verification Code</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoShieldCheck className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <span className="text-[11px] font-mono text-white/40 pl-1 text-center">Enter 6-Digit Code</span>
+                    <div className="relative">
                       <input
                         type="text"
                         placeholder="123456"
@@ -619,65 +578,50 @@ export default function AuthPage() {
                         value={enteredOtp}
                         onChange={(e) => setEnteredOtp(e.target.value)}
                         required
-                        className="bg-transparent text-base font-mono tracking-widest text-white placeholder-neutral-500 outline-none w-full text-center"
+                        className="h-12 w-full rounded-full border border-white/10 bg-[#0d0d0f] text-center font-mono tracking-[0.4em] text-lg font-bold text-white placeholder-white/20 outline-none transition-all focus:border-white/30 focus:bg-[#111114]"
                         autoFocus
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 mt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForgotStep(1);
-                        setError('');
-                        setSuccessMsg('');
-                      }}
-                      className="px-4 py-3 bg-[#18181b] hover:bg-[#222226] text-neutral-300 text-xs font-medium rounded-xl border border-white/10 transition-colors cursor-pointer flex items-center gap-1.5"
-                    >
-                      <GoArrowLeft className="w-3.5 h-3.5" />
-                      <span>Back</span>
-                    </button>
-
-                    <button
-                      type="submit"
-                      className="flex-1 py-3 bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] hover:brightness-110 text-neutral-950 font-bold text-xs rounded-xl transition-colors cursor-pointer shadow-md"
-                    >
-                      Verify Code
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    className="mt-2 h-11 w-full rounded-full bg-white text-zinc-950 font-tight font-semibold text-xs sm:text-sm transition-all hover:bg-zinc-100 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <span>Verify Code</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </form>
               )}
 
               {forgotStep === 3 && (
-                /* Step 3: Set Password */
-                <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
+                <form onSubmit={handleResetPassword} className="flex flex-col gap-3.5">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">New Password</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoLock className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                    <span className="text-[11px] font-mono text-white/40 pl-1">New Password</span>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="password"
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                        className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">Confirm New Password</span>
-                    <div className="bg-[#18181b]/90 border border-white/10 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 rounded-xl p-3 flex items-center gap-3 transition-all">
-                      <GoLock className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                    <span className="text-[11px] font-mono text-white/40 pl-1">Confirm New Password</span>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="password"
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
-                        className="bg-transparent text-sm text-white placeholder-neutral-500 outline-none w-full"
+                        className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
                   </div>
@@ -685,20 +629,77 @@ export default function AuthPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-gradient-to-r from-[#ffec27] via-[#ce6f36] to-[#f6602d] hover:brightness-110 text-neutral-950 font-bold text-sm rounded-xl transition-all shadow-[0_4px_20px_rgba(246,96,45,0.25)] hover:shadow-[0_4px_25px_rgba(246,96,45,0.4)] cursor-pointer mt-2 flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50"
+                    className="mt-2 h-11 w-full rounded-full bg-white text-zinc-950 font-tight font-semibold text-xs sm:text-sm transition-all hover:bg-zinc-100 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                   >
-                    {isLoading ? <DotmSquare5 size={18} dotSize={2} speed={1.2} bloom colorPreset="grad-aurora" animated /> : 'Reset Password'}
+                    <span>{isLoading ? 'Resetting...' : 'Reset Password'}</span>
+                    {!isLoading && <ArrowRight className="w-4 h-4" />}
                   </button>
                 </form>
               )}
             </>
           )}
 
+          {/* Switch links at bottom */}
+          <div className="text-center pt-3 border-t border-white/5">
+            {mode === 'login' ? (
+              <p className="text-xs text-white/50 font-tight">
+                Don&apos;t have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode('signup');
+                    setError('');
+                    setSuccessMsg('');
+                    setSignupStep(1);
+                  }}
+                  className="text-white underline hover:opacity-80 font-medium cursor-pointer ml-1"
+                >
+                  Sign up
+                </button>
+              </p>
+            ) : mode === 'signup' ? (
+              <p className="text-xs text-white/50 font-tight">
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode('login');
+                    setError('');
+                    setSuccessMsg('');
+                  }}
+                  className="text-white underline hover:opacity-80 font-medium cursor-pointer ml-1"
+                >
+                  Sign in
+                </button>
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('login');
+                  setError('');
+                  setSuccessMsg('');
+                  setForgotStep(1);
+                }}
+                className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer"
+              >
+                Back to Sign in
+              </button>
+            )}
+          </div>
+
         </div>
 
       </div>
 
-      <Footer />
     </main>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0d0d0f] text-white flex items-center justify-center">Loading...</div>}>
+      <AuthContent />
+    </Suspense>
   );
 }

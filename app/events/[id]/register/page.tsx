@@ -754,7 +754,7 @@ function RegisterPageInner() {
         }
       `}} />
 
-      <div className="w-full max-w-4xl mx-auto py-8 sm:py-12 px-4 sm:px-6 flex-1 flex flex-col gap-6">
+      <div className="w-full max-w-4xl mx-auto pt-12 sm:pt-16 md:pt-20 pb-12 px-4 sm:px-6 flex-1 flex flex-col gap-6">
         
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-xs text-[#8a8a90] font-normal pb-4 border-b border-[#2e2e34] mb-4">

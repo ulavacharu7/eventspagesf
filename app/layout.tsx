@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import CookieConsent from "@/components/CookieConsent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,37 +14,41 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const FAVICON_URL = "https://ik.imagekit.io/dypkhqxip/events-sf?updatedAt=1787505317349";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://events.studentforge.in"),
   authors: [{ name: "Studio Redlix", url: "https://www.redlix.co.in/" }],
   creator: "Studio Redlix",
   publisher: "Studio Redlix",
-  title: "StudentForge | Campus Events & Ticketing Portal",
-  description: "RSVP for college workshops, student tech meetups, and campus gatherings with custom check-in QR passes.",
+  title: "Student Forge Events | Campus Events, Workshops & Ticketing Portal",
+  description: "Discover, host, and RSVP for campus workshops, student hackathons, tech meetups, and college gatherings with live custom QR check-in passes.",
   icons: {
-    icon: "https://ik.imagekit.io/dypkhqxip/events%20by%20sf.png",
-    shortcut: "https://ik.imagekit.io/dypkhqxip/events%20by%20sf.png",
-    apple: "https://ik.imagekit.io/dypkhqxip/events%20by%20sf.png",
+    icon: [
+      { url: FAVICON_URL, type: "image/svg+xml" },
+    ],
+    shortcut: FAVICON_URL,
+    apple: FAVICON_URL,
   },
   openGraph: {
-    title: "StudentForge | Campus Events & Ticketing Portal",
-    description: "RSVP for college workshops, student tech meetups, and campus gatherings with custom check-in QR passes.",
+    title: "Student Forge Events | Campus Events, Workshops & Ticketing Portal",
+    description: "Discover, host, and RSVP for campus workshops, student hackathons, tech meetups, and college gatherings with live custom QR check-in passes.",
     url: "https://events.studentforge.in",
-    siteName: "StudentForge",
+    siteName: "Student Forge Events",
     images: [
       {
         url: "https://ik.imagekit.io/dypkhqxip/events%20by%20main.png",
         width: 1200,
         height: 630,
-        alt: "StudentForge Campus Events & Ticketing Portal",
+        alt: "Student Forge Events Campus Ticketing Portal",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "StudentForge | Campus Events & Ticketing Portal",
-    description: "RSVP for college workshops, student tech meetups, and campus gatherings with custom check-in QR passes.",
+    title: "Student Forge Events | Campus Events, Workshops & Ticketing Portal",
+    description: "Discover, host, and RSVP for campus workshops, student hackathons, tech meetups, and college gatherings with live custom QR check-in passes.",
     images: ["https://ik.imagekit.io/dypkhqxip/events%20by%20main.png"],
   },
   verification: {
@@ -63,17 +68,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Cookiebot Consent Script (Loaded only in Production to prevent local dev blocking) */}
-        {process.env.NODE_ENV === 'production' && (
-          <script
-            id="Cookiebot"
-            src="https://consent.cookiebot.com/uc.js"
-            data-cbid="a1514766-7f6a-4019-9781-9e8a9e737583"
-            data-blockingmode="auto"
-            type="text/javascript"
-            async
-          />
-        )}
+        <link rel="icon" href={FAVICON_URL} type="image/svg+xml" />
         {/* Material Symbols */}
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
@@ -95,7 +90,10 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <CookieConsent />
+      </body>
     </html>
   );
 }

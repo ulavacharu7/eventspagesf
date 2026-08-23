@@ -195,32 +195,32 @@ export default function CouponsDashboardPage() {
   const totalUses = coupons.reduce((sum, c) => sum + c.usedCount, 0);
 
   return (
-    <main className="min-h-screen bg-[#141417] text-white flex flex-col justify-between antialiased font-sans">
+    <main className="min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased font-tight">
       <Navbar />
 
-      <div className="w-full max-w-6xl mx-auto py-8 px-4 sm:px-6 flex-1 flex flex-col gap-6">
+      <div className="w-full max-w-6xl mx-auto pt-12 sm:pt-16 md:pt-20 pb-12 px-4 sm:px-6 flex-1 flex flex-col gap-6">
         
         {/* Top Header & Breadcrumb */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#27272a] pb-5">
-          <div className="flex flex-col gap-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+          <div className="flex flex-col gap-1.5">
             <button 
               onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer w-fit"
+              className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors cursor-pointer w-fit"
             >
               <GoArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
             </button>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                <GoTag className="w-4 h-4" />
-              </div>
-              <span>Coupon Codes &amp; Discounts</span>
+            <h1 className="font-instrument-serif text-2xl sm:text-3xl text-white font-normal tracking-[-0.6px] leading-tight flex items-center gap-2.5">
+              <span>Coupon Codes &amp;</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d946ef] via-[#f97316] to-[#fbbf24]">
+                Discounts
+              </span>
             </h1>
-            <p className="text-xs text-neutral-400">Create promotional discount codes for your event attendees.</p>
+            <p className="text-xs sm:text-sm text-white/50 font-normal">Create promotional discount codes for your event attendees.</p>
           </div>
 
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white text-xs font-semibold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-amber-500/10"
+            className="px-4 py-2 bg-white text-[#101010] hover:opacity-90 text-xs font-semibold rounded-[8px] transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95"
           >
             <GoPlus className="w-4 h-4" /> Create Coupon Code
           </button>
@@ -228,44 +228,44 @@ export default function CouponsDashboardPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-[#1c1c20] border border-[#2e2e34] rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+          <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-4 flex items-center gap-4 shadow-sm">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
               <GoTag className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase font-mono text-neutral-400">Total Coupons</span>
+              <span className="text-[10px] uppercase font-mono text-white/40">Total Coupons</span>
               <span className="text-xl font-bold text-white">{totalCoupons}</span>
             </div>
           </div>
 
-          <div className="bg-[#1c1c20] border border-[#2e2e34] rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+          <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-4 flex items-center gap-4 shadow-sm">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
               <GoCheckCircle className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase font-mono text-neutral-400">Active Codes</span>
+              <span className="text-[10px] uppercase font-mono text-white/40">Active Codes</span>
               <span className="text-xl font-bold text-white">{activeCoupons}</span>
             </div>
           </div>
 
-          <div className="bg-[#1c1c20] border border-[#2e2e34] rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+          <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-4 flex items-center gap-4 shadow-sm">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
               <GoZap className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase font-mono text-neutral-400">Total Redemptions</span>
+              <span className="text-[10px] uppercase font-mono text-white/40">Total Redemptions</span>
               <span className="text-xl font-bold text-white">{totalUses} uses</span>
             </div>
           </div>
         </div>
 
         {/* Coupons Table */}
-        <div className="bg-[#1c1c20] border border-[#2e2e34] rounded-2xl overflow-hidden shadow-xl flex flex-col">
-          <div className="p-4 border-b border-[#2e2e34] bg-[#222228] flex items-center justify-between">
-            <h3 className="text-xs uppercase font-mono text-neutral-300 tracking-wider font-semibold">
+        <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl overflow-hidden shadow-xl flex flex-col">
+          <div className="p-4 border-b border-white/10 bg-[#141417]/80 flex items-center justify-between">
+            <h3 className="text-xs uppercase font-mono text-white/70 tracking-wider font-semibold">
               Active &amp; Past Coupon Codes
             </h3>
-            <span className="text-[10px] font-mono text-neutral-400">
+            <span className="text-[10px] font-mono text-white/40">
               {coupons.length} {coupons.length === 1 ? 'code' : 'codes'} total
             </span>
           </div>
@@ -273,20 +273,20 @@ export default function CouponsDashboardPage() {
           {loading ? (
             <div className="p-12 flex flex-col items-center justify-center gap-3 text-center">
               <DotmSquare5 size={32} dotSize={4} speed={1.2} bloom colorPreset="grad-aurora" animated />
-              <p className="text-xs text-neutral-400 font-mono">Loading coupon codes...</p>
+              <p className="text-xs text-white/40 font-mono">Loading coupon codes...</p>
             </div>
           ) : coupons.length === 0 ? (
             <div className="p-12 flex flex-col items-center justify-center gap-3 text-center">
-              <div className="w-12 h-12 rounded-full bg-[#27272e] flex items-center justify-center text-neutral-500">
+              <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40">
                 <GoTag className="w-6 h-6" />
               </div>
-              <p className="text-sm text-neutral-300 font-medium">No coupon codes created yet.</p>
-              <p className="text-xs text-neutral-500 max-w-sm">
+              <h3 className="font-instrument-serif text-xl sm:text-2xl text-white font-normal">No coupon codes created yet</h3>
+              <p className="text-xs text-white/50 max-w-sm">
                 Create promotional discount codes (e.g. EARLYBIRD50) to give special discounts to event registrants.
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="mt-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold rounded-xl transition-all cursor-pointer shadow-md"
+                className="mt-2 px-4 py-2 bg-white text-[#101010] hover:opacity-90 text-xs font-semibold rounded-[8px] transition-all cursor-pointer shadow-sm active:scale-95"
               >
                 + Create First Coupon Code
               </button>
@@ -295,7 +295,7 @@ export default function CouponsDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#24242a] text-neutral-400 text-[10px] uppercase font-mono border-b border-[#2e2e34]">
+                  <tr className="bg-[#141417] text-white/40 text-[10px] uppercase font-mono border-b border-white/10">
                     <th className="py-3 px-4">Coupon Code</th>
                     <th className="py-3 px-4">Applicable Event</th>
                     <th className="py-3 px-4">Discount</th>
@@ -305,7 +305,7 @@ export default function CouponsDashboardPage() {
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#282830]">
+                <tbody className="divide-y divide-white/5">
                   {coupons.map((coupon) => {
                     const isExpired = coupon.expiresAt && new Date(coupon.expiresAt).getTime() < Date.now();
                     const isExhausted = coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses;

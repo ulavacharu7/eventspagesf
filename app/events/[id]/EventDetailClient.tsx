@@ -125,107 +125,6 @@ function getFallbackSoftColor(headerBg: string | undefined): string {
   return '#ff6b6b';
 }
 
-const SidePromoBanners: React.FC<{ banners?: string[] }> = ({ 
-  banners = [
-    'https://ik.imagekit.io/dypkhqxip/mainbannersf',
-    'https://ik.imagekit.io/dypkhqxip/viralloop'
-  ] 
-}) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    if (banners.length <= 1 || isHovered) return;
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % banners.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [banners.length, isHovered]);
-
-  const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length);
-  };
-
-  const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % banners.length);
-  };
-
-  return (
-    <div className="w-full flex flex-col items-center gap-3 group select-none">
-      {/* Image Container Frame */}
-      <div
-        className="w-full aspect-[3/4] rounded-2xl overflow-hidden relative bg-black border border-[#2e2e34]"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {banners.map((url, idx) => (
-          <div
-            key={url + idx}
-            className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
-              idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-            }`}
-          >
-            <img
-              src={url}
-              alt={`Student Forge Feature Banner ${idx + 1}`}
-              width={1200}
-              height={1200}
-              className="w-full h-full object-cover object-center"
-              style={{ imageRendering: 'auto' }}
-            />
-          </div>
-        ))}
-
-        {banners.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={handlePrev}
-              aria-label="Previous Banner"
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/70 border border-white/10 text-white/80 hover:text-white transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer"
-            >
-              <GoChevronLeft className="w-4 h-4" />
-            </button>
-
-            <button
-              type="button"
-              onClick={handleNext}
-              aria-label="Next Banner"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/70 border border-white/10 text-white/80 hover:text-white transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer"
-            >
-              <GoChevronRight className="w-4 h-4" />
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Two Dots Navigation Indicator Container BELOW THE CONTAINER ("two dote") */}
-      {banners.length > 1 && (
-        <div className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-[#131315] border border-[#2e2e34]">
-          {banners.map((_, idx) => {
-            const isActive = idx === currentIndex;
-            return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setCurrentIndex(idx)}
-                aria-label={`Go to banner slide ${idx + 1}`}
-                className={`transition-all duration-300 rounded-full cursor-pointer focus:outline-none ${
-                  isActive
-                    ? 'w-5 h-2 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]'
-                    : 'w-2 h-2 bg-white/30 hover:bg-white/70'
-                }`}
-              />
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
 interface EventDetailClientProps {
   eventId: string;
   initialEvent: EventData | null;
@@ -471,28 +370,60 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
       <Navbar />
 
-      <div className="w-full max-w-4xl sm:max-w-5xl mx-auto py-8 sm:py-12 px-4 sm:px-6 flex-1 flex flex-col gap-6 relative z-10">
-        
-        {/* Far Left Promo Banner (ONLY for Student Forge Launch) */}
-        {isStudentForgeLaunch && (
-          <aside className="hidden xl:block absolute -left-72 2xl:-left-80 top-12 w-64 2xl:w-72 z-30">
-            <SidePromoBanners
-              banners={[
-                'https://ik.imagekit.io/dypkhqxip/mainbannersf',
-                'https://ik.imagekit.io/dypkhqxip/viralloop'
-              ]}
-            />
-          </aside>
-        )}
+      <div className="w-full max-w-6xl mx-auto pt-12 sm:pt-16 md:pt-20 pb-16 px-4 sm:px-6 flex-1 flex flex-col gap-6 relative z-10 font-tight">
 
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs text-[#8a8a90] font-normal pb-4 border-b border-[#2e2e34] mb-4">
+        <nav className="flex items-center gap-2 text-xs text-white/50 font-normal pb-2">
           <a href="/" className="hover:text-white transition-colors">Home</a>
-          <span>/</span>
+          <span className="text-white/20">/</span>
           <a href="/events" className="hover:text-white transition-colors">Events</a>
-          <span>/</span>
+          <span className="text-white/20">/</span>
           <span className="text-white font-medium truncate max-w-[200px] sm:max-w-xs">{event.title}</span>
         </nav>
+
+        {/* Top Hero Header Block */}
+        <div className="flex flex-col gap-3 pb-4 border-b border-white/10">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="text-[10px] font-mono uppercase bg-white/5 border border-white/10 text-white/70 px-2.5 py-1 rounded-md">
+              {event.calendarType || 'Event'}
+            </span>
+            <span className="text-[10px] font-mono uppercase bg-white/5 border border-white/10 text-white/70 px-2.5 py-1 rounded-md">
+              {event.visibility || 'Public'}
+            </span>
+            {/* Live viewer count badge */}
+            <span
+              className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-md shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+              title="People currently viewing this event"
+            >
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+              </span>
+              {viewerCount} {viewerCount === 1 ? 'viewer' : 'viewers'}
+            </span>
+          </div>
+
+          <h1 className="font-instrument-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal tracking-[-0.6px] leading-[1.15]">
+            {event.title}
+          </h1>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-white/60">
+            <span className="flex items-center gap-1.5">
+              <GoCalendar className="w-3.5 h-3.5 text-white/40" />
+              <span>{event.startDate}{event.startTime && ` at ${event.startTime}`}</span>
+            </span>
+            {event.location && (
+              <span className="flex items-center gap-1.5 truncate max-w-sm">
+                <GoLocation className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                <span className="truncate">{event.location}</span>
+              </span>
+            )}
+            <span className="flex items-center gap-1.5">
+              <GoPerson className="w-3.5 h-3.5 text-white/40" />
+              <span>Hosted by <strong className="text-white font-medium">{event.organizer || 'Student Forge'}</strong></span>
+            </span>
+          </div>
+        </div>
 
         {/* Outer Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -500,10 +431,10 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
           {/* Left Content Column: Poster & Details */}
           <div className="lg:col-span-7 flex flex-col gap-6">
             
-            {/* Original Styled Event Cover Image */}
-            <div className={`w-full aspect-square rounded-2xl overflow-hidden relative shadow-2xl ${
+            {/* 1200x1200px 1:1 Square Event Poster */}
+            <div className={`w-full aspect-square rounded-2xl sm:rounded-3xl overflow-hidden relative shadow-2xl ${
               event.coverImage 
-                ? 'bg-black border border-[#2e2e34]' 
+                ? 'bg-black border border-white/10' 
                 : 'bg-neutral-950/45 backdrop-blur-md border border-white/10 text-white'
             }`}>
               {event.coverImage ? (
@@ -512,7 +443,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   alt={event.title}
                   width={1200}
                   height={1200}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-[1.01]"
                   style={{ imageRendering: 'auto' }}
                 />
               ) : (
@@ -521,7 +452,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                     <span className="text-[10px] font-mono uppercase tracking-wider font-medium opacity-60">
                       {event.calendarType || 'Student Forge Gathering'}
                     </span>
-                    <h2 className="text-3xl sm:text-5xl font-medium uppercase leading-[0.9] tracking-tighter line-clamp-5">
+                    <h2 className="font-instrument-serif text-3xl sm:text-5xl font-normal leading-[0.95] tracking-tight line-clamp-5">
                       {event.title}
                     </h2>
                   </div>
@@ -532,115 +463,74 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 </div>
               )}
             </div>
-
-            {/* Event Header Text Stack */}
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-mono uppercase bg-[#222226] border border-[#333339] text-neutral-300 px-2.5 py-1 rounded-md">
-                  {event.calendarType || 'Event'}
-                </span>
-                <span className="text-[10px] font-mono uppercase bg-[#222226] border border-[#333339] text-neutral-300 px-2.5 py-1 rounded-md">
-                  {event.visibility || 'Public'}
-                </span>
-                {/* Live viewer count badge */}
-                <span
-                  className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase bg-[#0d1f12] border border-[#1e3a24] text-emerald-400 px-2.5 py-1 rounded-md"
-                  title="People currently viewing this event"
-                >
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-                  </span>
-                  {viewerCount} {viewerCount === 1 ? 'viewer' : 'viewers'}
-                </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-normal text-white tracking-tight leading-tight">
-                {event.title.split(' ').map((word, i) => {
-                  if (i % 2 === 1) {
-                    return <span key={i} style={{ color: 'var(--event-highlight)' }}>{word} </span>;
-                  }
-                  return <span key={i}>{word} </span>;
-                })}
-              </h1>
-            </div>
  
             {/* Event Description Section */}
-            <div className="bg-[#131315] border border-[#232329] rounded-2xl p-6 flex flex-col gap-4 shadow-[0_12px_45px_rgba(0,0,0,0.65)]">
-              <h3 className="text-xs uppercase font-mono tracking-wider" style={{ color: 'var(--event-highlight)' }}>About the Event</h3>
+            <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-6 sm:p-7 flex flex-col gap-4 shadow-xl">
+              <h3 className="font-instrument-serif text-xl sm:text-2xl text-white font-normal tracking-[-0.4px]">
+                About the Event
+              </h3>
               <div className="flex flex-col gap-2">
-                <p className="text-sm text-neutral-300 leading-relaxed whitespace-pre-wrap">
+                <p className="text-xs sm:text-sm text-white/70 leading-relaxed whitespace-pre-wrap font-normal">
                   {event.description 
-                    ? (isDescExpanded || event.description.length <= 280
+                    ? (isDescExpanded || event.description.length <= 320
                         ? event.description
-                        : `${event.description.substring(0, 280)}...`)
+                        : `${event.description.substring(0, 320)}...`)
                     : 'No detailed description provided for this event.'}
                 </p>
-                {event.description && event.description.length > 280 && (
+                {event.description && event.description.length > 320 && (
                   <button
                     type="button"
                     onClick={() => setIsDescExpanded(!isDescExpanded)}
-                    className="text-xs font-normal text-neutral-400 hover:text-white transition-colors text-left underline underline-offset-4 cursor-pointer mt-1 py-2.5 pr-6 block outline-none select-none"
+                    className="text-xs font-semibold text-white/80 hover:text-white transition-colors text-left underline underline-offset-4 cursor-pointer mt-1 py-1 block outline-none select-none"
                   >
                     {isDescExpanded ? 'Read Less' : 'Read More'}
                   </button>
                 )}
               </div>
             </div>
- 
 
+            {/* Speakers Section */}
             {event.speakers && (() => {
               try {
                 const parsedSpeakers = JSON.parse(event.speakers) as { name: string; role: string; image?: string | null }[];
                 if (parsedSpeakers.length === 0) return null;
                 return (
-                  <div className="py-3 flex flex-col gap-6 animate-fade-in">
-                    {/* Frameless Modern Header with Subtle Accent & Gradient Divider */}
-                    <div className="flex items-center gap-3">
-                      <span 
-                        className="w-2 h-2 rounded-full flex-shrink-0" 
-                        style={{ backgroundColor: 'var(--event-highlight)', boxShadow: '0 0 10px var(--event-highlight)' }} 
-                      />
-                      <h3 className="text-xs font-mono uppercase tracking-widest text-neutral-300 font-medium">
-                        Speakers
+                  <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-6 sm:p-7 flex flex-col gap-6 shadow-xl animate-fade-in">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                      <h3 className="font-instrument-serif text-xl sm:text-2xl text-white font-normal tracking-[-0.4px]">
+                        Featured Speakers
                       </h3>
-                      <div className="flex-1 h-[1px] bg-gradient-to-r from-white/15 via-white/5 to-transparent" />
+                      <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">{parsedSpeakers.length} Speaker{parsedSpeakers.length !== 1 ? 's' : ''}</span>
                     </div>
 
-                    {/* Containerless Floating Speakers Layout */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 pt-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-1">
                       {parsedSpeakers.map((sp, idx) => (
                         <div 
                           key={idx} 
-                          className="group flex flex-col items-center text-center relative cursor-pointer"
+                          className="group flex flex-col items-center text-center relative"
                         >
-                          {/* Ambient Glow Aura on Hover */}
-                          <div 
-                            className="absolute -top-1 w-28 h-28 sm:w-32 sm:h-32 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-all duration-500 pointer-events-none"
-                            style={{ background: 'var(--event-highlight)' }}
-                          />
-
-                          {/* Avatar with Gradient Ring */}
-                          <div className="relative p-1 rounded-full bg-gradient-to-b from-white/20 via-white/5 to-transparent group-hover:from-[var(--event-highlight)] group-hover:to-white/30 transition-all duration-500 shadow-2xl">
+                          {/* Avatar */}
+                          <div className="relative p-1 rounded-full bg-white/10 group-hover:bg-white/20 transition-all duration-300 shadow-xl">
                             {sp.image ? (
                               <img
                                 src={sp.image}
                                 alt={sp.name}
-                                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
                             ) : (
-                              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center text-2xl sm:text-3xl font-bold text-[#ffec27] select-none group-hover:scale-105 transition-transform duration-500">
+                              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#131316] border border-white/10 flex items-center justify-center text-xl sm:text-2xl font-bold text-white select-none">
                                 {sp.name.substring(0, 1).toUpperCase()}
                               </div>
                             )}
                           </div>
 
                           {/* Speaker Name */}
-                          <h4 className="text-sm sm:text-base font-semibold text-white tracking-tight mt-3.5 group-hover:text-[var(--event-highlight)] transition-colors duration-300 leading-snug">
+                          <h4 className="text-sm font-semibold text-white tracking-tight mt-3 leading-snug">
                             {sp.name}
                           </h4>
 
                           {/* Speaker Role */}
-                          <p className="text-xs text-neutral-400 font-mono mt-1 leading-relaxed opacity-80 max-w-[180px]">
+                          <p className="text-[11px] text-white/50 font-mono mt-0.5 leading-relaxed max-w-[160px]">
                             {sp.role}
                           </p>
                         </div>
@@ -656,30 +546,27 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
           </div>
 
           {/* Right Side Column: Registration + Grab Pics & Videos + Meta Info */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
+          <div className="lg:col-span-5 flex flex-col gap-5 sticky top-24">
 
             {/* Registration Card Console */}
-            <div className="bg-[#131315] border border-[#232329] rounded-2xl p-6 flex flex-col gap-6 shadow-[0_12px_45px_rgba(0,0,0,0.65)] relative overflow-hidden">
-              {/* Glowing accent border line */}
-              <div 
-                className="absolute top-0 left-0 right-0 h-[2px]" 
-                style={{ background: 'linear-gradient(90deg, transparent, var(--event-highlight), transparent)' }}
-              />
+            <div className="bg-[#18181c]/90 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+              {/* Subtle top specular accent */}
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               
               <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-neutral-400">Admission Price</span>
-                  <span className="text-3xl font-normal leading-none" style={{ color: 'var(--event-highlight)' }}>{event.price || 'Free'}</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-white/40">Admission Price</span>
+                  <span className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal leading-none">{event.price || 'Free'}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider bg-[#1c1c21] border border-[#232329] text-neutral-300 px-3 py-1 rounded-md">
+                  <span className="text-[10px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-white/70 px-2.5 py-1 rounded-md">
                     {event.visibility || 'Public'}
                   </span>
                   {isLimited && (
-                    <span className={`text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-md border ${
+                    <span className={`text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-md border ${
                       isFull 
                         ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' 
-                        : 'bg-[#1c1c21] border-[#232329] text-neutral-300'
+                        : 'bg-white/5 border-white/10 text-white/70'
                     }`}>
                       {isFull ? '0 tickets left' : `${displayTicketsLeft} tickets left`}
                     </span>
@@ -687,37 +574,35 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 </div>
               </div>
 
-              {/* Dotted separator coupon style line */}
+              {/* Dotted separator */}
               <div className="w-full border-t border-dashed border-white/10" />
 
               <div className="flex flex-col gap-3">
                 {isEventCompleted(event) ? (
                   <div className="flex flex-col gap-2">
-                    <div className="w-full py-3.5 bg-neutral-900 border border-neutral-800 text-neutral-400 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 cursor-not-allowed select-none shadow-inner">
-                      <GoClock className="w-4 h-4 text-neutral-500" />
+                    <div className="w-full py-3.5 bg-white/5 border border-white/10 text-white/40 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 cursor-not-allowed select-none shadow-inner">
+                      <GoClock className="w-4 h-4 text-white/40" />
                       <span>Event Concluded · Registration Closed</span>
                     </div>
-                    <p className="text-[10px] text-neutral-500 text-center leading-relaxed">
+                    <p className="text-[11px] text-white/40 text-center leading-relaxed">
                       This event has already taken place. Registration is closed for completed events.
                     </p>
                   </div>
                 ) : registered ? (
                   <div className="flex flex-col gap-2">
-                    <div className="w-full py-3 bg-[#1c1c21] border border-[#232329] text-neutral-200 text-xs font-medium rounded-xl flex items-center justify-center gap-2">
-                      <GoCheck className="w-3.5 h-3.5 text-neutral-400" />
-                      <span>You're Registered</span>
+                    <div className="w-full py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-xl flex items-center justify-center gap-2">
+                      <GoCheck className="w-4 h-4 text-emerald-400" />
+                      <span>You&apos;re Registered</span>
                     </div>
-                    <ShinyButton
-                      onClick={() => {
-                        router.push(`/events/${event.id}/register`);
-                      }}
-                      className="w-full"
+                    <a
+                      href={`/events/${event.id}/register`}
+                      className="w-full py-3 bg-white hover:bg-neutral-100 text-[#101010] text-xs font-bold rounded-xl text-center shadow-md active:scale-[0.99] transition-all cursor-pointer block"
                     >
                       View Ticket Pass
-                    </ShinyButton>
+                    </a>
                   </div>
                 ) : isFull ? (
-                  <ShinyButton
+                  <button
                     onClick={() => {
                       if (!user) {
                         router.push('/auth');
@@ -725,12 +610,12 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                         router.push(`/events/${event.id}/register?waitlist=true`);
                       }
                     }}
-                    className="w-full bg-gradient-to-r from-amber-500 to-orange-600 border border-amber-400/40 text-white shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:brightness-110"
+                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:brightness-110 text-white text-xs font-bold rounded-xl shadow-lg shadow-amber-500/20 active:scale-[0.99] transition-all cursor-pointer"
                   >
                     {user ? 'Join Waitlist' : 'Sign Up to Join Waitlist'}
-                  </ShinyButton>
+                  </button>
                 ) : (
-                  <ShinyButton
+                  <button
                     onClick={() => {
                       if (!user) {
                         router.push('/auth');
@@ -738,14 +623,14 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                         router.push(`/events/${event.id}/register`);
                       }
                     }}
-                    className="w-full"
+                    className="w-full py-3.5 bg-white hover:bg-neutral-100 text-[#101010] text-xs font-bold rounded-xl shadow-lg active:scale-[0.99] transition-all cursor-pointer"
                   >
                     {user ? 'Register for Event' : 'Sign Up to Register'}
-                  </ShinyButton>
+                  </button>
                 )}
 
                 {!registered && !isEventCompleted(event) && (
-                  <p className="text-[10px] text-neutral-500 text-center leading-relaxed">
+                  <p className="text-[11px] text-white/40 text-center leading-relaxed">
                     {isFull
                       ? `Capacity reached (${registrationsCount}/${maxCapacity} seats filled). Join waitlist to claim spots if tickets free up.`
                       : event.requireApproval
@@ -758,14 +643,8 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
             {/* Grab Pics & Videos Container Card (ONLY for Student Forge Launch) */}
             {isStudentForgeLaunch && (
-              <div className="bg-[#131315] border border-[#232329] rounded-2xl p-6 flex flex-col gap-4 shadow-[0_12px_45px_rgba(0,0,0,0.65)] relative overflow-hidden">
-                {/* Glowing accent border line */}
-                <div 
-                  className="absolute top-0 left-0 right-0 h-[2px]" 
-                  style={{ background: 'linear-gradient(90deg, transparent, var(--event-highlight), transparent)' }}
-                />
-                
-                <h3 className="text-xs uppercase font-mono tracking-wider" style={{ color: 'var(--event-highlight)' }}>
+              <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 shadow-xl relative overflow-hidden">
+                <h3 className="font-instrument-serif text-lg text-white font-normal tracking-tight">
                   Grab Pics &amp; Videos from Here
                 </h3>
 
@@ -775,20 +654,20 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                     href="https://drive.google.com/drive/folders/1LdhVFoQzA6jnRYVbVB4ySX0QMugT8RF0"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3.5 rounded-xl bg-[#18181b] border border-[#26262e] hover:border-white/30 hover:bg-[#202026] text-white transition-all group cursor-pointer"
+                    className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 text-white transition-all group cursor-pointer"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-[#22222a] border border-[#333340] flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
                         <GoogleDriveLogo className="w-4.5 h-4.5" />
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="text-xs font-semibold text-white tracking-wide">Event Photos</span>
-                        <span className="text-[10px] text-neutral-400 font-mono">Google Drive Folder</span>
+                        <span className="text-[10px] text-white/40 font-mono">Google Drive Folder</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs text-neutral-400 group-hover:text-white font-mono flex-shrink-0 ml-2">
+                    <div className="flex items-center gap-1.5 text-xs text-white/40 group-hover:text-white font-mono flex-shrink-0 ml-2">
                       <span className="text-[10px] hidden sm:inline opacity-75">View Photos</span>
-                      <GoArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                      <GoArrowUpRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                     </div>
                   </a>
 
@@ -797,20 +676,20 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                     href="https://drive.google.com/drive/folders/1gFOufUzi2rcsWjvtN1xkBciV-f8KeM9N"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3.5 rounded-xl bg-[#18181b] border border-[#26262e] hover:border-white/30 hover:bg-[#202026] text-white transition-all group cursor-pointer"
+                    className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 text-white transition-all group cursor-pointer"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-[#22222a] border border-[#333340] flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
                         <GoogleDriveLogo className="w-4.5 h-4.5" />
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="text-xs font-semibold text-white tracking-wide">Event Videos</span>
-                        <span className="text-[10px] text-neutral-400 font-mono">Google Drive Folder</span>
+                        <span className="text-[10px] text-white/40 font-mono">Google Drive Folder</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs text-neutral-400 group-hover:text-white font-mono flex-shrink-0 ml-2">
+                    <div className="flex items-center gap-1.5 text-xs text-white/40 group-hover:text-white font-mono flex-shrink-0 ml-2">
                       <span className="text-[10px] hidden sm:inline opacity-75">View Videos</span>
-                      <GoArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                      <GoArrowUpRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                     </div>
                   </a>
                 </div>
@@ -818,20 +697,17 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
             )}
 
             {/* Event Meta Info Card */}
-            <div className="bg-[#131315] border border-[#232329] rounded-2xl p-6 flex flex-col gap-5 shadow-[0_12px_45px_rgba(0,0,0,0.65)]">
+            <div className="bg-[#18181c]/80 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 shadow-xl">
 
               {/* Date & Time row */}
               <div className="flex items-start gap-4">
-                <div 
-                  className="w-8.5 h-8.5 rounded-xl border border-white/[0.04] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner"
-                  style={{ backgroundColor: 'var(--event-highlight-bg)' }}
-                >
-                  <GoCalendar className="w-4 h-4" style={{ color: 'var(--event-highlight)' }} />
+                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-white/70">
+                  <GoCalendar className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[9px] uppercase font-mono tracking-widest text-neutral-500">Date &amp; Time</span>
-                  <span className="text-sm font-normal text-white mt-0.5 leading-snug">{event.startDate}</span>
-                  <span className="text-xs text-neutral-400 font-mono mt-0.5">
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[9px] uppercase font-mono tracking-widest text-white/40">Date &amp; Time</span>
+                  <span className="text-xs sm:text-sm font-semibold text-white mt-0.5 leading-snug">{event.startDate}</span>
+                  <span className="text-[11px] text-white/50 font-mono mt-0.5">
                     {event.startTime}{event.endTime ? ` → ${event.endTime}` : ''}
                   </span>
                 </div>
@@ -839,51 +715,55 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
               {/* Location row */}
               <div className="flex items-start gap-4">
-                <div 
-                  className="w-8.5 h-8.5 rounded-xl border border-white/[0.04] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner"
-                  style={{ backgroundColor: 'var(--event-highlight-bg)' }}
-                >
-                  <GoLocation className="w-4 h-4" style={{ color: 'var(--event-highlight)' }} />
+                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-white/70">
+                  <GoLocation className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[9px] uppercase font-mono tracking-widest text-neutral-500">Location</span>
-                  <span className="text-xs text-white font-normal mt-0.5 leading-relaxed break-words">{event.location || 'Online / Virtual'}</span>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] uppercase font-mono tracking-widest text-white/40">Location</span>
+                    {event.location && (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-white/60 hover:text-white flex items-center gap-0.5 transition-colors"
+                      >
+                        <span>Maps</span>
+                        <GoArrowUpRight className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                  <span className="text-xs text-white/80 font-normal mt-0.5 leading-relaxed break-words">{event.location || 'Online / Virtual'}</span>
                 </div>
               </div>
 
               {/* Organizer row */}
               <div className="flex items-start gap-4">
-                <div 
-                  className="w-8.5 h-8.5 rounded-xl border border-white/[0.04] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner"
-                  style={{ backgroundColor: 'var(--event-highlight-bg)' }}
-                >
-                  <GoPerson className="w-4 h-4" style={{ color: 'var(--event-highlight)' }} />
+                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-white/70">
+                  <GoPerson className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[9px] uppercase font-mono tracking-widest text-neutral-500">Organizer</span>
-                  <span className="text-xs font-normal text-white mt-0.5 truncate">{event.organizer || 'Infinity Event Organizer'}</span>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[9px] uppercase font-mono tracking-widest text-white/40">Organizer</span>
+                  <span className="text-xs font-semibold text-white mt-0.5 truncate">{event.organizer || 'Student Forge'}</span>
                 </div>
               </div>
 
               {/* Capacity row */}
               <div className="flex items-start gap-4">
-                <div 
-                  className="w-8.5 h-8.5 rounded-xl border border-white/[0.04] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner"
-                  style={{ backgroundColor: 'var(--event-highlight-bg)' }}
-                >
-                  <GoPeople className="w-4 h-4" style={{ color: 'var(--event-highlight)' }} />
+                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-white/70">
+                  <GoPeople className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[9px] uppercase font-mono tracking-widest text-neutral-500">Capacity &amp; Availability</span>
-                  <span className="text-xs font-normal text-white mt-0.5">
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[9px] uppercase font-mono tracking-widest text-white/40">Capacity &amp; Availability</span>
+                  <span className="text-xs font-semibold text-white mt-0.5">
                     {event.capacity || 'Unlimited'} seats
                     {isLimited && (
-                      <span className={`ml-2 font-mono text-[11px] ${isFull ? 'text-rose-400 font-semibold' : 'text-neutral-400'}`}>
+                      <span className={`ml-2 font-mono text-[11px] ${isFull ? 'text-rose-400 font-semibold' : 'text-white/50'}`}>
                         ({isFull ? '0 tickets left' : `${displayTicketsLeft} tickets left`})
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px] text-neutral-400 mt-0.5">
+                  <span className="text-[10px] text-white/40 mt-0.5">
                     {isFull
                       ? `${registrationsCount}/${maxCapacity} seats filled · Waitlist open`
                       : event.requireApproval
@@ -895,20 +775,20 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
             </div>
 
-            {/* Standalone Official Event Partners Card (Positioned BELOW the metadata cards, ONLY for Incept Event) */}
+            {/* Standalone Official Event Partners Card (ONLY for Incept Event) */}
             {isInceptEvent && (
-              <div className="w-full bg-[#121218] border border-[#22222e] rounded-2xl p-5 shadow-xl flex flex-col gap-4 mt-4 font-sans">
-                <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <div className="w-full bg-[#18181c]/80 border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                     <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Official Event Partners</h4>
                   </div>
-                  <span className="text-[10px] font-mono text-neutral-300 bg-[#1c1c28] border border-[#2b2b3d] px-2 py-0.5 rounded-full">Collaborators</span>
+                  <span className="text-[10px] font-mono text-white/60 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">Collaborators</span>
                 </div>
 
                 {/* Networking Partner: Peopld */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-[10px] uppercase font-mono tracking-widest text-neutral-200 font-semibold flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-mono tracking-widest text-white/40 font-semibold flex items-center gap-1">
                     Networking Partner
                   </span>
                   <a
@@ -938,9 +818,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   </a>
                 </div>
 
-                {/* Marketplace / Vendor Partners: Yem nest & Fitbasics (JUST LOGOS) */}
+                {/* Marketplace / Vendor Partners */}
                 <div className="flex flex-col gap-2 pt-1">
-                  <span className="text-[10px] uppercase font-mono tracking-widest text-neutral-200 font-semibold flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-mono tracking-widest text-white/40 font-semibold flex items-center gap-1">
                     Marketplace Partners
                   </span>
                   <div className="grid grid-cols-2 gap-3">
@@ -955,7 +835,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                     </div>
 
                     {/* Fitbasics */}
-                    <div className="w-full h-14 bg-black border border-[#2a2a38] rounded-xl shadow-md p-2 flex items-center justify-center transition-transform hover:scale-[1.01]">
+                    <div className="w-full h-14 bg-black border border-white/10 rounded-xl shadow-md p-2 flex items-center justify-center transition-transform hover:scale-[1.01]">
                       <img
                         src="https://ik.imagekit.io/dypkhqxip/ven1"
                         alt="Fitbasics Marketplace Partner"
@@ -971,18 +851,6 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
           </div>
 
         </div>
-
-        {/* Mobile/Tablet Banner (Moved DOWN for Student Forge Launch on screens < 1280px) */}
-        {isStudentForgeLaunch && (
-          <div className="block xl:hidden w-full max-w-md mx-auto mt-4">
-            <SidePromoBanners
-              banners={[
-                'https://ik.imagekit.io/dypkhqxip/mainbannersf',
-                'https://ik.imagekit.io/dypkhqxip/viralloop'
-              ]}
-            />
-          </div>
-        )}
 
       </div>
 

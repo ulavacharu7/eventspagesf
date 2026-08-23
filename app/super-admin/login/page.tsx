@@ -59,10 +59,10 @@ export default function SuperAdminLoginPage() {
         {/* Official Events Logo Centered */}
         <div className="flex flex-col items-center text-center mb-8">
           <img
-            src="https://ik.imagekit.io/dypkhqxip/events%20loho"
+            src="https://ik.imagekit.io/dypkhqxip/sf-events-svg?updatedAt=1787505496001"
             alt="Events Logo"
-            className="h-12 w-auto object-contain mb-4"
-            style={{ filter: 'brightness(0) invert(1)' }}
+            className="h-12 w-auto object-contain mb-4 opacity-90"
+            style={{ filter: 'brightness(0) invert(0.88)' }}
             draggable={false}
           />
           <h1 className="text-xl font-bold text-white tracking-tight">Super Admin Portal</h1>
