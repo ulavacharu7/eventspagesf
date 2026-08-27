@@ -278,6 +278,9 @@ export default function EventsPage() {
                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
                       <div className="flex items-baseline gap-1.5">
                         <span className="text-[10px] uppercase font-mono text-white/40 tracking-wider">Price:</span>
+                        {(event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
+                          <span className="text-xs text-white/40 line-through font-mono">₹249</span>
+                        )}
                         <span className="text-sm font-semibold font-tight text-white">
                           {event.price?.startsWith('₹') ? event.price : (event.price === 'Free' || !event.price ? 'Free' : `₹${event.price}`)}
                         </span>

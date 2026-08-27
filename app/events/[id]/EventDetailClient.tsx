@@ -305,6 +305,14 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
   
   const highlightColor = getHighlightColor(event.headerBg);
   const isInceptEvent = event.title ? event.title.toLowerCase().includes('incept') : false;
+  const isIncept01PartnersEvent = event.title
+    ? (event.title.toLowerCase().includes('incept') &&
+       (event.title.toLowerCase().includes('01') || event.title.toLowerCase().includes('edition - 01') || event.title.toLowerCase().includes('edition 1') || event.title.toLowerCase().includes('edition-01')) &&
+       !event.title.toLowerCase().includes('episode - i i') &&
+       !event.title.toLowerCase().includes('episode ii') &&
+       !event.title.toLowerCase().includes('episode - 2') &&
+       !event.title.toLowerCase().includes('episode 2'))
+    : false;
 
   return (
     <main 
@@ -558,7 +566,14 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-[10px] uppercase font-mono tracking-wider text-white/40">Admission Price</span>
-                  <span className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal leading-none">{event.price || 'Free'}</span>
+                  <div className="flex items-baseline gap-2">
+                    {(event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
+                      <span className="text-base sm:text-lg text-white/40 line-through font-mono">₹249</span>
+                    )}
+                    <span className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal leading-none">
+                      {event.price?.startsWith('₹') ? event.price : (event.price === 'Free' || !event.price ? 'Free' : `₹${event.price}`)}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-white/70 px-2.5 py-1 rounded-md">
@@ -777,8 +792,8 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
             </div>
 
-            {/* Standalone Official Event Partners Card (ONLY for Incept Event) */}
-            {isInceptEvent && (
+            {/* Standalone Official Event Partners Card (ONLY for Incept Edition 01) */}
+            {isIncept01PartnersEvent && (
               <div className="w-full bg-[#18181c]/80 border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2">

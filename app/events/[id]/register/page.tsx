@@ -1125,9 +1125,14 @@ function RegisterPageInner() {
                             <span className="text-xl font-bold text-emerald-400 font-mono">{formattedDisplayPrice}</span>
                           </>
                         ) : (
-                          <span className="text-xl font-bold font-mono" style={{ color: 'var(--event-highlight)' }}>
-                            {formattedDisplayPrice}
-                          </span>
+                          <>
+                            {(event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
+                              <span className="text-sm line-through text-neutral-500 font-mono">₹{249 * totalAttendees}</span>
+                            )}
+                            <span className="text-xl font-bold font-mono" style={{ color: 'var(--event-highlight)' }}>
+                              {formattedDisplayPrice}
+                            </span>
+                          </>
                         )}
                       </div>
                       {totalAttendees > 1 && !isEventFree(event.price) && (
