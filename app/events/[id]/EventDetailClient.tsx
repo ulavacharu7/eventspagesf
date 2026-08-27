@@ -180,7 +180,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
     }
 
     const img = new Image();
-    img.crossOrigin = 'Anonymous';
+    if (!event.coverImage.startsWith('data:')) {
+      img.crossOrigin = 'Anonymous';
+    }
     img.src = event.coverImage;
     img.onload = () => {
       try {

@@ -162,19 +162,36 @@ const themes = [
 
 const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
   const [error, setError] = useState(false);
-  if (event.coverImage && !error) {
+
+  const getFirstImage = () => {
+    if (event.coverImage) {
+      const trimmed = event.coverImage.trim();
+      if (trimmed.startsWith('data:')) return trimmed;
+      const first = trimmed.split(',')[0].trim();
+      if (first) return first;
+    }
+    const titleLower = (event.title || '').toLowerCase();
+    if (event.id === 'cmsbpnls8000004lfw3buf1a7' || titleLower.includes('student forge') || titleLower.includes('platform launch')) {
+      return 'https://ik.imagekit.io/dypkhqxip/mainbannersf';
+    }
+    return null;
+  };
+
+  const coverSrc = getFirstImage();
+
+  if (coverSrc && !error) {
     return (
-      <img src={event.coverImage} alt={event.title} onError={() => setError(true)} className="w-full h-full object-cover" />
+      <img src={coverSrc} alt={event.title} onError={() => setError(true)} className="w-full h-full object-cover" />
     );
   }
   const t = event.themeIdx !== undefined && themes[event.themeIdx] ? themes[event.themeIdx] : themes[0];
   return (
-    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-3">
+    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-3 bg-neutral-900 border border-white/10 rounded-[8px]">
       <div className={`absolute inset-0 z-0 ${t.bg}`} />
-      <h5 className="z-10 text-[11px] font-semibold uppercase leading-tight tracking-tight line-clamp-3 text-white relative">
+      <h5 className="z-10 text-[11px] font-semibold uppercase leading-tight tracking-tight line-clamp-3 text-white/90 relative">
         {event.title}
       </h5>
-      <span className="z-10 text-[6px] font-mono uppercase tracking-widest opacity-60 border-t border-white/20 pt-1.5 text-white relative">
+      <span className="z-10 text-[6px] font-mono uppercase tracking-widest opacity-80 border-t border-white/20 pt-1.5 text-white relative">
         {event.startDate}
       </span>
     </div>

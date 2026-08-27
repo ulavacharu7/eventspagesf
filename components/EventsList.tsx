@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { GoLocation, GoCalendar, GoPlus, GoArrowRight, GoSearch } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
+import { isEventCompleted } from '@/lib/utils';
 
 const themes = [
   { name: 'Minimal', bg: 'bg-[#f4f4f5]', textColor: 'text-black', subText: '*HOW LUCKY YOU ARE' },
@@ -21,7 +22,11 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
 
   const getFirstImage = () => {
     if (event.coverImage) {
-      const first = event.coverImage.split(',')[0].trim();
+      const trimmed = event.coverImage.trim();
+      if (trimmed.startsWith('data:')) {
+        return trimmed;
+      }
+      const first = trimmed.split(',')[0].trim();
       if (first) return first;
     }
     const titleLower = (event.title || '').toLowerCase();
@@ -49,14 +54,14 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
     : themes[0];
 
   return (
-    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-4 text-white bg-neutral-950/45 border border-white/10 rounded-[12px]">
+    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-4 bg-neutral-900 border border-white/10 rounded-[12px]">
       <div className={`absolute inset-0 z-0 ${activeTheme.bg}`} />
-      <div className="z-10 flex flex-col gap-1.5">
+      <div className={`z-10 flex flex-col gap-1.5 ${activeTheme.textColor || 'text-white'}`}>
         <h5 className="text-sm font-semibold font-tight leading-snug tracking-tight line-clamp-3">
           {event.title}
         </h5>
       </div>
-      <div className="z-10 flex flex-col text-xs font-mono tracking-wider opacity-90 border-t border-white/20 pt-2">
+      <div className={`z-10 flex flex-col text-xs font-mono tracking-wider opacity-90 border-t border-black/10 dark:border-white/20 pt-2 ${activeTheme.textColor || 'text-white'}`}>
         <span>{event.startDate}</span>
       </div>
     </div>
@@ -78,15 +83,6 @@ const EventsList: React.FC = () => {
       })
       .catch(() => setIsLoaded(true));
   }, []);
-
-  const isEventCompleted = (event: EventData) => {
-    if (!event.startDate) return false;
-    const eventDate = new Date(event.startDate);
-    if (isNaN(eventDate.getTime())) return false;
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    return eventDate < now;
-  };
 
   const upcomingCount = events.filter((e) => !isEventCompleted(e)).length;
   const pastCount = events.filter((e) => isEventCompleted(e)).length;

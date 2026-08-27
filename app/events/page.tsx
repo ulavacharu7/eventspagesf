@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { GoLocation, GoCalendar, GoSearch, GoPlus, GoArrowRight, GoChevronRight } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
+import { isEventCompleted } from '@/lib/utils';
 
 const themes = [
   { name: 'Minimal', bg: 'bg-[#f4f4f5]', textColor: 'text-black', subText: '*HOW LUCKY YOU ARE' },
@@ -24,7 +25,11 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
 
   const getFirstImage = () => {
     if (event.coverImage) {
-      const first = event.coverImage.split(',')[0].trim();
+      const trimmed = event.coverImage.trim();
+      if (trimmed.startsWith('data:')) {
+        return trimmed;
+      }
+      const first = trimmed.split(',')[0].trim();
       if (first) return first;
     }
     const titleLower = (event.title || '').toLowerCase();
@@ -52,14 +57,14 @@ const EventImage: React.FC<{ event: EventData }> = ({ event }) => {
     : themes[0];
 
   return (
-    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-3.5 text-white bg-neutral-950/45 border border-white/10 rounded-[10px]">
+    <div className="w-full h-full relative overflow-hidden flex flex-col justify-between p-3.5 bg-neutral-900 border border-white/10 rounded-[10px]">
       <div className={`absolute inset-0 z-0 ${activeTheme.bg}`} />
-      <div className="z-10 flex flex-col gap-1">
+      <div className={`z-10 flex flex-col gap-1 ${activeTheme.textColor || 'text-white'}`}>
         <h5 className="text-xs font-semibold font-tight leading-snug tracking-tight line-clamp-3">
           {event.title}
         </h5>
       </div>
-      <div className="z-10 flex flex-col text-[10px] font-mono tracking-wider opacity-90 border-t border-white/20 pt-1">
+      <div className={`z-10 flex flex-col text-[10px] font-mono tracking-wider opacity-90 border-t border-black/10 dark:border-white/20 pt-1 ${activeTheme.textColor || 'text-white'}`}>
         <span>{event.startDate}</span>
       </div>
     </div>
@@ -82,14 +87,6 @@ export default function EventsPage() {
       })
       .catch(() => setIsLoaded(true));
   }, []);
-
-  const isEventCompleted = (event: EventData) => {
-    if (!event.startDate) return false;
-    const eventDate = new Date(event.startDate);
-    if (isNaN(eventDate.getTime())) return false;
-    const now = new Date();
-    return eventDate < now;
-  };
 
   const displayedEvents = events.filter((e) => {
     if (activeTab === 'upcoming') {

@@ -2,6 +2,24 @@ export function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ');
 }
 
+function applyEventTime(d: Date, timeStr?: string | null) {
+  if (!timeStr || !timeStr.trim()) {
+    d.setHours(23, 59, 59, 999);
+    return;
+  }
+  const m = timeStr.trim().match(/(\d{1,2}):?(\d{2})?\s*(am|pm)?/i);
+  if (m) {
+    let hours = parseInt(m[1], 10);
+    const mins = m[2] ? parseInt(m[2], 10) : 0;
+    const meridiem = m[3] ? m[3].toLowerCase() : null;
+    if (meridiem === 'pm' && hours < 12) hours += 12;
+    if (meridiem === 'am' && hours === 12) hours = 0;
+    d.setHours(hours, mins, 59, 999);
+  } else {
+    d.setHours(23, 59, 59, 999);
+  }
+}
+
 export function isEventCompleted(event: {
   startDate?: string | null;
   startTime?: string | null;
@@ -11,47 +29,68 @@ export function isEventCompleted(event: {
   if (!event) return false;
 
   const dateStr = event.endDate || event.startDate;
-  if (!dateStr) return false;
+  if (!dateStr || !dateStr.trim()) return false;
 
   try {
-    // 1. Try direct Date parsing for ISO / standard date strings
-    const directDate = new Date(dateStr);
-    if (!isNaN(directDate.getTime()) && dateStr.includes('-')) {
-      const timeStr = event.endTime || event.startTime;
-      if (timeStr) {
-        const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
-        if (!isNaN(h)) directDate.setHours(h, !isNaN(m) ? m : 0, 0, 0);
-      } else {
-        directDate.setHours(23, 59, 59, 999);
+    const raw = dateStr.trim();
+
+    // 1. Direct standard ISO format YYYY-MM-DD or YYYY/MM/DD
+    if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(raw)) {
+      const d = new Date(raw);
+      if (!isNaN(d.getTime())) {
+        applyEventTime(d, event.endTime || event.startTime);
+        return d.getTime() < Date.now();
       }
-      return directDate.getTime() < Date.now();
     }
 
-    // 2. Parse relative/formatted date strings like "Sat, 1 Aug" or "Sun, 9 Aug"
     const months: Record<string, number> = {
-      jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-      jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+      jan: 0, january: 0,
+      feb: 1, february: 1,
+      mar: 2, march: 2,
+      apr: 3, april: 3,
+      may: 4,
+      jun: 5, june: 5,
+      jul: 6, july: 6,
+      aug: 7, august: 7,
+      sep: 8, sept: 8, september: 8,
+      oct: 9, october: 9,
+      nov: 10, november: 10,
+      dec: 11, december: 11,
     };
 
-    const match = dateStr.match(/(\d{1,2})\s+([a-zA-Z]{3})/);
-    if (match) {
-      const day = parseInt(match[1], 10);
-      const monthIdx = months[match[2].toLowerCase()];
+    // 2. Check for explicit 4-digit year in string (e.g. "Sun, 6 Sep 2026")
+    const yearMatch = raw.match(/\b(20\d{2})\b/);
+    const year = yearMatch ? parseInt(yearMatch[1], 10) : new Date().getFullYear();
+
+    // 3. Match "6 Sep", "Sun, 6 Sep", "Sep 6", "September 6"
+    const dayMonthMatch = raw.match(/(\d{1,2})\s+([a-zA-Z]+)/) || raw.match(/([a-zA-Z]+)\s+(\d{1,2})/);
+    if (dayMonthMatch) {
+      let day: number;
+      let monthStr: string;
+      if (/^\d+$/.test(dayMonthMatch[1])) {
+        day = parseInt(dayMonthMatch[1], 10);
+        monthStr = dayMonthMatch[2].toLowerCase();
+      } else {
+        monthStr = dayMonthMatch[1].toLowerCase();
+        day = parseInt(dayMonthMatch[2], 10);
+      }
+
+      const monthIdx = months[monthStr] !== undefined ? months[monthStr] : months[monthStr.slice(0, 3)];
       if (monthIdx !== undefined && !isNaN(day)) {
-        const year = new Date().getFullYear();
         const eventDate = new Date(year, monthIdx, day);
-
-        const timeStr = event.endTime || event.startTime;
-        if (timeStr) {
-          const [h, m] = timeStr.split(':').map((n) => parseInt(n, 10));
-          if (!isNaN(h)) eventDate.setHours(h, !isNaN(m) ? m : 0, 0, 0);
-          else eventDate.setHours(23, 59, 59, 999);
-        } else {
-          eventDate.setHours(23, 59, 59, 999);
-        }
-
+        applyEventTime(eventDate, event.endTime || event.startTime);
         return eventDate.getTime() < Date.now();
       }
+    }
+
+    // 4. Fallback parser
+    const fallbackDate = new Date(raw);
+    if (!isNaN(fallbackDate.getTime())) {
+      if (fallbackDate.getFullYear() < 2020 && !yearMatch) {
+        fallbackDate.setFullYear(new Date().getFullYear());
+      }
+      applyEventTime(fallbackDate, event.endTime || event.startTime);
+      return fallbackDate.getTime() < Date.now();
     }
   } catch (err) {
     console.error('isEventCompleted parse error:', err);
