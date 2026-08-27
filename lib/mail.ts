@@ -421,7 +421,7 @@ export async function sendEventMail({ to, subject, event, registration, type, or
           <tr>
             <td style="padding:24px 24px;background-color:#0f1015;border-top:1px solid #272832;text-align:center;font-size:11px;color:#71717a;">
               <div style="margin-bottom:12px;">
-                <img src="${LOGO_URL}" alt="StudentForge" height="36" style="height:36px;width:auto;display:inline-block;border:0;" />
+                <img src="${LOGO_URL}" alt="StudentForge" height="36" style="height:36px;width:auto;display:inline-block;border:0;filter:grayscale(100%) brightness(0) invert(1);-webkit-filter:grayscale(100%) brightness(0) invert(1);opacity:0.95;" />
               </div>
               © ${new Date().getFullYear()} Student Forge Technologies Private Limited. All rights reserved.
             </td>

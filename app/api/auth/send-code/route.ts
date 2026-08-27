@@ -46,6 +46,9 @@ export async function POST(request: Request) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 460px; background-color: #ffffff; border: 1px solid #e1e4e8; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(27,31,35,0.04);">
                 <tr>
                   <td style="padding: 32px 32px 24px 32px; text-align: center;">
+                    <div style="margin-bottom: 20px;">
+                      <img src="https://ik.imagekit.io/dypkhqxip/sf-events-svg?updatedAt=1787505496001" alt="Student Forge" height="32" style="height: 32px; width: auto; display: inline-block; border: 0; filter: grayscale(100%); -webkit-filter: grayscale(100%); opacity: 0.9;" />
+                    </div>
                     <h2 style="margin: 0 0 12px 0; color: #111827; font-size: 22px; font-weight: 600; letter-spacing: -0.5px;">Confirm your email address</h2>
                     <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
                       Use the 6-digit verification code below to authorize your Student Forge account:
@@ -71,33 +74,55 @@ export async function POST(request: Request) {
     // Always log code to terminal for easy development testing
     console.log('\n\x1b[43m\x1b[30m%s\x1b[0m', ` [SANDBOX MODE] VERIFICATION CODE FOR ${email}: ${code} `);
 
-    // Attempt delivery via Resend
-    try {
-      const sendResult = await resend.emails.send({
-        from: `Student Forge <${resendFromEmail}>`,
-        to: email,
-        subject: 'Confirm Your Email - Student Forge',
-        text: `Your verification code is: ${code}`,
-        html: mailHtml,
-      });
+    let deliverySuccess = false;
 
-      if (sendResult.error) {
-        console.warn('Resend primary delivery error:', sendResult.error.message);
-        // Fallback to sandbox domain if custom domain is unverified
-        if (resendFromEmail !== 'onboarding@resend.dev') {
-          await resend.emails.send({
-            from: 'Student Forge <onboarding@resend.dev>',
-            to: email,
-            subject: 'Confirm Your Email - Student Forge',
-            text: `Your verification code is: ${code}`,
-            html: mailHtml,
-          }).catch((fallbackErr) => {
-            console.warn('Resend fallback delivery error:', fallbackErr.message);
-          });
+    // 1. Attempt delivery via Resend
+    if (resendApiKey && !resendApiKey.startsWith('re_xxxx')) {
+      try {
+        const sendResult = await resend.emails.send({
+          from: `Student Forge <${resendFromEmail}>`,
+          to: email,
+          subject: 'Confirm Your Email - Student Forge',
+          text: `Your verification code is: ${code}`,
+          html: mailHtml,
+        });
+
+        if (sendResult.data?.id) {
+          deliverySuccess = true;
+          console.log(`[Resend Success] OTP sent to ${email} (ID: ${sendResult.data.id})`);
+        } else if (sendResult.error) {
+          console.warn('Resend primary delivery error:', sendResult.error.message);
         }
+      } catch (mailError: any) {
+        console.warn('Resend mail delivery catch error:', mailError.message);
       }
-    } catch (mailError: any) {
-      console.warn('Resend mail delivery catch error:', mailError.message);
+    }
+
+    // 2. Fallback to Nodemailer Gmail SMTP
+    if (!deliverySuccess && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        console.log(`[Gmail SMTP Fallback] Sending verification code to ${email} via Gmail SMTP...`);
+        const nodemailerModule = await import('nodemailer');
+        const transporter = nodemailerModule.default.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+        await transporter.sendMail({
+          from: `"Student Forge" <${process.env.EMAIL_USER}>`,
+          to: email,
+          subject: 'Confirm Your Email - Student Forge',
+          text: `Your verification code is: ${code}`,
+          html: mailHtml,
+        });
+        deliverySuccess = true;
+        console.log(`[Gmail SMTP Success] OTP sent successfully to ${email}`);
+      } catch (smtpErr: any) {
+        console.error('[Gmail SMTP Error] Failed to send verification code:', smtpErr?.message);
+      }
     }
 
     return NextResponse.json({

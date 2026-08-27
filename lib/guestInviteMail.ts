@@ -394,7 +394,7 @@ export async function sendGuestInviteMail({
           <tr>
             <td style="padding:24px 24px;background-color:#0f1015;border-top:1px solid #272832;text-align:center;font-size:11px;color:#71717a;">
               <div style="margin-bottom:12px;">
-                <img src="${LOGO_URL}" alt="StudentForge" height="36" style="height:36px;width:auto;display:inline-block;border:0;" />
+                <img src="${LOGO_URL}" alt="StudentForge" height="36" style="height:36px;width:auto;display:inline-block;border:0;filter:grayscale(100%) brightness(0) invert(1);-webkit-filter:grayscale(100%) brightness(0) invert(1);opacity:0.95;" />
               </div>
               © ${new Date().getFullYear()} StudentForge Events. Official Speaker &amp; Guest Portal.
             </td>
@@ -407,20 +407,52 @@ export async function sendGuestInviteMail({
 </body>
 </html>`;
 
-    const { data, error } = await resend.emails.send({
-      from: `StudentForge Events <${resendFromEmail}>`,
-      to: [to],
-      subject,
-      html: htmlBody,
-      attachments, // Contains ONLY the 1 PDF attachment file!
-    });
+    // 1. Try Resend if configured
+    if (resendApiKey && !resendApiKey.startsWith('re_xxxx')) {
+      try {
+        const { data, error } = await resend.emails.send({
+          from: `StudentForge Events <${resendFromEmail}>`,
+          to: [to],
+          subject,
+          html: htmlBody,
+          attachments, // Contains ONLY the 1 PDF attachment file!
+        });
 
-    if (error) {
-      console.error('Failed to send guest invite email:', error);
-      return { success: false, error: error.message };
+        if (data?.id) {
+          console.log(`[Resend Success] Guest invite sent to ${to} (ID: ${data.id})`);
+          return { success: true, messageId: data.id };
+        }
+
+        console.warn(`[Resend Error] Guest invite delivery error (${JSON.stringify(error)}). Falling back to Gmail SMTP...`);
+      } catch (resendErr: any) {
+        console.warn(`[Resend Exception] Guest invite error: ${resendErr?.message}. Falling back to Gmail SMTP...`);
+      }
     }
 
-    return { success: true, messageId: data?.id };
+    // 2. Fallback to Nodemailer Gmail SMTP
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      console.log(`[Gmail SMTP Fallback] Sending guest invite to ${to} via Gmail SMTP (${process.env.EMAIL_USER})...`);
+      const nodemailerModule = await import('nodemailer');
+      const transporter = nodemailerModule.default.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      const info = await transporter.sendMail({
+        from: `"Student Forge Events" <${process.env.EMAIL_USER}>`,
+        to,
+        subject,
+        html: htmlBody,
+        attachments,
+      });
+
+      return { success: true, messageId: info.messageId };
+    }
+
+    return { success: false, error: 'No email service configured' };
   } catch (err: any) {
     console.error('sendGuestInviteMail error:', err);
     return { success: false, error: err.message };

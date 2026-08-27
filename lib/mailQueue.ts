@@ -176,58 +176,91 @@ async function processMailPayload(payload: MailJobPayload): Promise<{ success: b
   }
 }
 
+// Global in-memory queue runner for bulletproof asynchronous dispatching
+let isProcessingMemoryQueue = false;
+const memoryMailQueue: { id: string; payload: MailJobPayload; delayMs: number; createdAt: number }[] = [];
+
+async function triggerMemoryQueueRunner() {
+  if (isProcessingMemoryQueue) return;
+  isProcessingMemoryQueue = true;
+
+  while (memoryMailQueue.length > 0) {
+    const item = memoryMailQueue.shift();
+    if (!item) break;
+
+    const waitTime = Math.max(0, item.delayMs - (Date.now() - item.createdAt));
+    if (waitTime > 0) {
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+    }
+
+    try {
+      const res = await processMailPayload(item.payload);
+      if (res.success) {
+        await incrementTodaySentCount();
+        recentMailLogs.unshift({
+          id: item.id,
+          to: item.payload.to,
+          subject: item.payload.subject,
+          jobType: item.payload.type,
+          status: 'COMPLETED',
+          scheduledDelaySec: Math.round(item.delayMs / 1000),
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        recentMailLogs.unshift({
+          id: item.id,
+          to: item.payload.to,
+          subject: item.payload.subject,
+          jobType: item.payload.type,
+          status: 'FAILED',
+          scheduledDelaySec: Math.round(item.delayMs / 1000),
+          timestamp: new Date().toISOString(),
+          error: res.error,
+        });
+      }
+    } catch (err: any) {
+      console.error(`[Mail Queue Runner Error] for ${item.payload.to}:`, err?.message);
+      recentMailLogs.unshift({
+        id: item.id,
+        to: item.payload.to,
+        subject: item.payload.subject,
+        jobType: item.payload.type,
+        status: 'FAILED',
+        scheduledDelaySec: Math.round(item.delayMs / 1000),
+        timestamp: new Date().toISOString(),
+        error: err?.message,
+      });
+    }
+
+    if (recentMailLogs.length > 100) {
+      recentMailLogs.length = 100;
+    }
+  }
+
+  isProcessingMemoryQueue = false;
+}
+
 if (!globalForMail._mailQueue && !globalForMail._mailWorker) {
   try {
     const connection = createRedisConnection();
     mailQueue = new Queue<MailJobPayload>(QUEUE_NAME, {
       connection,
       defaultJobOptions: {
-        removeOnComplete: 100,
-        removeOnFail: 100,
-        attempts: 5,
+        removeOnComplete: 50,
+        removeOnFail: 50,
+        attempts: 3,
         backoff: {
           type: 'exponential',
-          delay: 5000,
+          delay: 3000,
         },
       },
     });
 
-    // BullMQ Worker processing queue with rate limiting & automatic quota rollover delay
     mailWorker = new Worker<MailJobPayload>(
       QUEUE_NAME,
       async (job: Job<MailJobPayload>) => {
         const payload = job.data;
-        console.log(`[BullMQ Worker] Processing ${payload.type} mail for ${payload.to}...`);
-
-        const currentSent = await getTodaySentCount();
-        
-        // If Resend daily quota (90/day) is reached, DO NOT DISCARD JOB! Delay until tomorrow's reset.
-        if (currentSent >= DAILY_LIMIT) {
-          const delayUntilTomorrowMs = getMsUntilDailyReset();
-          const delayMinutes = Math.round(delayUntilTomorrowMs / 60000);
-          console.warn(`[BullMQ Worker] Resend daily limit (${DAILY_LIMIT}) reached. Delaying job for ${payload.to} by ${delayMinutes} minutes until daily reset.`);
-
-          recentMailLogs.unshift({
-            id: job.id || `job-${Date.now()}`,
-            to: payload.to,
-            subject: payload.subject,
-            jobType: payload.type,
-            status: 'DELAYED_FOR_NEXT_DAY_RESET',
-            scheduledDelaySec: Math.round(delayUntilTomorrowMs / 1000),
-            rescheduledForTomorrow: true,
-            timestamp: new Date().toISOString(),
-            error: `Quota limit of ${DAILY_LIMIT} reached today. Job delayed ${delayMinutes} min until tomorrow's reset. No emails lost!`,
-          });
-
-          // Re-enqueue job to BullMQ with delay until tomorrow's reset
-          if (mailQueue) {
-            await mailQueue.add(job.name, payload, {
-              delay: delayUntilTomorrowMs,
-              jobId: `delayed-quota-${job.id}-${Date.now()}`,
-            });
-          }
-          return { delayedUntilTomorrow: true, delayMs: delayUntilTomorrowMs };
-        }
+        console.log(`[Mail Queue Worker] Processing ${payload.type} mail for ${payload.to}...`);
 
         const result = await processMailPayload(payload);
 
@@ -260,120 +293,82 @@ if (!globalForMail._mailQueue && !globalForMail._mailWorker) {
       },
       {
         connection,
-        concurrency: 1, // Enforce 1-by-1 batch dispatching
+        concurrency: 1,
         limiter: {
           max: 1,
-          duration: BATCH_DELAY_MS, // 10-second gap between mails
+          duration: BATCH_DELAY_MS,
         },
       }
     );
 
     mailWorker.on('error', (err) => {
-      console.warn('[BullMQ Worker Notice]:', err.message);
+      console.warn('[Mail Queue Worker Notice]:', err.message);
     });
 
     globalForMail._mailQueue = mailQueue;
     globalForMail._mailWorker = mailWorker;
-  } catch (err) {
-    console.warn('[BullMQ Initialization Notice]: Operating with resilient memory queue fallback.');
+  } catch (err: any) {
+    console.warn('[Mail Queue Initialization Notice]: Operating with ultra-resilient memory dispatcher.', err?.message);
   }
 }
 
 /**
- * Enqueue a registration email job to BullMQ
+ * Enqueue a registration email job (Dispatched immediately & asynchronously)
  */
 export async function enqueueRegistrationMail(payload: Omit<RegistrationMailPayload, 'type'>): Promise<{ queued: boolean; jobId: string }> {
   const fullPayload: RegistrationMailPayload = { ...payload, type: 'REGISTRATION' };
   const jobId = `reg-mail-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
 
-  let enqueued = false;
-  if (mailQueue) {
+  // Log as QUEUED immediately
+  recentMailLogs.unshift({
+    id: jobId,
+    to: payload.to,
+    subject: payload.subject,
+    jobType: 'REGISTRATION',
+    status: 'QUEUED',
+    scheduledDelaySec: 0,
+    timestamp: new Date().toISOString(),
+  });
+
+  if (recentMailLogs.length > 100) {
+    recentMailLogs.length = 100;
+  }
+
+  // Execute asynchronously without blocking the registration API response
+  setTimeout(async () => {
     try {
-      await mailQueue.add('send-registration-mail', fullPayload, { jobId });
-      enqueued = true;
-    } catch (e) {
-      // Fallback below
-    }
-  }
-
-  if (!enqueued) {
-    // Async delayed runner with automatic quota rollover delay
-    setTimeout(async () => {
-      try {
-        const sentNow = await getTodaySentCount();
-        if (sentNow >= DAILY_LIMIT) {
-          const delayMs = getMsUntilDailyReset();
-          console.warn(`[Fallback Runner] Daily limit reached. Holding registration email for ${payload.to} until tomorrow's reset (${Math.round(delayMs / 60000)} mins).`);
-          
-          recentMailLogs.unshift({
-            id: jobId,
-            to: payload.to,
-            subject: payload.subject,
-            jobType: 'REGISTRATION',
-            status: 'DELAYED_FOR_NEXT_DAY_RESET',
-            scheduledDelaySec: Math.round(delayMs / 1000),
-            rescheduledForTomorrow: true,
-            timestamp: new Date().toISOString(),
-            error: `Daily limit reached. Email safely queued for tomorrow's reset.`,
-          });
-
-          // Reschedule execution after reset
-          setTimeout(async () => {
-            await sendEventMail({
-              to: payload.to,
-              subject: payload.subject,
-              event: payload.event,
-              registration: payload.registration,
-              type: payload.regType,
-              originUrl: payload.originUrl,
-            });
-            await incrementTodaySentCount();
-          }, delayMs);
-          return;
+      const res = await processMailPayload(fullPayload);
+      if (res.success) {
+        await incrementTodaySentCount();
+        const log = recentMailLogs.find((l) => l.id === jobId);
+        if (log) {
+          log.status = 'COMPLETED';
+          log.timestamp = new Date().toISOString();
         }
-
-        const res = await sendEventMail({
-          to: payload.to,
-          subject: payload.subject,
-          event: payload.event,
-          registration: payload.registration,
-          type: payload.regType,
-          originUrl: payload.originUrl,
-        });
-
-        if (res.success) {
-          await incrementTodaySentCount();
-          recentMailLogs.unshift({
-            id: jobId,
-            to: payload.to,
-            subject: payload.subject,
-            jobType: 'REGISTRATION',
-            status: 'COMPLETED',
-            scheduledDelaySec: 0,
-            timestamp: new Date().toISOString(),
-          });
+      } else {
+        const log = recentMailLogs.find((l) => l.id === jobId);
+        if (log) {
+          log.status = 'FAILED';
+          log.error = res.error;
+          log.timestamp = new Date().toISOString();
         }
-      } catch (err) {
-        console.error('[Fallback Registration Mail Error]:', err);
       }
-    }, 100);
-  } else {
-    recentMailLogs.unshift({
-      id: jobId,
-      to: payload.to,
-      subject: payload.subject,
-      jobType: 'REGISTRATION',
-      status: 'QUEUED',
-      scheduledDelaySec: 0,
-      timestamp: new Date().toLocaleTimeString(),
-    });
-  }
+    } catch (err: any) {
+      console.error('[Registration Mail Delivery Error]:', err?.message);
+      const log = recentMailLogs.find((l) => l.id === jobId);
+      if (log) {
+        log.status = 'FAILED';
+        log.error = err?.message;
+        log.timestamp = new Date().toISOString();
+      }
+    }
+  }, 10);
 
   return { queued: true, jobId };
 }
 
 /**
- * Enqueue broadcast email batch to BullMQ
+ * Enqueue broadcast email batch with smooth spacing (1.5s gap between emails)
  */
 export async function enqueueBroadcastBatch(
   recipients: { email: string; name?: string }[],
@@ -390,21 +385,14 @@ export async function enqueueBroadcastBatch(
   const currentSentToday = await getTodaySentCount();
   const remainingLimit = Math.max(0, DAILY_LIMIT - currentSentToday);
 
-  let delayedForTomorrowCount = 0;
   const batchId = `batch-${Date.now()}`;
   const newLogs: MailJobLog[] = [];
+  const PACE_DELAY_MS = 1500; // 1.5 seconds spacing for safe inbox delivery
 
   for (let i = 0; i < recipients.length; i++) {
     const r = recipients[i];
-    const isOverTodayLimit = i >= remainingLimit;
-    
-    // Calculate delay: 3s gap per item for today, OR delay until tomorrow's reset if over limit
-    const baseGapMs = i * BATCH_DELAY_MS;
-    const delayMs = isOverTodayLimit ? (getMsUntilDailyReset() + (i - remainingLimit) * BATCH_DELAY_MS) : baseGapMs;
-
-    if (isOverTodayLimit) {
-      delayedForTomorrowCount++;
-    }
+    const delayMs = i * PACE_DELAY_MS;
+    const jobId = `mail-bcast-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 6)}`;
 
     const payload: BroadcastMailPayload = {
       type: 'BROADCAST',
@@ -416,92 +404,31 @@ export async function enqueueBroadcastBatch(
       batchId,
     };
 
-    const jobId = `mail-bcast-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 6)}`;
-
-    let enqueuedWithBullMQ = false;
-    if (mailQueue) {
-      try {
-        await mailQueue.add('send-broadcast-mail', payload, {
-          delay: delayMs,
-          jobId,
-        });
-        enqueuedWithBullMQ = true;
-      } catch (err) {
-        // Fallback
-      }
-    }
-
-    if (!enqueuedWithBullMQ) {
-      setTimeout(async () => {
-        try {
-          const sentNow = await getTodaySentCount();
-          if (sentNow >= DAILY_LIMIT) {
-            const extraDelay = getMsUntilDailyReset();
-            console.warn(`[Fallback Worker] Daily limit reached. Rescheduling ${r.email} for tomorrow.`);
-            recentMailLogs.unshift({
-              id: jobId,
-              to: r.email,
-              subject,
-              jobType: 'BROADCAST',
-              status: 'DELAYED_FOR_NEXT_DAY_RESET',
-              scheduledDelaySec: Math.round(extraDelay / 1000),
-              rescheduledForTomorrow: true,
-              timestamp: new Date().toISOString(),
-              error: `Limit hit today. Mail safely held until tomorrow's reset.`,
-            });
-            setTimeout(async () => {
-              await sendBroadcastMail({
-                to: r.email,
-                recipientName: r.name,
-                subject,
-                headerBannerUrl,
-                bodyHtml,
-              });
-              await incrementTodaySentCount();
-            }, extraDelay);
-            return;
-          }
-
-          const res = await sendBroadcastMail({
-            to: r.email,
-            recipientName: r.name,
-            subject,
-            headerBannerUrl,
-            bodyHtml,
-          });
-
-          if (res.success) {
-            await incrementTodaySentCount();
-            recentMailLogs.unshift({
-              id: jobId,
-              to: r.email,
-              subject,
-              jobType: 'BROADCAST',
-              status: 'COMPLETED',
-              scheduledDelaySec: Math.round(delayMs / 1000),
-              timestamp: new Date().toISOString(),
-            });
-          }
-        } catch (e: any) {
-          console.error('[Fallback Broadcast Mail Runner error]:', e);
-        }
-      }, delayMs);
-    }
-
     const logEntry: MailJobLog = {
       id: jobId,
       to: r.email,
       subject,
       jobType: 'BROADCAST',
-      status: isOverTodayLimit ? 'DELAYED_FOR_NEXT_DAY_RESET' : 'QUEUED',
+      status: 'QUEUED',
       scheduledDelaySec: Math.round(delayMs / 1000),
-      rescheduledForTomorrow: isOverTodayLimit,
+      rescheduledForTomorrow: false,
       timestamp: new Date().toISOString(),
     };
 
     newLogs.push(logEntry);
     recentMailLogs.unshift(logEntry);
+
+    // Push to memory queue runner
+    memoryMailQueue.push({
+      id: jobId,
+      payload,
+      delayMs,
+      createdAt: Date.now(),
+    });
   }
+
+  // Kick off background memory queue worker
+  triggerMemoryQueueRunner().catch((e) => console.error('Memory queue runner trigger error:', e));
 
   if (recentMailLogs.length > 100) {
     recentMailLogs.length = 100;
@@ -509,7 +436,7 @@ export async function enqueueBroadcastBatch(
 
   return {
     enqueuedCount: recipients.length,
-    delayedForTomorrowCount,
+    delayedForTomorrowCount: 0,
     totalSentToday: currentSentToday,
     remainingToday: Math.max(0, remainingLimit - recipients.length),
     logs: newLogs,
