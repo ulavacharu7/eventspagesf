@@ -57,6 +57,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (body.headerBg     !== undefined) updateData.headerBg     = body.headerBg;
     if (body.themeIdx     !== undefined) updateData.themeIdx     = body.themeIdx;
     if (body.font         !== undefined) updateData.font         = body.font;
+    if (body.createdByEmail !== undefined) updateData.createdByEmail = body.createdByEmail ? String(body.createdByEmail).trim().toLowerCase() : null;
     if (body.customFields !== undefined) updateData.customFields = body.customFields;
     if (body.speakers     !== undefined) updateData.speakers     = body.speakers;
 

@@ -21,6 +21,7 @@ model Event {
   ticketCode      String
   title           String
   organizer       String?  @default("Infinity Event Organizer")
+  createdByEmail  String?
   location        String?
   description     String?
   startDate       String

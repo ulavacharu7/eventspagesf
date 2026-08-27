@@ -5,9 +5,33 @@ import { cacheGet, cacheSet, cacheDel } from '@/lib/redis';
 const CACHE_KEY = 'events:all';
 const CACHE_TTL = 60; // 60 seconds
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // ── 1. Cache hit ────────────────────────────────────────────────────────
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email') || searchParams.get('createdByEmail');
+
+    // If an email is requested (e.g. from Organizer Dashboard), query strictly for this user
+    if (email && email.trim()) {
+      const cleanEmail = email.trim().toLowerCase();
+      const events = await prisma.event.findMany({
+        where: {
+          OR: [
+            { createdByEmail: { equals: cleanEmail, mode: 'insensitive' } },
+            { createdByEmail: { equals: email.trim() } },
+          ],
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const formattedEvents = events.map((e) => ({
+        ...e,
+        requireApproval: e.requireApproval || (e.title ? e.title.toLowerCase().includes('incept') : false),
+      }));
+
+      return NextResponse.json({ events: formattedEvents });
+    }
+
+    // ── 1. Cache hit for public events list ──────────────────────────────────
     const cached = await cacheGet<{ events: unknown[] }>(CACHE_KEY);
     if (cached) {
       return NextResponse.json(cached, {
@@ -15,14 +39,14 @@ export async function GET() {
       });
     }
 
-    // ── 2. Cache miss — query DB ────────────────────────────────────────────
+    // ── 2. Cache miss — query DB for all public events ───────────────────────
     const events = await prisma.event.findMany({
       orderBy: { createdAt: 'desc' },
     });
 
-    const formattedEvents = events.map(e => ({
+    const formattedEvents = events.map((e) => ({
       ...e,
-      requireApproval: e.requireApproval || (e.title ? e.title.toLowerCase().includes('incept') : false)
+      requireApproval: e.requireApproval || (e.title ? e.title.toLowerCase().includes('incept') : false),
     }));
 
     const payload = { events: formattedEvents };
@@ -48,6 +72,7 @@ export async function POST(request: Request) {
         ticketCode: `GBD${randomChars}`,
         title: body.title,
         organizer: body.organizer || 'Infinity Event Organizer',
+        createdByEmail: body.createdByEmail ? body.createdByEmail.trim().toLowerCase() : null,
         location: body.location || '',
         description: body.description || '',
         startDate: body.startDate,

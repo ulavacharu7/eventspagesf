@@ -200,7 +200,8 @@ export default function DashboardPage() {
   const fetchBroadcastStatus = async () => {
     setBroadcastStatusLoading(true);
     try {
-      const res = await fetch('/api/broadcast/status');
+      const url = user?.email ? `/api/broadcast/status?email=${encodeURIComponent(user.email)}` : '/api/broadcast/status';
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         setBroadcastStatusData(data);
@@ -213,10 +214,10 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (activeTab === 'broadcast') {
+    if (activeTab === 'broadcast' && user?.email) {
       fetchBroadcastStatus();
     }
-  }, [activeTab]);
+  }, [activeTab, user?.email]);
 
   const applyTextFormat = (tag: 'b' | 'i' | 'u' | 'p' | 'h2' | 'a') => {
     const textarea = broadcastTextareaRef.current;
@@ -346,25 +347,20 @@ export default function DashboardPage() {
     setAuthChecked(true);
   }, [router]);
 
-  // Load events and registrations from DB
+  // Load user's created events and registrations from DB
   useEffect(() => {
-    if (!user) return;
+    if (!user?.email) return;
     setLoading(true);
-    fetch('/api/events')
+    fetch(`/api/events?email=${encodeURIComponent(user.email)}`)
       .then((r) => r.json())
       .then(async (data) => {
-        const allEvents: EventData[] = data.events || [];
-        setEvents(allEvents);
-        
-        // Filter user's created events
-        const my = allEvents.filter(
-          (e) => e.organizer === user.name || (e as any).createdByEmail === user.email
-        );
+        const userEvents: EventData[] = data.events || [];
+        setEvents(userEvents);
         
         // Load registrations for each of user's events from database
         const regsMap: Record<string, RegUser[]> = {};
         await Promise.all(
-          my.map(async (ev) => {
+          userEvents.map(async (ev) => {
             try {
               const res = await fetch(`/api/events/${ev.id}/register`);
               if (res.ok) {
@@ -611,7 +607,7 @@ export default function DashboardPage() {
     }
   };
 
-  const myEvents = events.filter((e) => e.organizer === user?.name || (e as any).createdByEmail === user?.email);
+  const myEvents = events;
 
   if (!authChecked || !user) return null;
 
@@ -708,11 +704,11 @@ export default function DashboardPage() {
                 </div>
                 <span className="truncate">My Events</span>
               </div>
-              {events.length > 0 && (
+              {myEvents.length > 0 && (
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
                   activeTab === 'my-events' ? 'bg-white/15 text-white border-white/20' : 'bg-white/5 text-white/40 border-white/10'
                 }`}>
-                  {events.length}
+                  {myEvents.length}
                 </span>
               )}
             </button>
@@ -915,7 +911,7 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        if (events.length > 0) setInviteSelectedEventId(events[0].id);
+                        if (myEvents.length > 0) setInviteSelectedEventId(myEvents[0].id);
                         setShowInviteGuestModal(true);
                       }}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white text-xs font-semibold rounded-[8px] border border-white/10 transition-all cursor-pointer shadow-sm active:scale-95"

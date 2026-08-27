@@ -54,11 +54,13 @@ export default function CouponsDashboardPage() {
   const [expiresAt, setExpiresAt] = useState('');
 
   useEffect(() => {
+    let currentUserEmail = '';
     try {
       const stored = localStorage.getItem('student_forge_user');
       if (stored) {
         const u = JSON.parse(stored);
         setUser(u);
+        currentUserEmail = u.email;
       } else {
         router.push('/auth');
         return;
@@ -69,14 +71,16 @@ export default function CouponsDashboardPage() {
       return;
     }
 
-    fetchCouponsAndEvents();
+    fetchCouponsAndEvents(currentUserEmail);
   }, []);
 
-  const fetchCouponsAndEvents = async () => {
+  const fetchCouponsAndEvents = async (organizerEmail?: string) => {
     setLoading(true);
+    const emailToUse = organizerEmail || user?.email;
     try {
-      // Fetch Organizer Events
-      const evRes = await fetch('/api/events');
+      // Fetch Organizer Events strictly for logged-in user
+      const evUrl = emailToUse ? `/api/events?email=${encodeURIComponent(emailToUse)}` : '/api/events';
+      const evRes = await fetch(evUrl);
       if (evRes.ok) {
         const evData = await evRes.json();
         if (evData.events) {
@@ -84,8 +88,9 @@ export default function CouponsDashboardPage() {
         }
       }
 
-      // Fetch Coupons
-      const cRes = await fetch('/api/coupons');
+      // Fetch Coupons strictly for logged-in user
+      const cUrl = emailToUse ? `/api/coupons?organizerEmail=${encodeURIComponent(emailToUse)}` : '/api/coupons';
+      const cRes = await fetch(cUrl);
       if (cRes.ok) {
         const cData = await cRes.json();
         if (cData.coupons) {
