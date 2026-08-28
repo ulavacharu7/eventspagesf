@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { GoLocation, GoCalendar, GoPlus, GoArrowRight, GoSearch } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
 import { isEventCompleted } from '@/lib/utils';
+import { VerifiedBadge } from '@/components/VerifiedBadge';
 
 const themes = [
   { name: 'Minimal', bg: 'bg-[#f4f4f5]', textColor: 'text-black', subText: '*HOW LUCKY YOU ARE' },
@@ -288,14 +289,7 @@ const EventsList: React.FC = () => {
                       {/* Organizer */}
                       <span className="text-xs text-white/50 font-tight truncate flex items-center gap-1">
                         <span>By {event.organizer || 'Student Forge'}</span>
-                        <img
-                          src="https://cdn-icons-png.flaticon.com/512/7641/7641727.png"
-                          alt="Verified Host"
-                          width={12}
-                          height={12}
-                          className="w-3 h-3 object-contain inline-block shrink-0"
-                          title="Verified Host"
-                        />
+                        <VerifiedBadge className="w-3 h-3" />
                       </span>
                     </div>
 

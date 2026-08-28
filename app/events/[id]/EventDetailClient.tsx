@@ -20,6 +20,39 @@ import {
 import { useViewerCount } from '@/lib/useViewerCount';
 import { DotmSquare5 } from '@/components/ui/dotm-square-5';
 import { isEventCompleted } from '@/lib/utils';
+import { VerifiedBadge } from '@/components/VerifiedBadge';
+
+const GoogleCalendarLogo = ({ className = "w-4 h-4" }: { className?: string }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="4" width="18" height="17" rx="3" fill="#FFFFFF"/>
+        <path d="M18 4H6C4.34315 4 3 5.34315 3 7V8H21V7C21 5.34315 19.6569 4 18 4Z" fill="#1A73E8"/>
+        <path d="M7 2V5" stroke="#1A73E8" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M17 2V5" stroke="#1A73E8" strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="6" y="11" width="3.2" height="3.2" rx="0.5" fill="#4285F4"/>
+        <rect x="10.4" y="11" width="3.2" height="3.2" rx="0.5" fill="#EA4335"/>
+        <rect x="14.8" y="11" width="3.2" height="3.2" rx="0.5" fill="#FBBC05"/>
+        <rect x="6" y="15.5" width="3.2" height="3.2" rx="0.5" fill="#34A853"/>
+        <rect x="10.4" y="15.5" width="3.2" height="3.2" rx="0.5" fill="#4285F4"/>
+        <rect x="14.8" y="15.5" width="3.2" height="3.2" rx="0.5" fill="#EA4335"/>
+      </svg>
+    );
+  }
+
+  return (
+    <img
+      src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg"
+      alt="Google Calendar"
+      width={18}
+      height={18}
+      className={`${className} object-contain shrink-0`}
+      onError={() => setHasError(true)}
+    />
+  );
+};
 
 const GoogleDriveLogo = ({ className = "w-4 h-4" }: { className?: string }) => {
   const [hasError, setHasError] = useState(false);
@@ -333,9 +366,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               href={buildGoogleCalendarUrl(event)}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 px-3 rounded-xl bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800/80 hover:border-neutral-700 text-neutral-400 hover:text-neutral-200 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer font-tight"
+              className="w-full py-2.5 px-3 rounded-xl bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800/80 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-medium transition-colors flex items-center justify-center gap-2.5 cursor-pointer font-tight shadow-sm"
             >
-              <GoCalendar className="w-3.5 h-3.5" />
+              <GoogleCalendarLogo className="w-4 h-4" />
               <span>Add to Google Calendar</span>
             </a>
           </div>
@@ -357,14 +390,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-tight">
                   <span>Presented by</span>
                   <span className="font-semibold text-neutral-200">{event.organizer || 'Student Forge'}</span>
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/7641/7641727.png"
-                    alt="Verified Host"
-                    width={15}
-                    height={15}
-                    className="w-3.5 h-3.5 object-contain inline-block shrink-0"
-                    title="Verified Host"
-                  />
+                  <VerifiedBadge className="w-3.5 h-3.5" />
                 </div>
               </div>
             </div>
@@ -412,10 +438,10 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   <button
                     type="button"
                     onClick={handleCopyAddress}
-                    className="text-xs text-neutral-400 hover:text-neutral-300 text-left truncate transition-colors mt-0.5 cursor-pointer font-tight"
-                    title="Click to copy address"
+                    className="text-xs text-neutral-400 hover:text-neutral-200 text-left whitespace-normal break-words leading-relaxed transition-colors mt-1 cursor-pointer font-tight block"
+                    title="Click to copy full address"
                   >
-                    {copiedAddressToast ? 'Address Copied!' : (event.location || 'Virtual event')}
+                    {copiedAddressToast ? '✓ Address Copied to Clipboard!' : (event.location || 'Virtual event')}
                   </button>
                 </div>
               </div>
@@ -541,9 +567,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 <span className="text-xs font-mono text-neutral-400 w-full">
                   Requirements:
                 </span>
-                {parsedCustomFields.map((cf) => (
+                {parsedCustomFields.map((cf, idx) => (
                   <span
-                    key={cf.id}
+                    key={cf.id || cf.label || `cf-${idx}`}
                     className="inline-flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-neutral-300"
                   >
                     <GoTag className="w-3 h-3 text-neutral-400" />
