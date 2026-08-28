@@ -209,7 +209,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#09090b] text-neutral-100 flex flex-col justify-between antialiased font-sans">
+      <main className="min-h-screen bg-[#111113] text-neutral-100 flex flex-col justify-between antialiased font-tight">
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center gap-4 py-24 px-4">
           <DotmSquare5 size={32} dotSize={3.5} speed={1.2} bloom colorPreset="grad-aurora" animated />
@@ -222,21 +222,21 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[#09090b] text-neutral-100 flex flex-col justify-between antialiased font-sans">
+      <main className="min-h-screen bg-[#111113] text-neutral-100 flex flex-col justify-between antialiased font-tight">
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center gap-5 py-24 px-4">
           <div className="w-14 h-14 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center">
             <GoCalendar className="w-6 h-6 text-neutral-400" />
           </div>
           <div className="text-center">
-            <h2 className="text-lg font-semibold text-white">Event Not Found</h2>
-            <p className="text-xs text-neutral-400 mt-1 max-w-sm">
+            <h2 className="font-instrument-serif text-2xl text-white">Event Not Found</h2>
+            <p className="text-xs text-neutral-400 font-tight mt-1 max-w-sm">
               This event may have been removed or the link is invalid.
             </p>
           </div>
           <a
             href="/events"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-950 font-medium rounded-xl text-xs hover:bg-white transition-all shadow-sm active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-950 font-medium rounded-xl text-xs hover:bg-white transition-all shadow-sm active:scale-95 cursor-pointer font-tight"
           >
             <GoArrowLeft className="w-3.5 h-3.5" />
             <span>Browse Events</span>
@@ -248,14 +248,14 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0c] text-neutral-100 flex flex-col justify-between antialiased font-sans selection:bg-neutral-800 selection:text-white">
+    <main className="min-h-screen bg-[#111113] text-neutral-100 flex flex-col justify-between antialiased font-tight selection:bg-neutral-800 selection:text-white">
       <Navbar />
 
       <div className="w-full max-w-5xl mx-auto pt-6 sm:pt-10 pb-20 px-4 sm:px-6 flex-1 flex flex-col gap-8 sm:gap-10">
 
         {/* Minimal Breadcrumb Navigation & Top Actions */}
         <div className="flex items-center justify-between gap-4">
-          <nav className="flex items-center gap-2 text-xs text-neutral-400">
+          <nav className="flex items-center gap-2 text-xs text-neutral-400 font-tight">
             <a href="/" className="hover:text-neutral-200 transition-colors">Home</a>
             <span className="text-neutral-600">/</span>
             <a href="/events" className="hover:text-neutral-200 transition-colors">Events</a>
@@ -263,7 +263,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
             <span className="text-neutral-200 font-medium truncate max-w-[160px] sm:max-w-xs">{event.title}</span>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 font-tight">
             <button
               type="button"
               onClick={handleShare}
@@ -299,12 +299,12 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   className="w-full h-full object-cover object-center"
                 />
               ) : (
-                <div className="w-full h-full flex flex-col justify-between p-8 bg-neutral-900 text-white">
+                <div className="w-full h-full flex flex-col justify-between p-8 bg-neutral-900 text-white font-tight">
                   <div className="flex flex-col gap-2">
                     <span className="text-xs uppercase tracking-wider text-neutral-400 font-mono">
                       {event.calendarType || 'Gathering'}
                     </span>
-                    <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight">
+                    <h2 className="font-instrument-serif text-2xl sm:text-3xl font-normal leading-tight">
                       {event.title}
                     </h2>
                   </div>
@@ -317,12 +317,12 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
               {/* Status Tags on Poster */}
               <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <span className="text-[11px] font-medium bg-black/75 backdrop-blur-md border border-white/10 text-neutral-200 px-2.5 py-1 rounded-md shadow-sm">
+                <span className="text-[11px] font-mono uppercase bg-black/75 backdrop-blur-md border border-white/10 text-neutral-200 px-2.5 py-1 rounded-md shadow-sm">
                   {event.calendarType || 'Public Event'}
                 </span>
 
                 {/* Viewer count pill */}
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-black/75 backdrop-blur-md border border-white/10 text-neutral-300 px-2.5 py-1 rounded-md shadow-sm">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase bg-black/75 backdrop-blur-md border border-white/10 text-neutral-300 px-2.5 py-1 rounded-md shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>{viewerCount} online</span>
                 </span>
@@ -334,7 +334,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               href={buildGoogleCalendarUrl(event)}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 px-3 rounded-xl bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800/80 hover:border-neutral-700 text-neutral-400 hover:text-neutral-200 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 px-3 rounded-xl bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800/80 hover:border-neutral-700 text-neutral-400 hover:text-neutral-200 text-xs font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer font-tight"
             >
               <GoCalendar className="w-3.5 h-3.5" />
               <span>Add to Google Calendar</span>
@@ -345,17 +345,17 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
           <div className="md:col-span-6 flex flex-col gap-6">
 
             {/* Event Title & Host */}
-            <div className="flex flex-col gap-2.5">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug">
+            <div className="flex flex-col gap-3">
+              <h1 className="font-instrument-serif text-3xl sm:text-4xl lg:text-[44px] font-normal tracking-[-0.6px] text-white leading-[1.1]">
                 {event.title}
               </h1>
 
               {/* Host Row */}
               <div className="flex items-center gap-2.5 pt-0.5">
-                <div className="w-7 h-7 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xs font-semibold text-neutral-300 shrink-0">
+                <div className="w-7 h-7 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xs font-semibold text-neutral-300 shrink-0 font-mono">
                   {(event.organizer || 'Student Forge').charAt(0)}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+                <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-tight">
                   <span>Presented by</span>
                   <span className="font-semibold text-neutral-200">{event.organizer || 'Student Forge'}</span>
                   <GoShieldCheck className="w-3.5 h-3.5 text-neutral-400" title="Verified Host" />
@@ -371,11 +371,11 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 <div className="w-9 h-9 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-300 shrink-0 mt-0.5">
                   <GoCalendar className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col min-w-0">
+                <div className="flex flex-col min-w-0 font-tight">
                   <span className="text-sm font-semibold text-white tracking-tight leading-snug">
                     {event.startDate}
                   </span>
-                  <span className="text-xs text-neutral-400 mt-0.5">
+                  <span className="text-xs text-neutral-400 font-mono mt-0.5">
                     {event.startTime}{event.endTime ? ` – ${event.endTime}` : ''}
                   </span>
                 </div>
@@ -386,7 +386,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 <div className="w-9 h-9 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-300 shrink-0 mt-0.5">
                   <GoLocation className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col min-w-0 flex-1">
+                <div className="flex flex-col min-w-0 flex-1 font-tight">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-white tracking-tight leading-snug truncate">
                       {event.location ? event.location.split(',')[0] : 'Online / Virtual'}
@@ -396,7 +396,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-neutral-400 hover:text-white flex items-center gap-0.5 transition-colors cursor-pointer ml-2 shrink-0"
+                        className="text-xs text-neutral-400 hover:text-white flex items-center gap-0.5 transition-colors cursor-pointer ml-2 shrink-0 font-tight"
                       >
                         <span>Maps</span>
                         <GoArrowUpRight className="w-3 h-3" />
@@ -406,7 +406,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   <button
                     type="button"
                     onClick={handleCopyAddress}
-                    className="text-xs text-neutral-400 hover:text-neutral-300 text-left truncate transition-colors mt-0.5 cursor-pointer"
+                    className="text-xs text-neutral-400 hover:text-neutral-300 text-left truncate transition-colors mt-0.5 cursor-pointer font-tight"
                     title="Click to copy address"
                   >
                     {copiedAddressToast ? 'Address Copied!' : (event.location || 'Virtual event')}
@@ -416,7 +416,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
             </div>
 
-            {/* Clean Registration Box (Luma style) */}
+            {/* Clean Registration Box */}
             <div className="p-5 rounded-2xl bg-neutral-900/90 border border-neutral-800 flex flex-col gap-4 shadow-xl">
               
               <div className="flex items-center justify-between">
@@ -430,7 +430,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                         ₹249
                       </span>
                     )}
-                    <span className="text-2xl font-bold text-white tracking-tight">
+                    <span className="font-instrument-serif text-3xl sm:text-4xl font-normal text-white leading-none">
                       {event.price?.startsWith('₹') ? event.price : (event.price === 'Free' || !event.price ? 'Free' : `₹${event.price}`)}
                     </span>
                   </div>
@@ -444,20 +444,20 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               </div>
 
               {/* Action Button */}
-              <div className="flex flex-col gap-2.5 pt-1">
+              <div className="flex flex-col gap-2.5 pt-1 font-tight">
                 {eventEnded ? (
-                  <div className="w-full py-3 bg-neutral-800 border border-neutral-700 text-neutral-400 text-xs font-medium rounded-xl text-center cursor-not-allowed">
+                  <div className="w-full py-3 bg-neutral-800 border border-neutral-700 text-neutral-400 text-xs font-medium rounded-xl text-center cursor-not-allowed font-tight">
                     Event Concluded · Registration Closed
                   </div>
                 ) : registered ? (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 font-tight">
                     <div className="w-full py-2 bg-emerald-950/40 border border-emerald-800/60 text-emerald-400 text-xs font-medium rounded-xl flex items-center justify-center gap-1.5">
                       <GoCheck className="w-3.5 h-3.5 text-emerald-400" />
                       <span>You are registered</span>
                     </div>
                     <a
                       href={`/events/${event.id}/register`}
-                      className="w-full py-3 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold rounded-xl text-center transition-colors block cursor-pointer shadow-sm"
+                      className="w-full py-3 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold rounded-xl text-center transition-colors block cursor-pointer shadow-sm font-tight"
                     >
                       View Ticket Pass
                     </a>
@@ -469,7 +469,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                       if (!user) router.push('/auth');
                       else router.push(`/events/${event.id}/register?waitlist=true`);
                     }}
-                    className="w-full py-3 bg-neutral-100 hover:bg-white text-neutral-950 text-xs font-semibold rounded-xl transition-colors cursor-pointer shadow-sm"
+                    className="w-full py-3 bg-neutral-100 hover:bg-white text-neutral-950 text-xs font-semibold rounded-xl transition-colors cursor-pointer shadow-sm font-tight"
                   >
                     {user ? 'Join Waitlist' : 'Sign In to Join Waitlist'}
                   </button>
@@ -480,7 +480,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                       if (!user) router.push('/auth');
                       else router.push(`/events/${event.id}/register`);
                     }}
-                    className="w-full py-3 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
+                    className="w-full py-3 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-1.5 font-tight"
                   >
                     <span>{user ? 'Register for Event' : 'Sign Up to Register'}</span>
                     <GoArrowUpRight className="w-3.5 h-3.5" />
@@ -488,7 +488,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 )}
 
                 {!registered && !eventEnded && (
-                  <p className="text-[11px] text-neutral-400 text-center leading-relaxed">
+                  <p className="text-[11px] text-neutral-400 text-center leading-relaxed font-tight">
                     {event.requireApproval
                       ? 'Requires host approval after registration'
                       : 'Instant registration · QR pass generated upon RSVP'}
@@ -506,12 +506,12 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
         <div className="flex flex-col gap-8 pt-4 border-t border-neutral-800/80">
 
           {/* About Event Description */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-lg font-semibold text-white tracking-tight">
+          <div className="flex flex-col gap-3 font-tight">
+            <h3 className="font-instrument-serif text-2xl sm:text-3xl text-white font-normal tracking-[-0.4px]">
               About Event
             </h3>
             <div className="flex flex-col gap-2">
-              <p className="text-sm text-neutral-300 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-neutral-300 leading-relaxed whitespace-pre-wrap font-tight">
                 {event.description
                   ? (isDescExpanded || event.description.length <= 400
                     ? event.description
@@ -522,7 +522,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 <button
                   type="button"
                   onClick={() => setIsDescExpanded(!isDescExpanded)}
-                  className="text-xs font-semibold text-neutral-200 hover:text-white transition-colors text-left underline underline-offset-4 cursor-pointer mt-1 py-0.5 block outline-none"
+                  className="text-xs font-semibold text-neutral-200 hover:text-white transition-colors text-left underline underline-offset-4 cursor-pointer mt-1 py-0.5 block outline-none font-tight"
                 >
                   {isDescExpanded ? 'Show less' : 'Read more'}
                 </button>
@@ -551,9 +551,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
           {/* Featured Speakers */}
           {parsedSpeakers.length > 0 && (
-            <div className="flex flex-col gap-4 pt-4 border-t border-neutral-800/80">
+            <div className="flex flex-col gap-4 pt-4 border-t border-neutral-800/80 font-tight">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white tracking-tight">
+                <h3 className="font-instrument-serif text-2xl sm:text-3xl text-white font-normal tracking-[-0.4px]">
                   Featured Speakers
                 </h3>
                 <span className="text-xs font-mono text-neutral-400">
@@ -565,7 +565,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 {parsedSpeakers.map((sp, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 flex flex-col items-center text-center"
+                    className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 flex flex-col items-center text-center font-tight"
                   >
                     <div className="relative mb-3">
                       {sp.image ? (
@@ -575,7 +575,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                           className="w-16 h-16 rounded-full object-cover border border-neutral-700"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-lg font-bold text-white">
+                        <div className="w-16 h-16 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-lg font-bold text-white font-mono">
                           {sp.name.substring(0, 1).toUpperCase()}
                         </div>
                       )}
@@ -595,8 +595,8 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
           {/* Event Media / Photos & Videos (for Student Forge Launch) */}
           {isStudentForgeLaunch && (
-            <div className="flex flex-col gap-3 pt-4 border-t border-neutral-800/80">
-              <h3 className="text-lg font-semibold text-white tracking-tight">
+            <div className="flex flex-col gap-3 pt-4 border-t border-neutral-800/80 font-tight">
+              <h3 className="font-instrument-serif text-2xl sm:text-3xl text-white font-normal tracking-[-0.4px]">
                 Event Media
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -604,7 +604,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   href="https://drive.google.com/drive/folders/1LdhVFoQzA6jnRYVbVB4ySX0QMugT8RF0"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 transition-colors group cursor-pointer"
+                  className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 transition-colors group cursor-pointer font-tight"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <GoogleDriveLogo className="w-5 h-5 shrink-0" />
@@ -620,7 +620,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   href="https://drive.google.com/drive/folders/1gFOufUzi2rcsWjvtN1xkBciV-f8KeM9N"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 transition-colors group cursor-pointer"
+                  className="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 transition-colors group cursor-pointer font-tight"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <GoogleDriveLogo className="w-5 h-5 shrink-0" />
@@ -637,12 +637,12 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
 
           {/* Official Partners (Incept Edition 01 only) */}
           {isIncept01PartnersEvent && (
-            <div className="flex flex-col gap-3 pt-4 border-t border-neutral-800/80">
-              <h3 className="text-lg font-semibold text-white tracking-tight">
+            <div className="flex flex-col gap-3 pt-4 border-t border-neutral-800/80 font-tight">
+              <h3 className="font-instrument-serif text-2xl sm:text-3xl text-white font-normal tracking-[-0.4px]">
                 Official Event Partners
               </h3>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 font-tight">
                 <a
                   href="https://www.peopld.in/event/incept-edition-01-50ca84e6/register"
                   target="_blank"
@@ -658,7 +658,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                     />
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-neutral-900">Peopld Pass Portal</span>
-                      <span className="text-[10px] text-neutral-500">Official Registration Partner</span>
+                      <span className="text-[10px] text-neutral-500 font-tight">Official Registration Partner</span>
                     </div>
                   </div>
                   <span className="text-xs font-semibold text-neutral-900 flex items-center gap-1">
@@ -694,7 +694,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
       </div>
 
       {/* Floating Sticky Mobile CTA Bar */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#0a0a0c]/95 backdrop-blur-xl border-t border-neutral-800 shadow-2xl">
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#111113]/95 backdrop-blur-xl border-t border-neutral-800 shadow-2xl font-tight">
         <div className="max-w-md mx-auto flex items-center justify-between gap-3">
           <div className="flex flex-col">
             <span className="text-[10px] uppercase font-mono text-neutral-400">Price</span>
@@ -702,7 +702,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               {(event.price === '199' || event.price === '₹199' || isInceptEvent) && (
                 <span className="text-xs text-neutral-500 line-through font-mono">₹249</span>
               )}
-              <span className="text-base font-bold text-white">
+              <span className="text-base font-bold text-white font-tight">
                 {event.price?.startsWith('₹') ? event.price : (event.price === 'Free' || !event.price ? 'Free' : `₹${event.price}`)}
               </span>
             </div>
@@ -716,7 +716,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
             ) : registered ? (
               <a
                 href={`/events/${event.id}/register`}
-                className="w-full py-2.5 bg-white text-neutral-950 text-xs font-semibold rounded-xl text-center block"
+                className="w-full py-2.5 bg-white text-neutral-950 text-xs font-semibold rounded-xl text-center block font-tight"
               >
                 View Pass
               </a>
@@ -727,7 +727,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   if (!user) router.push('/auth');
                   else router.push(`/events/${event.id}/register?waitlist=true`);
                 }}
-                className="w-full py-2.5 bg-neutral-100 text-neutral-950 text-xs font-semibold rounded-xl text-center"
+                className="w-full py-2.5 bg-neutral-100 text-neutral-950 text-xs font-semibold rounded-xl text-center font-tight"
               >
                 Join Waitlist
               </button>
@@ -738,7 +738,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   if (!user) router.push('/auth');
                   else router.push(`/events/${event.id}/register`);
                 }}
-                className="w-full py-2.5 bg-white text-neutral-950 text-xs font-semibold rounded-xl text-center flex items-center justify-center gap-1"
+                className="w-full py-2.5 bg-white text-neutral-950 text-xs font-semibold rounded-xl text-center flex items-center justify-center gap-1 font-tight"
               >
                 <span>Register</span>
                 <GoChevronRight className="w-3.5 h-3.5" />
