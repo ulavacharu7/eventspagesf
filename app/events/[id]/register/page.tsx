@@ -1380,82 +1380,89 @@ function RegisterPageInner() {
           </div>
         ) : (
           /* HORIZONTAL BOARDING PASS TICKET SUCCESS SCREEN */
-          <div className="max-w-3xl w-full mx-auto flex flex-col items-center gap-6 py-6 animate-fade-in">
+          <div className="max-w-3xl w-full mx-auto flex flex-col items-center gap-8 py-4 animate-fade-in font-tight">
             
             {/* Header info */}
             {ticket.status === 'PENDING' ? (
-              <div className="flex flex-col items-center text-center gap-2 no-print">
-                <span className="text-3xl text-rose-500 animate-pulse"><GoClock className="w-8 h-8" /></span>
-                <h2 className="text-xl font-bold text-rose-500 tracking-tight">Pending Host Approval</h2>
-                <p className="text-xs text-neutral-400 max-w-sm">
-                  Your registration is pending review. The organizer will approve your details shortly.
+              <div className="flex flex-col items-center text-center gap-2.5 max-w-md mx-auto no-print">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 shadow-sm">
+                  <GoClock className="w-6 h-6" />
+                </div>
+                <h2 className="font-instrument-serif text-3xl sm:text-4xl font-normal text-white tracking-tight">
+                  Pending Host Approval
+                </h2>
+                <p className="text-xs text-neutral-400 font-tight leading-relaxed max-w-sm">
+                  Your registration details have been received. The host will review and confirm your entry pass shortly.
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col items-center text-center gap-1 no-print -mt-4">
-                <div 
-                  className="w-[120px] h-[120px] flex items-center justify-center -mb-2"
-                  dangerouslySetInnerHTML={{
-                    __html: `<dotlottie-wc src="https://lottie.host/3075f240-62a5-46db-8d64-5dda79afd538/4FE24H0UXC.lottie" style="width: 120px; height: 120px;" autoplay loop></dotlottie-wc>`
-                  }}
-                />
-                <h2 className="text-xl font-bold text-white tracking-tight">Registration Confirmed</h2>
-                <p className="text-xs text-neutral-400">Your presenter pass has been generated. Download or print below.</p>
+              <div className="flex flex-col items-center text-center gap-2.5 max-w-md mx-auto no-print">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 shadow-sm">
+                  <GoCheck className="w-6 h-6" />
+                </div>
+                <h2 className="font-instrument-serif text-3xl sm:text-4xl font-normal text-white tracking-tight">
+                  Registration Confirmed
+                </h2>
+                <p className="text-xs text-neutral-400 font-tight leading-relaxed max-w-sm">
+                  Your entry pass is generated and confirmed. Present this pass at the venue for check-in.
+                </p>
               </div>
             )}
 
             {/* Ticket Card Container */}
-            <div className="w-full bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl shadow-2xl relative flex flex-col md:flex-row items-stretch overflow-hidden printable-ticket-card">
+            <div className="w-full bg-neutral-900/90 border border-neutral-800 rounded-2xl shadow-2xl relative flex flex-col md:flex-row items-stretch overflow-hidden printable-ticket-card font-tight">
               
               {/* Left Side: Pass main information */}
               <div className="flex-1 p-6 md:p-8 flex flex-col justify-between gap-6 min-w-0">
                 
-                {/* Event Name & Ticket ID Header */}
+                {/* Event Name & Ticket Status Header */}
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex flex-col gap-1 min-w-0">
-                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Event Name</span>
-                    <h3 className="font-instrument-serif text-xl md:text-2xl font-normal text-white leading-tight truncate">{event.title}</h3>
+                    <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Event Name</span>
+                    <h3 className="font-instrument-serif text-2xl md:text-3xl font-normal text-white leading-tight">
+                      {event.title}
+                    </h3>
                   </div>
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Ticket ID</span>
-                    <span className="text-xs font-mono font-bold text-neutral-300">
-                      {ticket.status === 'PENDING' ? (
-                        <span className="text-rose-500 font-semibold">PENDING</span>
-                      ) : (
-                        ticket.ticketCode
-                      )}
+                    <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Status</span>
+                    <span className={`text-xs font-mono font-semibold px-2.5 py-1 rounded-md border ${
+                      ticket.status === 'PENDING'
+                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                        : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                    }`}>
+                      {ticket.status === 'PENDING' ? 'PENDING APPROVAL' : 'CONFIRMED'}
                     </span>
                   </div>
                 </div>
 
                 {/* Details layout: Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3.5 border-t border-[#2e2e34] pt-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3.5 border-t border-neutral-800 pt-5 text-xs">
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Date &amp; Time</span>
-                    <span className="text-xs font-semibold text-white truncate">{event.startDate} at {event.startTime}</span>
+                    <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Date &amp; Time</span>
+                    <span className="font-semibold text-white">{event.startDate}</span>
+                    <span className="text-neutral-400 font-mono text-[11px]">{event.startTime}</span>
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Location</span>
-                    <span className="text-xs font-semibold text-white truncate">{event.location}</span>
+                    <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Location</span>
+                    <span className="font-semibold text-white break-words leading-snug">{event.location || 'Online / Virtual'}</span>
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Amount Paid</span>
-                    <span className="text-xs font-bold" style={{ color: 'var(--event-highlight)' }}>{event.price || 'Free'}</span>
+                    <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Amount Paid</span>
+                    <span className="font-mono font-bold text-white text-sm">
+                      {event.price ? (event.price.startsWith('₹') ? event.price : `₹${event.price}`) : 'Free'}
+                    </span>
                   </div>
                 </div>
 
                 {/* Attendee Info Container */}
-                <div className="bg-[#222226] border border-[#2e2e34] rounded-xl p-4 flex flex-col gap-3">
+                <div className="bg-neutral-950/80 border border-neutral-800/80 rounded-xl p-4 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
-                    <div 
-                      className="w-8 h-8 rounded-full bg-[#2e2e34] border border-[#3e3e46] flex items-center justify-center text-xs font-bold font-mono"
-                      style={{ color: 'var(--event-highlight)' }}
-                    >
+                    <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xs font-semibold font-mono text-neutral-300">
                       {ticket.name?.substring(0, 2).toUpperCase() || 'SF'}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-white truncate">{ticket.name}</span>
-                      <span className="text-[10px] text-neutral-400 font-mono truncate">{ticket.email}</span>
+                      <span className="text-xs font-semibold text-white truncate">{ticket.name}</span>
+                      <span className="text-[11px] text-neutral-400 font-mono truncate">{ticket.email}</span>
                     </div>
                   </div>
 
@@ -1466,10 +1473,10 @@ function RegisterPageInner() {
                       const entries = Object.entries(parsed);
                       if (entries.length === 0) return null;
                       return (
-                        <div className="border-t border-[#2e2e34] pt-2 mt-0.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[10px]">
+                        <div className="border-t border-neutral-800/80 pt-2.5 mt-0.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[11px]">
                           {entries.map(([key, val]) => (
-                            <div key={key} className="flex gap-1.5">
-                              <span className="text-neutral-500 font-medium">{key}:</span>
+                            <div key={key} className="flex gap-1.5 items-center">
+                              <span className="text-neutral-400 font-medium">{key}:</span>
                               <span className="text-neutral-200 font-semibold">{typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val)}</span>
                             </div>
                           ))}
@@ -1480,10 +1487,10 @@ function RegisterPageInner() {
 
                   {/* Transaction ID if paid */}
                   {ticket.paymentTxnId && (
-                    <div className="border-t border-[#2e2e34] pt-2 mt-0.5 flex justify-between gap-4 text-[10px] text-neutral-500">
-                      <div>Method: <span className="text-neutral-300 font-semibold">{ticket.paymentMethod}</span></div>
-                      <div>Account: <span className="text-neutral-300 font-semibold">{ticket.paymentAccountName}</span></div>
-                      <div className="truncate max-w-[180px]">Txn ID: <span className="text-neutral-300 font-mono font-semibold">{ticket.paymentTxnId}</span></div>
+                    <div className="border-t border-neutral-800/80 pt-2.5 mt-0.5 flex flex-wrap justify-between gap-3 text-[11px] text-neutral-400">
+                      <div>Method: <span className="text-neutral-200 font-medium">{ticket.paymentMethod}</span></div>
+                      <div>Account: <span className="text-neutral-200 font-medium">{ticket.paymentAccountName}</span></div>
+                      <div className="truncate max-w-[200px]">Txn ID: <span className="text-neutral-200 font-mono font-medium">{ticket.paymentTxnId}</span></div>
                     </div>
                   )}
                 </div>
@@ -1492,25 +1499,25 @@ function RegisterPageInner() {
 
               {/* Tear Strip separator line with custom cutout notches */}
               <div className="hidden md:flex flex-col items-center justify-between py-4 select-none pointer-events-none printable-tear-strip">
-                <div className="w-6 h-6 rounded-full bg-[#161618] border border-[#2e2e34] -mt-7 -mb-2" />
-                <div className="h-full border-r border-dashed border-[#2e2e34] my-2" />
-                <div className="w-6 h-6 rounded-full bg-[#161618] border border-[#2e2e34] -mb-7 -mt-2" />
+                <div className="w-6 h-6 rounded-full bg-[#161618] border border-neutral-800 -mt-7 -mb-2" />
+                <div className="h-full border-r border-dashed border-neutral-800 my-2" />
+                <div className="w-6 h-6 rounded-full bg-[#161618] border border-neutral-800 -mb-7 -mt-2" />
               </div>
 
-              {/* Right Side: QR Code Stub */}
-              <div className="w-full md:w-60 bg-[#1c1c1f] border-t md:border-t-0 border-[#2e2e34] md:border-l border-dashed p-6 md:p-8 flex flex-col items-center justify-center gap-4 text-center flex-shrink-0 printable-stub">
+              {/* Right Side: QR Code / Verification Stub */}
+              <div className="w-full md:w-60 bg-neutral-950 border-t md:border-t-0 border-neutral-800 md:border-l border-dashed p-6 md:p-8 flex flex-col items-center justify-center gap-4 text-center flex-shrink-0 printable-stub">
                 {ticket.status === 'PENDING' ? (
-                  <div className="relative p-3 bg-white/5 rounded-xl border border-dashed border-[#2e2e34] w-[140px] h-[140px] flex flex-col items-center justify-center text-center select-none animate-pulse">
-                    <span className="text-xl mb-1 text-rose-500"><GoClock className="w-5 h-5" /></span>
-                    <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest leading-normal">
+                  <div className="w-32 h-32 rounded-2xl bg-neutral-900/90 border border-neutral-800 flex flex-col items-center justify-center gap-2 p-3 text-center select-none shadow-sm">
+                    <GoClock className="w-7 h-7 text-amber-400" />
+                    <span className="text-[10px] font-mono text-neutral-300 font-semibold uppercase tracking-wider">
                       Awaiting
                     </span>
-                    <span className="text-[8px] text-neutral-500 leading-tight">
-                      Organizer approval pending.
+                    <span className="text-[9px] text-neutral-500 leading-tight">
+                      QR unlocks after approval
                     </span>
                   </div>
                 ) : (
-                  <div className="p-2.5 bg-white rounded-xl shadow-xl flex items-center justify-center select-none">
+                  <div className="p-3 bg-white rounded-2xl shadow-xl flex items-center justify-center select-none">
                     <QRCodeSVG
                       value={ticket.ticketCode}
                       size={120}
@@ -1521,10 +1528,13 @@ function RegisterPageInner() {
                     />
                   </div>
                 )}
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider font-semibold">Presenter Pass</span>
-                  <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-widest">
-                    {ticket.status === 'PENDING' ? 'Status: Pending' : 'Scan for entry'}
+                
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider font-semibold">
+                    Presenter Pass
+                  </span>
+                  <span className="text-[10px] font-mono text-neutral-300 font-bold tracking-wider">
+                    {ticket.ticketCode || 'SF-PASS'}
                   </span>
                 </div>
               </div>
@@ -1533,30 +1543,31 @@ function RegisterPageInner() {
 
             {/* Download & Print buttons */}
             {ticket.status !== 'PENDING' && (
-              <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-3 mb-4 no-print">
-                <AntiMetalButton
+              <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-3 no-print">
+                <button
+                  type="button"
                   onClick={downloadPDF}
-                  className="flex-1 w-full sm:w-auto"
-                  label={downloading ? 'Downloading...' : 'Download (PDF)'}
-                  accentFrom={extractedColor}
-                  accentTo={extractedColor}
-                />
-                <AntiMetalButton
+                  disabled={downloading}
+                  className="w-full sm:w-auto px-6 py-2.5 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold rounded-xl transition-all shadow-md cursor-pointer active:scale-95 disabled:opacity-50"
+                >
+                  {downloading ? 'Downloading...' : 'Download Pass (PDF)'}
+                </button>
+                <button
+                  type="button"
                   onClick={() => window.print()}
-                  className="flex-1 w-full sm:w-auto"
-                  label="Print Ticket"
-                  accentFrom={extractedColor}
-                  accentTo={extractedColor}
-                />
+                  className="w-full sm:w-auto px-6 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-xl border border-neutral-800 transition-all shadow-sm cursor-pointer active:scale-95"
+                >
+                  Print Ticket
+                </button>
               </div>
             )}
 
             {/* Back action */}
             <a
               href={`/events/${event.id}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#222226] border border-[#2e2e34] rounded-md text-xs text-neutral-300 hover:text-white hover:bg-[#2c2c32] transition-colors no-print"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white transition-colors no-print"
             >
-              <GoArrowLeft className="w-3.5 h-3.5" /> Back to Event Details
+              <GoArrowLeft className="w-3.5 h-3.5" /> Return to Event Details
             </a>
 
           </div>
