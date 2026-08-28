@@ -786,20 +786,13 @@ function RegisterPageInner() {
                   </div>
 
                   {isFull && (
-                    <div 
-                      className="p-4 rounded-xl text-xs flex items-center gap-3 animate-fade-in font-tight border"
-                      style={{
-                        backgroundColor: `${extractedColor}15`,
-                        borderColor: `${extractedColor}40`,
-                        color: extractedColor
-                      }}
-                    >
-                      <GoClock className="w-5 h-5 flex-shrink-0" style={{ color: extractedColor }} />
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3 animate-fade-in font-tight">
+                      <GoClock className="w-5 h-5 flex-shrink-0 text-amber-400" />
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-semibold text-white">
+                        <span className="font-semibold text-amber-200">
                           Capacity Limit Reached ({registrationsCount}/{maxCapacity || 40} Seats Filled)
                         </span>
-                        <span className="text-[11px]" style={{ color: `${extractedColor}dd` }}>
+                        <span className="text-[11px] text-amber-300/80">
                           0 tickets left. Submitting this form will place you on the waitlist.
                         </span>
                       </div>
@@ -1387,170 +1380,83 @@ function RegisterPageInner() {
           </div>
         ) : (
           /* HORIZONTAL BOARDING PASS TICKET SUCCESS SCREEN */
-          <div className="max-w-4xl w-full mx-auto flex flex-col items-center gap-8 py-6 animate-fade-in font-tight relative">
+          <div className="max-w-3xl w-full mx-auto flex flex-col items-center gap-6 py-6 animate-fade-in">
             
-            {/* Ambient Background Glow matching banner color */}
-            <div 
-              className="absolute -top-16 left-1/2 -translate-x-1/2 w-[520px] h-[280px] blur-[100px] rounded-full pointer-events-none -z-10 opacity-30"
-              style={{
-                background: `radial-gradient(ellipse at center, ${extractedColor}, transparent 70%)`
-              }}
-            />
-
-            {/* Header info & Stepper Status */}
-            <div className="flex flex-col items-center text-center gap-4 max-w-xl mx-auto no-print">
-              {ticket.status === 'PENDING' ? (
-                <>
-                  <div 
-                    className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono border transition-colors shadow-sm"
-                    style={{
-                      backgroundColor: `${extractedColor}15`,
-                      borderColor: `${extractedColor}40`,
-                      color: extractedColor
-                    }}
-                  >
-                    <GoClock className="w-3.5 h-3.5" style={{ color: extractedColor }} />
-                    <span>STATUS: IN REVIEW</span>
-                  </div>
-                  <h2 className="font-instrument-serif text-3xl sm:text-5xl font-normal text-white tracking-[-0.5px]">
-                    Registration Submitted
-                  </h2>
-                  <p className="text-xs sm:text-sm text-neutral-400 font-tight leading-relaxed max-w-md">
-                    Your registration has been securely sent to the host. You will receive an email once approved.
-                  </p>
-                  
-                  {/* Status Timeline / Steps */}
-                  <div className="flex items-center gap-2 sm:gap-3 pt-1 text-[11px] font-mono text-neutral-400">
-                    <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                      <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-[10px]">✓</span> Details Sent
-                    </span>
-                    <span className="text-neutral-700">──</span>
-                    <span className="flex items-center gap-1.5 font-semibold" style={{ color: extractedColor }}>
-                      <span 
-                        className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] border"
-                        style={{
-                          backgroundColor: `${extractedColor}20`,
-                          borderColor: `${extractedColor}50`,
-                          color: extractedColor
-                        }}
-                      >
-                        2
-                      </span>
-                      Host Review
-                    </span>
-                    <span className="text-neutral-700">──</span>
-                    <span className="flex items-center gap-1.5 text-neutral-600">
-                      <span className="w-4 h-4 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px]">3</span> Pass Active
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono">
-                    <GoCheck className="w-3.5 h-3.5" />
-                    <span>STATUS: CONFIRMED</span>
-                  </div>
-                  <h2 className="font-instrument-serif text-3xl sm:text-5xl font-normal text-white tracking-[-0.5px]">
-                    Registration Confirmed
-                  </h2>
-                  <p className="text-xs sm:text-sm text-neutral-400 font-tight leading-relaxed max-w-md">
-                    Your official entry pass is generated and active. Present this pass at the entrance.
-                  </p>
-                </>
-              )}
-            </div>
+            {/* Header info */}
+            {ticket.status === 'PENDING' ? (
+              <div className="flex flex-col items-center text-center gap-2 no-print">
+                <span className="text-3xl text-rose-500 animate-pulse"><GoClock className="w-8 h-8" /></span>
+                <h2 className="text-xl font-bold text-rose-500 tracking-tight">Pending Host Approval</h2>
+                <p className="text-xs text-neutral-400 max-w-sm">
+                  Your registration is pending review. The organizer will approve your details shortly.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center text-center gap-1 no-print -mt-4">
+                <div 
+                  className="w-[120px] h-[120px] flex items-center justify-center -mb-2"
+                  dangerouslySetInnerHTML={{
+                    __html: `<dotlottie-wc src="https://lottie.host/3075f240-62a5-46db-8d64-5dda79afd538/4FE24H0UXC.lottie" style="width: 120px; height: 120px;" autoplay loop></dotlottie-wc>`
+                  }}
+                />
+                <h2 className="text-xl font-bold text-white tracking-tight">Registration Confirmed</h2>
+                <p className="text-xs text-neutral-400">Your presenter pass has been generated. Download or print below.</p>
+              </div>
+            )}
 
             {/* Ticket Card Container */}
-            <div className="w-full bg-[#18181b] border border-neutral-800 rounded-3xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.8)] relative flex flex-col md:flex-row items-stretch overflow-hidden printable-ticket-card font-tight">
+            <div className="w-full bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl shadow-2xl relative flex flex-col md:flex-row items-stretch overflow-hidden printable-ticket-card">
               
               {/* Left Side: Pass main information */}
-              <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between gap-6 min-w-0">
+              <div className="flex-1 p-6 md:p-8 flex flex-col justify-between gap-6 min-w-0">
                 
-                {/* Event Name & Host Branding Header */}
+                {/* Event Name & Ticket ID Header */}
                 <div className="flex justify-between items-start gap-4">
-                  <div className="flex flex-col gap-1.5 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">
-                        OFFICIAL ENTRY PASS
-                      </span>
-                      <span className="text-neutral-700">•</span>
-                      <span className="text-[10px] font-mono text-neutral-400">
-                        {event.ticketCode || 'STUDENT FORGE'}
-                      </span>
-                    </div>
-                    <h3 className="font-instrument-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-white leading-tight">
-                      {event.title}
-                    </h3>
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Event Name</span>
+                    <h3 className="font-instrument-serif text-xl md:text-2xl font-normal text-white leading-tight truncate">{event.title}</h3>
                   </div>
-
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                    <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Pass ID</span>
-                    <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-neutral-300">
-                      {ticket.ticketCode || 'TKT-PENDING'}
+                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Ticket ID</span>
+                    <span className="text-xs font-mono font-bold text-neutral-300">
+                      {ticket.status === 'PENDING' ? (
+                        <span className="text-rose-500 font-semibold">PENDING</span>
+                      ) : (
+                        ticket.ticketCode
+                      )}
                     </span>
                   </div>
                 </div>
 
-                {/* Details layout: 3-column Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-neutral-800/80 pt-5 text-xs">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 flex-shrink-0 mt-0.5">
-                      <GoCalendar className="w-3.5 h-3.5" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Date &amp; Time</span>
-                      <span className="font-medium text-white">{event.startDate}</span>
-                      <span className="text-neutral-400 font-mono text-[11px]">{event.startTime}{event.endTime ? ` – ${event.endTime}` : ''}</span>
-                    </div>
+                {/* Details layout: Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3.5 border-t border-[#2e2e34] pt-5">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Date &amp; Time</span>
+                    <span className="text-xs font-semibold text-white truncate">{event.startDate} at {event.startTime}</span>
                   </div>
-
-                  <div className="flex items-start gap-2.5 sm:col-span-1">
-                    <div className="w-7 h-7 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 flex-shrink-0 mt-0.5">
-                      <GoLocation className="w-3.5 h-3.5" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Venue</span>
-                      <span className="font-medium text-neutral-200 break-words leading-relaxed">{event.location || 'Online / Virtual'}</span>
-                    </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Location</span>
+                    <span className="text-xs font-semibold text-white truncate">{event.location}</span>
                   </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 flex-shrink-0 mt-0.5">
-                      <GoTag className="w-3.5 h-3.5" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-mono text-neutral-500 tracking-wider">Pass Fee</span>
-                      <span className="font-mono font-bold text-white text-sm">
-                        {event.price ? (event.price.startsWith('₹') ? event.price : `₹${event.price}`) : 'Free'}
-                      </span>
-                      <span className="text-neutral-500 text-[10px] font-mono">Admit 1</span>
-                    </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Amount Paid</span>
+                    <span className="text-xs font-bold" style={{ color: 'var(--event-highlight)' }}>{event.price || 'Free'}</span>
                   </div>
                 </div>
 
                 {/* Attendee Info Container */}
-                <div className="bg-neutral-950/80 border border-neutral-800/90 rounded-2xl p-4 sm:p-5 flex flex-col gap-3.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-xs font-bold font-mono text-neutral-200">
-                        {ticket.name?.substring(0, 2).toUpperCase() || 'SF'}
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-sm font-semibold text-white truncate">{ticket.name}</span>
-                        <span className="text-[11px] text-neutral-400 font-mono truncate">{ticket.email}</span>
-                      </div>
-                    </div>
-
-                    <span 
-                      className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-md border"
-                      style={{
-                        backgroundColor: ticket.status === 'PENDING' ? `${extractedColor}15` : 'rgba(16, 185, 129, 0.1)',
-                        borderColor: ticket.status === 'PENDING' ? `${extractedColor}40` : 'rgba(16, 185, 129, 0.3)',
-                        color: ticket.status === 'PENDING' ? extractedColor : '#34d399'
-                      }}
+                <div className="bg-[#222226] border border-[#2e2e34] rounded-xl p-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-8 h-8 rounded-full bg-[#2e2e34] border border-[#3e3e46] flex items-center justify-center text-xs font-bold font-mono"
+                      style={{ color: 'var(--event-highlight)' }}
                     >
-                      {ticket.status === 'PENDING' ? 'REVIEW PENDING' : 'PASS VERIFIED'}
-                    </span>
+                      {ticket.name?.substring(0, 2).toUpperCase() || 'SF'}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-white truncate">{ticket.name}</span>
+                      <span className="text-[10px] text-neutral-400 font-mono truncate">{ticket.email}</span>
+                    </div>
                   </div>
 
                   {/* Dynamic fields / Answers */}
@@ -1560,12 +1466,12 @@ function RegisterPageInner() {
                       const entries = Object.entries(parsed);
                       if (entries.length === 0) return null;
                       return (
-                        <div className="border-t border-neutral-900 pt-3 flex flex-wrap gap-2 text-xs">
+                        <div className="border-t border-[#2e2e34] pt-2 mt-0.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[10px]">
                           {entries.map(([key, val]) => (
-                            <span key={key} className="inline-flex items-center gap-1.5 bg-neutral-900 border border-neutral-800 px-2.5 py-1 rounded-lg text-neutral-300 text-[11px]">
-                              <span className="text-neutral-500">{key}:</span>
-                              <span className="text-white font-medium">{typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val)}</span>
-                            </span>
+                            <div key={key} className="flex gap-1.5">
+                              <span className="text-neutral-500 font-medium">{key}:</span>
+                              <span className="text-neutral-200 font-semibold">{typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val)}</span>
+                            </div>
                           ))}
                         </div>
                       );
@@ -1574,14 +1480,10 @@ function RegisterPageInner() {
 
                   {/* Transaction ID if paid */}
                   {ticket.paymentTxnId && (
-                    <div className="border-t border-neutral-900 pt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-neutral-400">
-                      <div className="flex items-center gap-3">
-                        <span>Method: <strong className="text-white">{ticket.paymentMethod}</strong></span>
-                        <span>Account: <strong className="text-white">{ticket.paymentAccountName}</strong></span>
-                      </div>
-                      <div className="font-mono text-neutral-400">
-                        Txn: <strong className="text-neutral-200">{ticket.paymentTxnId}</strong>
-                      </div>
+                    <div className="border-t border-[#2e2e34] pt-2 mt-0.5 flex justify-between gap-4 text-[10px] text-neutral-500">
+                      <div>Method: <span className="text-neutral-300 font-semibold">{ticket.paymentMethod}</span></div>
+                      <div>Account: <span className="text-neutral-300 font-semibold">{ticket.paymentAccountName}</span></div>
+                      <div className="truncate max-w-[180px]">Txn ID: <span className="text-neutral-300 font-mono font-semibold">{ticket.paymentTxnId}</span></div>
                     </div>
                   )}
                 </div>
@@ -1589,56 +1491,29 @@ function RegisterPageInner() {
               </div>
 
               {/* Tear Strip separator line with custom cutout notches */}
-              <div className="hidden md:flex flex-col items-center justify-between py-4 select-none pointer-events-none printable-tear-strip relative">
-                <div className="w-7 h-7 rounded-full bg-[#161618] border border-neutral-800 -mt-7 -mb-2" />
-                <div className="h-full border-r-2 border-dashed border-neutral-800/80 my-2" />
-                <div className="w-7 h-7 rounded-full bg-[#161618] border border-neutral-800 -mb-7 -mt-2" />
+              <div className="hidden md:flex flex-col items-center justify-between py-4 select-none pointer-events-none printable-tear-strip">
+                <div className="w-6 h-6 rounded-full bg-[#161618] border border-[#2e2e34] -mt-7 -mb-2" />
+                <div className="h-full border-r border-dashed border-[#2e2e34] my-2" />
+                <div className="w-6 h-6 rounded-full bg-[#161618] border border-[#2e2e34] -mb-7 -mt-2" />
               </div>
 
-              {/* Right Side: QR Code / Verification Stub */}
-              <div className="w-full md:w-64 bg-neutral-950/90 border-t md:border-t-0 border-neutral-800 md:border-l border-dashed p-6 sm:p-8 flex flex-col items-center justify-between gap-5 text-center flex-shrink-0 printable-stub">
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest font-semibold">
-                    ENTRY PASS
-                  </span>
-                  <span className="text-[10px] font-mono text-neutral-400">
-                    ADMIT ONE
-                  </span>
-                </div>
-
+              {/* Right Side: QR Code Stub */}
+              <div className="w-full md:w-60 bg-[#1c1c1f] border-t md:border-t-0 border-[#2e2e34] md:border-l border-dashed p-6 md:p-8 flex flex-col items-center justify-center gap-4 text-center flex-shrink-0 printable-stub">
                 {ticket.status === 'PENDING' ? (
-                  <div 
-                    className="w-36 h-36 rounded-2xl border flex flex-col items-center justify-center gap-2 p-4 text-center select-none shadow-sm"
-                    style={{
-                      backgroundColor: '#161618',
-                      borderColor: `${extractedColor}35`
-                    }}
-                  >
-                    <div 
-                      className="w-10 h-10 rounded-xl border flex items-center justify-center"
-                      style={{
-                        backgroundColor: `${extractedColor}15`,
-                        borderColor: `${extractedColor}30`,
-                        color: extractedColor
-                      }}
-                    >
-                      <GoClock className="w-5 h-5" />
-                    </div>
-                    <span 
-                      className="text-[11px] font-mono font-semibold uppercase tracking-wider" 
-                      style={{ color: extractedColor }}
-                    >
-                      Under Review
+                  <div className="relative p-3 bg-white/5 rounded-xl border border-dashed border-[#2e2e34] w-[140px] h-[140px] flex flex-col items-center justify-center text-center select-none animate-pulse">
+                    <span className="text-xl mb-1 text-rose-500"><GoClock className="w-5 h-5" /></span>
+                    <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest leading-normal">
+                      Awaiting
                     </span>
-                    <span className="text-[9px] text-neutral-400 leading-tight">
-                      QR unlocks after host approval
+                    <span className="text-[8px] text-neutral-500 leading-tight">
+                      Organizer approval pending.
                     </span>
                   </div>
                 ) : (
-                  <div className="p-3.5 bg-white rounded-2xl shadow-xl flex items-center justify-center select-none">
+                  <div className="p-2.5 bg-white rounded-xl shadow-xl flex items-center justify-center select-none">
                     <QRCodeSVG
                       value={ticket.ticketCode}
-                      size={128}
+                      size={120}
                       bgColor="#ffffff"
                       fgColor="#000000"
                       level="L"
@@ -1646,48 +1521,43 @@ function RegisterPageInner() {
                     />
                   </div>
                 )}
-                
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-[11px] font-mono text-white font-bold tracking-wider">
-                    {ticket.ticketCode || 'TKT-PENDING'}
-                  </span>
-                  <span className="text-[9px] font-mono text-neutral-500 uppercase">
-                    {ticket.status === 'PENDING' ? 'Awaiting Host Approval' : 'Scan for Instant Entry'}
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider font-semibold">Presenter Pass</span>
+                  <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-widest">
+                    {ticket.status === 'PENDING' ? 'Status: Pending' : 'Scan for entry'}
                   </span>
                 </div>
               </div>
 
             </div>
 
-            {/* Download & Print buttons & Return */}
-            <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-3 pt-2 no-print">
-              {ticket.status !== 'PENDING' && (
-                <>
-                  <button
-                    type="button"
-                    onClick={downloadPDF}
-                    disabled={downloading}
-                    className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold rounded-xl transition-all shadow-md cursor-pointer active:scale-95 disabled:opacity-50 font-tight"
-                  >
-                    {downloading ? 'Downloading...' : 'Download Pass (PDF)'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => window.print()}
-                    className="w-full sm:w-auto px-6 py-3 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-xl border border-neutral-800 transition-all shadow-sm cursor-pointer active:scale-95 font-tight"
-                  >
-                    Print Ticket
-                  </button>
-                </>
-              )}
-              
-              <a
-                href={`/events/${event.id}`}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white transition-colors font-tight"
-              >
-                <GoArrowLeft className="w-3.5 h-3.5" /> Return to Event Details
-              </a>
-            </div>
+            {/* Download & Print buttons */}
+            {ticket.status !== 'PENDING' && (
+              <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-3 mb-4 no-print">
+                <AntiMetalButton
+                  onClick={downloadPDF}
+                  className="flex-1 w-full sm:w-auto"
+                  label={downloading ? 'Downloading...' : 'Download (PDF)'}
+                  accentFrom={extractedColor}
+                  accentTo={extractedColor}
+                />
+                <AntiMetalButton
+                  onClick={() => window.print()}
+                  className="flex-1 w-full sm:w-auto"
+                  label="Print Ticket"
+                  accentFrom={extractedColor}
+                  accentTo={extractedColor}
+                />
+              </div>
+            )}
+
+            {/* Back action */}
+            <a
+              href={`/events/${event.id}`}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#222226] border border-[#2e2e34] rounded-md text-xs text-neutral-300 hover:text-white hover:bg-[#2c2c32] transition-colors no-print"
+            >
+              <GoArrowLeft className="w-3.5 h-3.5" /> Back to Event Details
+            </a>
 
           </div>
         )}
