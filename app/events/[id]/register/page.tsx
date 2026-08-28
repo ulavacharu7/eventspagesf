@@ -786,13 +786,20 @@ function RegisterPageInner() {
                   </div>
 
                   {isFull && (
-                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3 animate-fade-in font-tight">
-                      <GoClock className="w-5 h-5 flex-shrink-0 text-amber-400" />
+                    <div 
+                      className="p-4 rounded-xl text-xs flex items-center gap-3 animate-fade-in font-tight border"
+                      style={{
+                        backgroundColor: `${extractedColor}15`,
+                        borderColor: `${extractedColor}40`,
+                        color: extractedColor
+                      }}
+                    >
+                      <GoClock className="w-5 h-5 flex-shrink-0" style={{ color: extractedColor }} />
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-semibold text-amber-200">
+                        <span className="font-semibold text-white">
                           Capacity Limit Reached ({registrationsCount}/{maxCapacity || 40} Seats Filled)
                         </span>
-                        <span className="text-[11px] text-amber-300/80">
+                        <span className="text-[11px]" style={{ color: `${extractedColor}dd` }}>
                           0 tickets left. Submitting this form will place you on the waitlist.
                         </span>
                       </div>
@@ -1382,15 +1389,27 @@ function RegisterPageInner() {
           /* HORIZONTAL BOARDING PASS TICKET SUCCESS SCREEN */
           <div className="max-w-4xl w-full mx-auto flex flex-col items-center gap-8 py-6 animate-fade-in font-tight relative">
             
-            {/* Ambient Background Glow */}
-            <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[520px] h-[280px] bg-gradient-to-b from-white/[0.04] to-transparent blur-[100px] rounded-full pointer-events-none -z-10" />
+            {/* Ambient Background Glow matching banner color */}
+            <div 
+              className="absolute -top-16 left-1/2 -translate-x-1/2 w-[520px] h-[280px] blur-[100px] rounded-full pointer-events-none -z-10 opacity-30"
+              style={{
+                background: `radial-gradient(ellipse at center, ${extractedColor}, transparent 70%)`
+              }}
+            />
 
             {/* Header info & Stepper Status */}
             <div className="flex flex-col items-center text-center gap-4 max-w-xl mx-auto no-print">
               {ticket.status === 'PENDING' ? (
                 <>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
-                    <GoClock className="w-3.5 h-3.5" />
+                  <div 
+                    className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono border transition-colors shadow-sm"
+                    style={{
+                      backgroundColor: `${extractedColor}15`,
+                      borderColor: `${extractedColor}40`,
+                      color: extractedColor
+                    }}
+                  >
+                    <GoClock className="w-3.5 h-3.5" style={{ color: extractedColor }} />
                     <span>STATUS: IN REVIEW</span>
                   </div>
                   <h2 className="font-instrument-serif text-3xl sm:text-5xl font-normal text-white tracking-[-0.5px]">
@@ -1406,8 +1425,18 @@ function RegisterPageInner() {
                       <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-[10px]">✓</span> Details Sent
                     </span>
                     <span className="text-neutral-700">──</span>
-                    <span className="flex items-center gap-1.5 text-amber-300 font-semibold">
-                      <span className="w-4 h-4 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-[10px]">2</span> Host Review
+                    <span className="flex items-center gap-1.5 font-semibold" style={{ color: extractedColor }}>
+                      <span 
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] border"
+                        style={{
+                          backgroundColor: `${extractedColor}20`,
+                          borderColor: `${extractedColor}50`,
+                          color: extractedColor
+                        }}
+                      >
+                        2
+                      </span>
+                      Host Review
                     </span>
                     <span className="text-neutral-700">──</span>
                     <span className="flex items-center gap-1.5 text-neutral-600">
@@ -1512,11 +1541,14 @@ function RegisterPageInner() {
                       </div>
                     </div>
 
-                    <span className={`text-[10px] font-mono font-semibold px-2.5 py-1 rounded-md border ${
-                      ticket.status === 'PENDING'
-                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-                        : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                    }`}>
+                    <span 
+                      className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-md border"
+                      style={{
+                        backgroundColor: ticket.status === 'PENDING' ? `${extractedColor}15` : 'rgba(16, 185, 129, 0.1)',
+                        borderColor: ticket.status === 'PENDING' ? `${extractedColor}40` : 'rgba(16, 185, 129, 0.3)',
+                        color: ticket.status === 'PENDING' ? extractedColor : '#34d399'
+                      }}
+                    >
                       {ticket.status === 'PENDING' ? 'REVIEW PENDING' : 'PASS VERIFIED'}
                     </span>
                   </div>
@@ -1575,14 +1607,30 @@ function RegisterPageInner() {
                 </div>
 
                 {ticket.status === 'PENDING' ? (
-                  <div className="w-36 h-36 rounded-2xl bg-neutral-900/90 border border-neutral-800 flex flex-col items-center justify-center gap-2 p-4 text-center select-none shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                  <div 
+                    className="w-36 h-36 rounded-2xl border flex flex-col items-center justify-center gap-2 p-4 text-center select-none shadow-sm"
+                    style={{
+                      backgroundColor: '#161618',
+                      borderColor: `${extractedColor}35`
+                    }}
+                  >
+                    <div 
+                      className="w-10 h-10 rounded-xl border flex items-center justify-center"
+                      style={{
+                        backgroundColor: `${extractedColor}15`,
+                        borderColor: `${extractedColor}30`,
+                        color: extractedColor
+                      }}
+                    >
                       <GoClock className="w-5 h-5" />
                     </div>
-                    <span className="text-[11px] font-mono text-neutral-200 font-semibold uppercase tracking-wider">
+                    <span 
+                      className="text-[11px] font-mono font-semibold uppercase tracking-wider" 
+                      style={{ color: extractedColor }}
+                    >
                       Under Review
                     </span>
-                    <span className="text-[9px] text-neutral-500 leading-tight">
+                    <span className="text-[9px] text-neutral-400 leading-tight">
                       QR unlocks after host approval
                     </span>
                   </div>
