@@ -422,14 +422,6 @@ export default function ExplorePage() {
                   {/* Square cover image (1200×1200) */}
                   <div className="relative w-full aspect-square overflow-hidden bg-[#141416] flex-shrink-0">
                     <EventImage event={event} />
-                    <span className="absolute top-3 left-3 text-[9px] font-mono bg-black/55 backdrop-blur-sm border border-white/10 px-2 py-1 rounded-md text-neutral-300 tracking-wide">
-                      {event.ticketCode}
-                    </span>
-                    {isEventCompleted(event) && (
-                      <span className="absolute top-3 right-3 text-[9px] font-mono uppercase bg-neutral-900/90 text-neutral-300 border border-neutral-700/80 px-2 py-1 rounded-md tracking-wider font-semibold shadow-md backdrop-blur-sm">
-                        Ended
-                      </span>
-                    )}
                   </div>
 
                   {/* Body */}

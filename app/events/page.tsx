@@ -231,23 +231,6 @@ export default function EventsPage() {
                   {/* Top: 1200x1200 1:1 Aspect-Square Poster Container */}
                   <div className="relative w-full aspect-square bg-[#131316] border border-white/10 group-hover:border-white/20 rounded-[14px] overflow-hidden select-none flex-shrink-0 mb-3.5 shadow-sm">
                     <EventImage event={event} />
-                    
-                    {/* Top Left Ticket Code */}
-                    <span className="absolute top-3 left-3 text-[10px] font-mono bg-black/70 backdrop-blur-md border border-white/15 px-2.5 py-0.5 rounded-[6px] text-white/90 tracking-wider font-medium shadow-sm">
-                      {event.ticketCode}
-                    </span>
-
-                    {/* Top Right Status Badge */}
-                    {ended ? (
-                      <span className="absolute top-3 right-3 text-[10px] font-mono uppercase bg-black/80 text-white/80 border border-white/20 px-2.5 py-0.5 rounded-[6px] tracking-wider font-semibold backdrop-blur-md shadow-sm">
-                        Ended
-                      </span>
-                    ) : (
-                      <span className="absolute top-3 right-3 text-[10px] font-tight bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-[6px] font-medium backdrop-blur-md shadow-sm flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        Upcoming
-                      </span>
-                    )}
                   </div>
 
                   {/* Body: Event Details */}

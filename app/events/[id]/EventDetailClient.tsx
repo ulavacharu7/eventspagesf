@@ -346,19 +346,6 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   </div>
                 </div>
               )}
-
-              {/* Status Tags on Poster */}
-              <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <span className="text-[11px] font-mono uppercase bg-black/75 backdrop-blur-md border border-white/10 text-neutral-200 px-2.5 py-1 rounded-md shadow-sm">
-                  {event.calendarType || 'Public Event'}
-                </span>
-
-                {/* Viewer count pill */}
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase bg-black/75 backdrop-blur-md border border-white/10 text-neutral-300 px-2.5 py-1 rounded-md shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>{viewerCount} online</span>
-                </span>
-              </div>
             </div>
 
             {/* Google Calendar Quick Link */}
@@ -561,24 +548,6 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               )}
             </div>
 
-            {/* Custom Registration Fields */}
-            {parsedCustomFields.length > 0 && (
-              <div className="pt-3 flex flex-wrap gap-2">
-                <span className="text-xs font-mono text-neutral-400 w-full">
-                  Requirements:
-                </span>
-                {parsedCustomFields.map((cf, idx) => (
-                  <span
-                    key={cf.id || cf.label || `cf-${idx}`}
-                    className="inline-flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-neutral-300"
-                  >
-                    <GoTag className="w-3 h-3 text-neutral-400" />
-                    <span>{cf.label}</span>
-                    {cf.required && <span className="text-neutral-400 text-[10px]">*</span>}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Featured Speakers */}
