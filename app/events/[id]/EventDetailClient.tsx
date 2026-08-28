@@ -14,7 +14,6 @@ import {
   GoClock,
   GoShareAndroid,
   GoCopy,
-  GoShieldCheck,
   GoChevronRight,
   GoTag,
 } from 'react-icons/go';
@@ -358,7 +357,14 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-tight">
                   <span>Presented by</span>
                   <span className="font-semibold text-neutral-200">{event.organizer || 'Student Forge'}</span>
-                  <GoShieldCheck className="w-3.5 h-3.5 text-neutral-400" title="Verified Host" />
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/7641/7641727.png"
+                    alt="Verified Host"
+                    width={15}
+                    height={15}
+                    className="w-3.5 h-3.5 object-contain inline-block shrink-0"
+                    title="Verified Host"
+                  />
                 </div>
               </div>
             </div>

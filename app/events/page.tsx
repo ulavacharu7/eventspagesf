@@ -269,8 +269,16 @@ export default function EventsPage() {
                       </h3>
 
                       {/* Organizer */}
-                      <span className="text-xs text-white/50 font-tight truncate">
-                        By {event.organizer || 'Student Forge'}
+                      <span className="text-xs text-white/50 font-tight truncate flex items-center gap-1">
+                        <span>By {event.organizer || 'Student Forge'}</span>
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/7641/7641727.png"
+                          alt="Verified Host"
+                          width={12}
+                          height={12}
+                          className="w-3 h-3 object-contain inline-block shrink-0"
+                          title="Verified Host"
+                        />
                       </span>
                     </div>
 
