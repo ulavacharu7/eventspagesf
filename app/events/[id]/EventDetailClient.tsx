@@ -251,7 +251,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
     <main className="min-h-screen bg-[#111113] text-neutral-100 flex flex-col justify-between antialiased font-tight selection:bg-neutral-800 selection:text-white">
       <Navbar />
 
-      <div className="w-full max-w-5xl mx-auto pt-6 sm:pt-10 pb-20 px-4 sm:px-6 flex-1 flex flex-col gap-8 sm:gap-10">
+      <div className="w-full max-w-5xl mx-auto pt-16 sm:pt-20 md:pt-24 pb-20 px-4 sm:px-6 flex-1 flex flex-col gap-8 sm:gap-10">
 
         {/* Minimal Breadcrumb Navigation & Top Actions */}
         <div className="flex items-center justify-between gap-4">
