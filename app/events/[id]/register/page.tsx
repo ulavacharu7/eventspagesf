@@ -756,22 +756,22 @@ function RegisterPageInner() {
         }
       `}} />
 
-      <div className="w-full max-w-4xl mx-auto pt-12 sm:pt-16 md:pt-20 pb-12 px-4 sm:px-6 flex-1 flex flex-col gap-6">
+      <div className="w-full max-w-5xl mx-auto pt-16 sm:pt-20 md:pt-24 pb-16 px-4 sm:px-6 flex-1 flex flex-col gap-6 font-tight">
         
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs text-[#8a8a90] font-normal pb-4 border-b border-[#2e2e34] mb-4">
+        <nav className="flex items-center gap-2 text-xs text-neutral-400 font-tight pb-4 border-b border-neutral-800/80 mb-2">
           <a href="/" className="hover:text-white transition-colors">Home</a>
-          <span>/</span>
+          <span className="text-neutral-600">/</span>
           <a href="/events" className="hover:text-white transition-colors">Events</a>
-          <span>/</span>
+          <span className="text-neutral-600">/</span>
           <a href={`/events/${event.id}`} className="hover:text-white transition-colors truncate max-w-[150px] sm:max-w-xs">{event.title}</a>
-          <span>/</span>
+          <span className="text-neutral-600">/</span>
           <span className="text-white font-medium">Register</span>
         </nav>
 
         {!ticket ? (
           /* Registration Form / Payment Flow Grid */
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
             
             {/* Left Side: Form inputs */}
             <div className="lg:col-span-7 flex flex-col gap-6">
@@ -779,10 +779,10 @@ function RegisterPageInner() {
               {rsvpStep === 'form' && (
                 <>
                   <div className="flex flex-col gap-1.5 animate-fade-in">
-                    <h1 className="text-2xl font-bold text-white tracking-tight">
+                    <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
                       {isFull ? 'Join Event Waitlist' : 'Complete your Registration'}
                     </h1>
-                    <p className="text-xs text-neutral-400">
+                    <p className="text-xs text-neutral-400 font-tight">
                       {isFull
                         ? 'Event capacity reached. Fill in your details to join the waitlist.'
                         : 'Fill in your details below to secure your entry pass.'}
@@ -790,7 +790,7 @@ function RegisterPageInner() {
                   </div>
 
                   {isFull && (
-                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3 animate-fade-in">
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3 animate-fade-in font-tight">
                       <GoClock className="w-5 h-5 flex-shrink-0 text-amber-400" />
                       <div className="flex flex-col gap-0.5">
                         <span className="font-semibold text-amber-200">
@@ -803,11 +803,11 @@ function RegisterPageInner() {
                     </div>
                   )}
 
-                  <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 animate-fade-in bg-transparent border-0 p-0 shadow-none">
+                  <form onSubmit={handleFormSubmit} className="flex flex-col gap-5 animate-fade-in bg-transparent border-0 p-0 shadow-none">
                     {/* Full Name */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider flex items-center gap-1.5">
-                        <GoPerson className="w-3.5 h-3.5" /> Full Name
+                    <div className="flex flex-col gap-1.5 font-tight">
+                      <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
+                        <GoPerson className="w-3.5 h-3.5 text-neutral-400" /> Full Name <span className="text-neutral-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -815,14 +815,14 @@ function RegisterPageInner() {
                         onChange={(e) => setName(e.target.value)}
                         required
                         placeholder="Enter your full name"
-                        className="w-full bg-transparent border-b border-neutral-700 focus:border-[var(--event-highlight)] rounded-none px-0 py-3 text-sm text-white outline-none transition-all placeholder:text-neutral-600"
+                        className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-sm"
                       />
                     </div>
 
                     {/* Email Address */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider flex items-center gap-1.5">
-                        <GoMail className="w-3.5 h-3.5" /> Email Address
+                    <div className="flex flex-col gap-1.5 font-tight">
+                      <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
+                        <GoMail className="w-3.5 h-3.5 text-neutral-400" /> Email Address <span className="text-neutral-500">*</span>
                       </label>
                       <input
                         type="email"
@@ -830,17 +830,17 @@ function RegisterPageInner() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         placeholder="you@example.com"
-                        className="w-full bg-transparent border-b border-neutral-700 focus:border-[var(--event-highlight)] rounded-none px-0 py-3 text-sm text-white outline-none transition-all placeholder:text-neutral-600"
+                        className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-sm"
                       />
                     </div>
 
                     {/* Phone Number */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider flex items-center gap-1.5">
-                        <GoDeviceMobile className="w-3.5 h-3.5" /> Phone Number (Optional)
+                    <div className="flex flex-col gap-1.5 font-tight">
+                      <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
+                        <GoDeviceMobile className="w-3.5 h-3.5 text-neutral-400" /> Phone Number <span className="text-neutral-500 text-[11px]">(Optional)</span>
                       </label>
-                      <div className="flex items-center gap-2.5 border-b border-neutral-700 focus-within:border-[var(--event-highlight)] transition-all pb-1">
-                        <div className="flex items-center gap-2 bg-[#18181b] border border-neutral-700 rounded-lg px-2.5 py-1.5 flex-shrink-0">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-xl px-2.5 py-2 flex-shrink-0">
                           <CountryFlagIcon country={COUNTRY_CODES.find((c) => c.code === countryCode)?.country || 'IN'} />
                           <select
                             value={countryCode}
@@ -848,7 +848,7 @@ function RegisterPageInner() {
                             className="bg-transparent text-xs font-mono font-medium text-white outline-none cursor-pointer pr-1"
                           >
                             {COUNTRY_CODES.map((c, i) => (
-                              <option key={i} value={c.code} className="bg-[#18181b] text-white font-mono">
+                              <option key={i} value={c.code} className="bg-neutral-900 text-white font-mono">
                                 {c.code} ({c.country})
                               </option>
                             ))}
@@ -859,18 +859,18 @@ function RegisterPageInner() {
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder={COUNTRY_CODES.find((c) => c.code === countryCode)?.placeholder || '98765 43210'}
-                          className="w-full bg-transparent px-2 py-3 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-mono"
+                          className="flex-1 bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-mono shadow-sm"
                         />
                       </div>
                     </div>
 
                     {/* Custom RSVP Fields */}
                     {parsedCustomFields.map((field, idx) => (
-                      <div key={idx} className="flex flex-col gap-2">
+                      <div key={idx} className="flex flex-col gap-1.5 font-tight">
                         {field.type === 'text' ? (
                           <>
-                            <label className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">
-                              {field.name} {field.required && <span className="text-rose-400">*</span>}
+                            <label className="text-xs font-medium text-neutral-300">
+                              {field.name} {field.required && <span className="text-neutral-500">*</span>}
                             </label>
                             <input
                               type="text"
@@ -878,21 +878,21 @@ function RegisterPageInner() {
                               value={(answers[field.name] as string) || ''}
                               onChange={(e) => setAnswers({ ...answers, [field.name]: e.target.value })}
                               placeholder={`Enter ${field.name.toLowerCase()}`}
-                              className="w-full bg-transparent border-b border-neutral-700 focus:border-[var(--event-highlight)] rounded-none px-0 py-3 text-sm text-white outline-none transition-all placeholder:text-neutral-600"
+                              className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-sm"
                             />
                           </>
                         ) : (
-                          <div className="flex items-center gap-2 py-1">
+                          <div className="flex items-center gap-2.5 py-1">
                             <input
                               type="checkbox"
                               id={`custom-check-${idx}`}
                               required={field.required}
                               checked={!!answers[field.name]}
                               onChange={(e) => setAnswers({ ...answers, [field.name]: e.target.checked })}
-                              className="rounded border-[#2e2e34] bg-[#222226] text-white focus:ring-0 cursor-pointer"
+                              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-white focus:ring-0 cursor-pointer accent-white"
                             />
-                            <label htmlFor={`custom-check-${idx}`} className="text-xs text-neutral-300 cursor-pointer flex items-center gap-1">
-                              {field.name} {field.required && <span className="text-rose-400">*</span>}
+                            <label htmlFor={`custom-check-${idx}`} className="text-xs text-neutral-300 cursor-pointer font-tight">
+                              {field.name} {field.required && <span className="text-neutral-500">*</span>}
                             </label>
                           </div>
                         )}
@@ -900,9 +900,9 @@ function RegisterPageInner() {
                     ))}
 
                     {/* Friends / Additional Participants */}
-                    <div className="flex flex-col gap-4 mt-2 border-t border-neutral-700 pt-4">
+                    <div className="flex flex-col gap-3 pt-2 font-tight border-t border-neutral-800/80">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">
+                        <span className="text-xs font-mono uppercase text-neutral-400 tracking-wider">
                           Additional Friends ({friends.length})
                         </span>
                         <button
@@ -911,15 +911,14 @@ function RegisterPageInner() {
                             e.preventDefault();
                             setFriends([...friends, { name: '', email: '', phone: '' }]);
                           }}
-                          className="flex items-center gap-1.5 text-xs font-semibold cursor-pointer py-1.5 px-3 rounded-lg border border-neutral-600 bg-[#141416]/50 hover:bg-[#1c1c1f] transition-all hover:border-neutral-500"
-                          style={{ color: 'var(--event-highlight)' }}
+                          className="flex items-center gap-1.5 text-xs font-medium text-neutral-300 hover:text-white cursor-pointer py-1.5 px-3 rounded-lg border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 transition-all font-tight"
                         >
                           <GoPlus className="w-3.5 h-3.5" /> Add Friend
                         </button>
                       </div>
 
                       {friends.map((friend, idx) => (
-                        <div key={idx} className="bg-[#141416]/50 border border-neutral-600 rounded-xl p-5 flex flex-col gap-4 relative animate-fade-in shadow-inner">
+                        <div key={idx} className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-4 flex flex-col gap-3 relative animate-fade-in font-tight">
                           <button
                             type="button"
                             onClick={() => {
@@ -927,16 +926,15 @@ function RegisterPageInner() {
                               newFriends.splice(idx, 1);
                               setFriends(newFriends);
                             }}
-                            className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-white/5 text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer flex items-center justify-center"
+                            className="absolute top-3.5 right-3.5 p-1 rounded-lg hover:bg-neutral-800 text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer"
                             title="Remove Friend"
                           >
                             <GoX className="w-4 h-4" />
                           </button>
                           
-                          <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wide">Friend #{idx + 1} details</span>
+                          <span className="text-xs font-mono text-neutral-400 uppercase">Friend #{idx + 1}</span>
                           
-                          <div className="flex flex-col gap-1.5">
-                            <label className="text-[9px] uppercase font-mono text-neutral-500">Full Name *</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <input
                               type="text"
                               required
@@ -946,13 +944,9 @@ function RegisterPageInner() {
                                 newFriends[idx].name = e.target.value;
                                 setFriends(newFriends);
                               }}
-                              placeholder="Friend's full name"
-                              className="w-full bg-transparent border-b border-neutral-600 focus:border-[var(--event-highlight)] rounded-none px-0 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600"
+                              placeholder="Friend's full name *"
+                              className="w-full bg-neutral-950/80 border border-neutral-800 focus:border-neutral-600 rounded-lg px-3 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600 font-tight"
                             />
-                          </div>
-
-                          <div className="flex flex-col gap-1.5">
-                            <label className="text-[9px] uppercase font-mono text-neutral-500">Email Address *</label>
                             <input
                               type="email"
                               required
@@ -962,90 +956,47 @@ function RegisterPageInner() {
                                 newFriends[idx].email = e.target.value;
                                 setFriends(newFriends);
                               }}
-                              placeholder="friend@example.com"
-                              className="w-full bg-transparent border-b border-neutral-600 focus:border-[var(--event-highlight)] rounded-none px-0 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600"
-                            />
-                          </div>
-
-                          <div className="flex flex-col gap-1.5">
-                            <label className="text-[9px] uppercase font-mono text-neutral-500">Phone Number (Optional)</label>
-                            <input
-                              type="tel"
-                              value={friend.phone}
-                              onChange={(e) => {
-                                const newFriends = [...friends];
-                                newFriends[idx].phone = e.target.value;
-                                setFriends(newFriends);
-                              }}
-                              placeholder="Friend's phone"
-                              className="w-full bg-transparent border-b border-neutral-600 focus:border-[var(--event-highlight)] rounded-none px-0 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600"
+                              placeholder="Friend's email *"
+                              className="w-full bg-neutral-950/80 border border-neutral-800 focus:border-neutral-600 rounded-lg px-3 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600 font-tight"
                             />
                           </div>
                         </div>
                       ))}
                     </div>
 
-
-
-                    {/* Coupon Code Section - Styled with Event Dynamic Highlight Color */}
+                    {/* Coupon Code Section */}
                     {!isEventFree(event.price) && (
-                      <div className="flex flex-col gap-3 p-4 bg-[#1b1b20] border border-[#2a2a34] rounded-2xl w-full shadow-xl relative overflow-hidden transition-all duration-300">
-                        {/* Subtle top glowing highlight bar using event color */}
-                        <div 
-                          className="absolute top-0 left-0 right-0 h-[2px]" 
-                          style={{ background: 'linear-gradient(90deg, transparent, var(--event-highlight), transparent)' }}
-                        />
-
+                      <div className="flex flex-col gap-3 p-4 bg-neutral-900/80 border border-neutral-800 rounded-2xl w-full font-tight shadow-md">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <div 
-                              className="w-6 h-6 rounded-lg flex items-center justify-center border shrink-0"
-                              style={{ 
-                                backgroundColor: 'var(--event-highlight-bg)', 
-                                borderColor: 'var(--event-highlight)',
-                                color: 'var(--event-highlight)' 
-                              }}
-                            >
+                            <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-neutral-800 border border-neutral-700 text-neutral-300 shrink-0">
                               <GoTag className="w-3.5 h-3.5" />
                             </div>
-                            <span className="text-xs uppercase font-mono tracking-wider font-bold text-white">
+                            <span className="text-xs uppercase font-mono tracking-wider font-semibold text-white">
                               Have a Coupon Code?
                             </span>
                           </div>
 
                           {appliedCoupon && (
-                            <span 
-                              className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md border"
-                              style={{ 
-                                backgroundColor: 'var(--event-highlight-bg)', 
-                                color: 'var(--event-highlight)',
-                                borderColor: 'var(--event-highlight)'
-                              }}
-                            >
+                            <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-950 border border-emerald-800 text-emerald-400">
                               -{appliedCoupon.discountType === 'PERCENTAGE' ? `${appliedCoupon.discountValue}%` : `₹${appliedCoupon.discountValue}`} OFF
                             </span>
                           )}
                         </div>
 
                         {appliedCoupon ? (
-                          <div 
-                            className="flex items-center justify-between p-2.5 rounded-xl border transition-all animate-fade-in"
-                            style={{ 
-                              backgroundColor: 'var(--event-highlight-bg)', 
-                              borderColor: 'var(--event-highlight)' 
-                            }}
-                          >
-                            <div className="flex items-center gap-2 font-mono text-xs">
-                              <GoCheck className="w-4 h-4 font-bold" style={{ color: 'var(--event-highlight)' }} />
+                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 transition-all">
+                            <div className="flex items-center gap-2 font-mono text-xs text-emerald-400">
+                              <GoCheck className="w-4 h-4 font-bold" />
                               <span className="font-bold text-white tracking-wider">{appliedCoupon.code}</span>
-                              <span className="text-[11px] font-medium opacity-90" style={{ color: 'var(--event-highlight)' }}>
+                              <span className="text-[11px] text-emerald-400">
                                 (-₹{appliedCoupon.discountAmount} saved)
                               </span>
                             </div>
                             <button
                               type="button"
                               onClick={handleRemoveCoupon}
-                              className="text-neutral-400 hover:text-white transition-colors cursor-pointer text-xs font-mono px-2 py-1 rounded-lg hover:bg-white/10"
+                              className="text-neutral-400 hover:text-white transition-colors cursor-pointer text-xs font-mono px-2 py-1 rounded-lg hover:bg-neutral-800"
                             >
                               Remove ✕
                             </button>
@@ -1057,16 +1008,13 @@ function RegisterPageInner() {
                               value={inputCouponCode}
                               onChange={(e) => setInputCouponCode(e.target.value.toUpperCase())}
                               placeholder="Enter Code (e.g. INCEPT50)"
-                              className="flex-1 bg-[#141417] border border-[#2d2d38] focus:border-[var(--event-highlight)] rounded-xl px-3.5 py-2 text-xs text-white uppercase font-mono font-bold outline-none transition-all placeholder:text-neutral-500 placeholder:normal-case tracking-wider shadow-inner"
+                              className="flex-1 bg-neutral-950/90 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2 text-xs text-white uppercase font-mono font-bold outline-none transition-all placeholder:text-neutral-500 placeholder:normal-case tracking-wider"
                             />
                             <button
                               type="button"
                               onClick={() => handleApplyCoupon()}
                               disabled={couponLoading || !inputCouponCode.trim()}
-                              className="px-4 py-2 text-neutral-950 text-xs font-bold font-mono rounded-xl transition-all cursor-pointer shrink-0 shadow-md hover:brightness-110 active:scale-95 disabled:opacity-40"
-                              style={{ 
-                                backgroundColor: 'var(--event-highlight)' 
-                              }}
+                              className="px-4 py-2 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold font-mono rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-40"
                             >
                               {couponLoading ? 'Applying...' : 'Apply'}
                             </button>
@@ -1081,10 +1029,11 @@ function RegisterPageInner() {
                       </div>
                     )}
 
-                    {/* Submit button */}
-                    <ShinyButton
-                      onClick={undefined}
-                      className={`mt-2 w-full ${isFull ? 'bg-gradient-to-r from-amber-500 to-orange-600 border border-amber-400/40 text-white' : ''}`}
+                    {/* Submit CTA Button */}
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full py-3 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 mt-2"
                     >
                       {submitting
                         ? 'Submitting...'
@@ -1093,29 +1042,31 @@ function RegisterPageInner() {
                           : isEventFree(event.price) || (appliedCoupon && finalPriceNum === 0)
                             ? 'Submit Registration'
                             : 'Proceed to Payment'}
-                    </ShinyButton>
+                    </button>
                   </form>
                 </>
               )}
 
               {rsvpStep === 'payment' && (
                 <>
-                  <div className="flex flex-col gap-1.5 animate-fade-in">
+                  <div className="flex flex-col gap-1.5 animate-fade-in font-tight">
                     <button onClick={() => { setRsvpStep('form'); }} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors pb-1 text-left cursor-pointer">
                       <GoArrowLeft className="w-3.5 h-3.5" /> Back to Registration Form
                     </button>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Scan &amp; Pay</h1>
-                    <p className="text-xs text-neutral-400">Please complete the payment of <strong style={{ color: 'var(--event-highlight)' }}>{formattedDisplayPrice}</strong> to register.</p>
+                    <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
+                      Scan &amp; Pay
+                    </h1>
+                    <p className="text-xs text-neutral-400">Please complete the payment of <strong className="text-white font-mono">{formattedDisplayPrice}</strong> to register.</p>
                   </div>
 
-                  <div className="bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl p-6 flex flex-col items-center gap-5 shadow-sm animate-fade-in text-center">
+                  <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-6 flex flex-col items-center gap-5 shadow-xl animate-fade-in text-center font-tight">
                     
                     {/* Amount badge */}
-                    <div className="bg-[#222226] border border-[#2e2e34] px-5 py-3 rounded-xl flex flex-col gap-1 max-w-[280px] w-full shadow-inner">
+                    <div className="bg-neutral-950 border border-neutral-800 px-5 py-3 rounded-xl flex flex-col gap-1 max-w-[280px] w-full shadow-inner">
                       <div className="flex items-center justify-between text-[10px] uppercase font-mono text-neutral-400">
                         <span>Total Amount Due</span>
                         {totalAttendees > 1 && (
-                          <span className="text-amber-400 font-bold font-mono">{totalAttendees} Members</span>
+                          <span className="text-white font-semibold font-mono">{totalAttendees} Members</span>
                         )}
                       </div>
                       <div className="flex items-baseline justify-center gap-2">
@@ -1129,7 +1080,7 @@ function RegisterPageInner() {
                             {(event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
                               <span className="text-sm line-through text-neutral-500 font-mono">₹{249 * totalAttendees}</span>
                             )}
-                            <span className="text-xl font-bold font-mono" style={{ color: 'var(--event-highlight)' }}>
+                            <span className="text-xl font-bold font-mono text-white">
                               {formattedDisplayPrice}
                             </span>
                           </>
@@ -1147,7 +1098,7 @@ function RegisterPageInner() {
                       )}
                     </div>
 
-                    {/* QR Code Container (Always Visible & Optimized for All Mobile Browsers) */}
+                    {/* QR Code Container */}
                     <div className="flex flex-col items-center gap-3 w-full">
                       <div className="p-4 bg-white border-4 border-white rounded-2xl shadow-xl flex items-center justify-center select-none animate-fade-in w-[200px] h-[200px] shrink-0">
                         <QRCodeSVG
@@ -1160,7 +1111,7 @@ function RegisterPageInner() {
                           className="w-full h-full object-contain"
                         />
                       </div>
-                      <span className="text-xs text-neutral-300 font-semibold">
+                      <span className="text-xs text-neutral-300 font-medium">
                         Scan QR using GPay, PhonePe, Paytm or Bank App
                       </span>
                     </div>
@@ -1168,7 +1119,7 @@ function RegisterPageInner() {
                     {/* Mobile Direct Pay Deep Link Button */}
                     <a
                       href={qrPaymentValue}
-                      className="w-full max-w-sm py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                      className="w-full max-w-sm py-2.5 px-4 bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer font-tight"
                     >
                       <GoDeviceMobile className="w-4 h-4" />
                       <span>Pay Directly via Mobile UPI App</span>
@@ -1177,36 +1128,39 @@ function RegisterPageInner() {
                     {/* Copy UPI ID Bar */}
                     <CopyCode code="6302933597@hdfc" label="UPI ID" duration={3500} />
 
-                    <p className="text-[10px] text-neutral-500 font-mono max-w-sm">
+                    <p className="text-[11px] text-neutral-500 font-mono max-w-sm">
                       Once scanning and paying is done, click the button below to add payment transaction details for host approval.
                     </p>
 
-                    <ShinyButton
+                    <button
+                      type="button"
                       onClick={() => setRsvpStep('confirm-txn')}
-                      className="w-full"
+                      className="w-full py-3 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer"
                     >
                       Next Step: Confirm Payment
-                    </ShinyButton>
+                    </button>
                   </div>
                 </>
               )}
 
               {rsvpStep === 'confirm-txn' && (
                 <>
-                  <div className="flex flex-col gap-1.5 animate-fade-in">
+                  <div className="flex flex-col gap-1.5 animate-fade-in font-tight">
                     <button onClick={() => { setRsvpStep('payment'); }} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors pb-1 text-left cursor-pointer">
                       <GoArrowLeft className="w-3.5 h-3.5" /> Back to Payment Scan
                     </button>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Confirm Transaction</h1>
+                    <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
+                      Confirm Transaction
+                    </h1>
                     <p className="text-xs text-neutral-400">Fill in details of the transaction you made to submit registration.</p>
                   </div>
 
-                  <form onSubmit={handleTxnSubmit} className="flex flex-col gap-6 animate-fade-in bg-transparent border-0 p-0 shadow-none">
+                  <form onSubmit={handleTxnSubmit} className="flex flex-col gap-5 animate-fade-in bg-transparent border-0 p-0 shadow-none font-tight">
                     
                     {/* Account Name */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">
-                        Sender Account Name *
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium text-neutral-300">
+                        Sender Account Name <span className="text-neutral-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1214,21 +1168,20 @@ function RegisterPageInner() {
                         onChange={(e) => setPaymentAccountName(e.target.value)}
                         required
                         placeholder="e.g. John Doe / Bank account holder name"
-                        className="w-full bg-transparent border-b border-neutral-700 focus:border-[var(--event-highlight)] rounded-none px-0 py-3 text-sm text-white outline-none transition-all placeholder:text-neutral-600"
+                        className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-sm"
                       />
                     </div>
 
                     {/* Payment Method */}
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">
-                          Payment Method *
+                        <label className="text-xs font-medium text-neutral-300">
+                          Payment Method <span className="text-neutral-500">*</span>
                         </label>
                         {/* Official Payment Logos (GPay, PhonePe, UPI) */}
                         <div className="flex items-center gap-1.5 select-none">
-                          {/* GPay Badge */}
-                          <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10 border border-white/15 text-[11px] font-bold text-white font-sans shadow-sm">
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-800 border border-neutral-700 text-[10px] font-bold text-white font-sans">
+                            <svg className="w-3 h-3" viewBox="0 0 24 24">
                               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
@@ -1236,14 +1189,12 @@ function RegisterPageInner() {
                             </svg>
                             GPay
                           </span>
-                          {/* PhonePe Badge */}
-                          <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10 border border-white/15 text-[11px] font-bold text-white font-sans shadow-sm">
-                            <span className="w-3.5 h-3.5 rounded-full bg-[#5f259f] text-white text-[9px] flex items-center justify-center font-bold flex-shrink-0">पे</span>
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-800 border border-neutral-700 text-[10px] font-bold text-white font-sans">
+                            <span className="w-3 h-3 rounded-full bg-[#5f259f] text-white text-[8px] flex items-center justify-center font-bold flex-shrink-0">पे</span>
                             PhonePe
                           </span>
-                          {/* UPI Badge */}
-                          <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/10 border border-white/15 text-[11px] font-bold text-white font-sans shadow-sm">
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 32 32">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-800 border border-neutral-700 text-[10px] font-bold text-white font-sans">
+                            <svg className="w-3 h-3" viewBox="0 0 32 32">
                               <path fill="#007934" d="M18.8 4L13.2 14.8H18L13.2 24L23.6 12.4H18.8L23.6 4H18.8Z" />
                               <path fill="#E05E00" d="M13.2 4L7.6 14.8H12.4L7.6 24L18 12.4H13.2L18 4H13.2Z" />
                             </svg>
@@ -1254,19 +1205,19 @@ function RegisterPageInner() {
                       <select
                         value={paymentMethod}
                         onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="w-full bg-transparent border-b border-neutral-700 focus:border-[var(--event-highlight)] rounded-none px-0 py-3 text-sm text-white outline-none transition-all cursor-pointer"
+                        className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all cursor-pointer font-tight shadow-sm"
                       >
-                        <option value="UPI" className="bg-[#141416]">UPI / GPay / PhonePe</option>
-                        <option value="Bank Transfer" className="bg-[#141416]">Bank Transfer (IMPS/NEFT)</option>
-                        <option value="Card Payment" className="bg-[#141416]">Credit / Debit Card</option>
-                        <option value="PayPal" className="bg-[#141416]">PayPal</option>
+                        <option value="UPI" className="bg-neutral-900">UPI / GPay / PhonePe</option>
+                        <option value="Bank Transfer" className="bg-neutral-900">Bank Transfer (IMPS/NEFT)</option>
+                        <option value="Card Payment" className="bg-neutral-900">Credit / Debit Card</option>
+                        <option value="PayPal" className="bg-neutral-900">PayPal</option>
                       </select>
                     </div>
 
                     {/* Transaction ID */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-[10px] uppercase font-mono text-neutral-400 tracking-wider">
-                        Transaction ID / Reference Number *
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium text-neutral-300">
+                        Transaction ID / Reference Number <span className="text-neutral-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1274,18 +1225,17 @@ function RegisterPageInner() {
                         onChange={(e) => setPaymentTxnId(e.target.value)}
                         required
                         placeholder="e.g. Txn-129037482, UPI Ref ID, etc."
-                        className="w-full bg-transparent border-b border-neutral-700 focus:border-[var(--event-highlight)] rounded-none px-0 py-3 text-sm text-white outline-none transition-all font-mono placeholder:text-neutral-600"
+                        className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all font-mono placeholder:text-neutral-600 shadow-sm"
                       />
                     </div>
 
-
-
-                    <ShinyButton
-                      onClick={undefined}
-                      className="mt-2 w-full"
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full py-3 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 mt-2"
                     >
                       {submitting ? 'Submitting Details...' : 'Complete Registration & Submit'}
-                    </ShinyButton>
+                    </button>
                   </form>
                 </>
               )}
@@ -1293,41 +1243,51 @@ function RegisterPageInner() {
             </div>
 
             {/* Right Side: Event Details Summary Card */}
-            <div className="lg:col-span-5 bg-[#1c1c1f] border border-[#232329] rounded-2xl overflow-hidden shadow-sm flex flex-col">
-              {/* Event Cover Image at the absolute top */}
+            <div className="lg:col-span-5 bg-neutral-900/90 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl flex flex-col font-tight">
+              {/* Event Cover Image at top (Clean 1:1 square container without overlay pills) */}
               {event.coverImage && (
-                <div className="w-full aspect-square relative overflow-hidden border-b border-[#232329] bg-[#121214]">
+                <div className="w-full aspect-square relative overflow-hidden bg-neutral-950 border-b border-neutral-800">
                   <img 
                     src={event.coverImage} 
                     alt={event.title} 
-                    className="w-full h-full object-contain select-none" 
+                    className="w-full h-full object-cover select-none" 
                   />
-                  {/* Ambient bottom gradient overlay */}
-                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#1c1c1f] to-transparent opacity-70 pointer-events-none" />
                 </div>
               )}
               <div className="p-5 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase bg-[#222226] border border-[#333339] text-neutral-300 px-2.5 py-1 rounded-md">
-                    {event.ticketCode}
+                  <span className="text-[10px] font-mono uppercase bg-neutral-800 border border-neutral-700 text-neutral-300 px-2.5 py-0.5 rounded-md">
+                    {event.ticketCode || 'TICKET'}
                   </span>
                   <span className="text-[10px] font-mono uppercase text-neutral-400">
                     Registration Pass
                   </span>
                 </div>
-                <h4 className="text-base font-bold text-white leading-tight">{event.title}</h4>
-                <div className="flex flex-col gap-3.5 text-xs text-neutral-400 pt-2 border-t border-[#2e2e34]">
-                  <div className="flex items-center gap-2">
-                    <GoCalendar className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-                    <span>{event.startDate} at {event.startTime}</span>
+                <h4 className="font-instrument-serif text-2xl font-normal text-white leading-snug">
+                  {event.title}
+                </h4>
+                <div className="flex flex-col gap-3 text-xs text-neutral-400 pt-3 border-t border-neutral-800">
+                  <div className="flex items-start gap-2.5">
+                    <GoCalendar className="w-4 h-4 text-neutral-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="text-white font-medium">{event.startDate}</span>
+                      <span className="text-neutral-400 font-mono text-[11px]">{event.startTime}{event.endTime ? ` – ${event.endTime}` : ''}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <GoLocation className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-                    <span className="truncate">{event.location}</span>
+                  <div className="flex items-start gap-2.5">
+                    <GoLocation className="w-4 h-4 text-neutral-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-300 break-words leading-relaxed">{event.location || 'Online / Virtual'}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <GoTag className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-                    <span>Price: <strong className="text-white">{event.price || 'Free'}</strong></span>
+                  <div className="flex items-center justify-between pt-2 border-t border-neutral-800/80">
+                    <span className="font-mono text-neutral-400 text-[11px] uppercase tracking-wider">Price</span>
+                    <div className="flex items-baseline gap-1.5">
+                      {(event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
+                        <span className="text-xs line-through text-neutral-500 font-mono">₹249</span>
+                      )}
+                      <span className="text-sm font-semibold font-mono text-white">
+                        {event.price ? (event.price.startsWith('₹') ? event.price : `₹${event.price}`) : 'Free'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1370,7 +1330,7 @@ function RegisterPageInner() {
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex flex-col gap-1 min-w-0">
                     <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Event Name</span>
-                    <h3 className="text-lg md:text-xl font-bold text-white leading-tight truncate">{event.title}</h3>
+                    <h3 className="font-instrument-serif text-xl md:text-2xl font-normal text-white leading-tight truncate">{event.title}</h3>
                   </div>
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
                     <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Ticket ID</span>
