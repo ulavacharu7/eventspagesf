@@ -665,7 +665,13 @@ function RegisterPageInner() {
   const perTicketPrice = parseFloat(event.price.replace(/[^0-9.]/g, '')) || 0;
   const totalBasePrice = perTicketPrice * totalAttendees;
 
-  const discountAmountNum = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  // Reactively calculate discount for friends additions/removals
+  const discountAmountNum = appliedCoupon
+    ? appliedCoupon.discountType === 'PERCENTAGE'
+      ? Math.round((totalBasePrice * (appliedCoupon.discountValue || 0)) / 100)
+      : Math.min(totalBasePrice, appliedCoupon.discountValue || appliedCoupon.discountAmount || 0)
+    : 0;
+
   const finalPriceNum = Math.max(0, totalBasePrice - discountAmountNum);
   const formattedDisplayPrice = isEventFree(event.price) || finalPriceNum === 0 ? 'Free' : `₹${finalPriceNum}`;
 
@@ -684,25 +690,20 @@ function RegisterPageInner() {
       {/* Global CSS for Print Optimization & Dynamic Input Focus */}
       <style dangerouslySetInnerHTML={{ __html: `
         input:focus, select:focus, textarea:focus {
-          border-bottom-color: var(--event-highlight) !important;
+          border-color: #52525b !important;
           outline: none !important;
           box-shadow: none !important;
         }
         @media print {
-          /* Hide Navbar, Footer, Breadcrumbs, download/print buttons, and back actions */
           nav, footer, .no-print, button, a {
             display: none !important;
           }
-          
-          /* Set body print background */
           body, html, main, div {
             background-color: #ffffff !important;
             background: #ffffff !important;
             color: #000000 !important;
             box-shadow: none !important;
           }
-          
-          /* Target printable ticket container and make it look clean on paper */
           .printable-ticket-card {
             background-color: #ffffff !important;
             background: #ffffff !important;
@@ -718,36 +719,26 @@ function RegisterPageInner() {
             align-items: stretch !important;
             page-break-inside: avoid !important;
           }
-          
-          /* Override texts to dark */
           .printable-ticket-card * {
             color: #000000 !important;
           }
-          
-          /* Make details labels medium gray */
           .printable-ticket-card .text-neutral-400,
           .printable-ticket-card .text-neutral-500 {
             color: #4b5563 !important;
           }
-          
-          /* Ensure dashed and regular borders print cleanly in dark color */
           .printable-ticket-card .border-t,
           .printable-ticket-card .border-x,
           .printable-ticket-card .border-dashed {
             border-color: #000000 !important;
           }
-
           .printable-stub {
             border-top: none !important;
             border-left: 1px dashed #000000 !important;
             width: 220px !important;
           }
-
           .printable-tear-strip {
             display: none !important;
           }
-          
-          /* Make background color of details cards light grey */
           .printable-ticket-card div.bg-\\[\\#222226\\] {
             background-color: #f3f4f6 !important;
             background: #f3f4f6 !important;
@@ -779,13 +770,18 @@ function RegisterPageInner() {
               {rsvpStep === 'form' && (
                 <>
                   <div className="flex flex-col gap-1.5 animate-fade-in">
-                    <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
-                      {isFull ? 'Join Event Waitlist' : 'Complete your Registration'}
-                    </h1>
+                    <div className="flex items-center justify-between">
+                      <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
+                        {isFull ? 'Join Event Waitlist' : 'Complete your Registration'}
+                      </h1>
+                      <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-neutral-300">
+                        {totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'}
+                      </span>
+                    </div>
                     <p className="text-xs text-neutral-400 font-tight">
                       {isFull
                         ? 'Event capacity reached. Fill in your details to join the waitlist.'
-                        : 'Fill in your details below to secure your entry pass.'}
+                        : 'Fill in your details and add friend passes below. All entry passes are generated instantly.'}
                     </p>
                   </div>
 
@@ -804,169 +800,218 @@ function RegisterPageInner() {
                   )}
 
                   <form onSubmit={handleFormSubmit} className="flex flex-col gap-5 animate-fade-in bg-transparent border-0 p-0 shadow-none">
-                    {/* Full Name */}
-                    <div className="flex flex-col gap-1.5 font-tight">
-                      <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
-                        <GoPerson className="w-3.5 h-3.5 text-neutral-400" /> Full Name <span className="text-neutral-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        placeholder="Enter your full name"
-                        className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-sm"
-                      />
-                    </div>
-
-                    {/* Email Address */}
-                    <div className="flex flex-col gap-1.5 font-tight">
-                      <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
-                        <GoMail className="w-3.5 h-3.5 text-neutral-400" /> Email Address <span className="text-neutral-500">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        placeholder="you@example.com"
-                        className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-sm"
-                      />
-                    </div>
-
-                    {/* Phone Number */}
-                    <div className="flex flex-col gap-1.5 font-tight">
-                      <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
-                        <GoDeviceMobile className="w-3.5 h-3.5 text-neutral-400" /> Phone Number <span className="text-neutral-500 text-[11px]">(Optional)</span>
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-xl px-2.5 py-2 flex-shrink-0">
-                          <CountryFlagIcon country={COUNTRY_CODES.find((c) => c.code === countryCode)?.country || 'IN'} />
-                          <select
-                            value={countryCode}
-                            onChange={(e) => setCountryCode(e.target.value)}
-                            className="bg-transparent text-xs font-mono font-medium text-white outline-none cursor-pointer pr-1"
-                          >
-                            {COUNTRY_CODES.map((c, i) => (
-                              <option key={i} value={c.code} className="bg-neutral-900 text-white font-mono">
-                                {c.code} ({c.country})
-                              </option>
-                            ))}
-                          </select>
+                    
+                    {/* Primary Attendee Box */}
+                    <div className="p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex flex-col gap-4 shadow-sm">
+                      <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                          <span className="text-xs font-semibold text-white uppercase tracking-wider font-mono">
+                            Primary Attendee (You)
+                          </span>
                         </div>
+                        <span className="text-xs font-mono text-neutral-400">
+                          {isEventFree(event.price) ? 'Free' : `₹${perTicketPrice}`}
+                        </span>
+                      </div>
+
+                      {/* Full Name */}
+                      <div className="flex flex-col gap-1.5 font-tight">
+                        <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
+                          <GoPerson className="w-3.5 h-3.5 text-neutral-400" /> Full Name <span className="text-neutral-500">*</span>
+                        </label>
                         <input
-                          type="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder={COUNTRY_CODES.find((c) => c.code === countryCode)?.placeholder || '98765 43210'}
-                          className="flex-1 bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-mono shadow-sm"
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          placeholder="Enter your full name"
+                          className="w-full bg-neutral-950/80 hover:bg-neutral-950 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-inner"
                         />
                       </div>
+
+                      {/* Email Address */}
+                      <div className="flex flex-col gap-1.5 font-tight">
+                        <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
+                          <GoMail className="w-3.5 h-3.5 text-neutral-400" /> Email Address <span className="text-neutral-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          placeholder="you@example.com"
+                          className="w-full bg-neutral-950/80 hover:bg-neutral-950 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-inner"
+                        />
+                      </div>
+
+                      {/* Phone Number */}
+                      <div className="flex flex-col gap-1.5 font-tight">
+                        <label className="text-xs font-medium text-neutral-300 flex items-center gap-1.5">
+                          <GoDeviceMobile className="w-3.5 h-3.5 text-neutral-400" /> Phone Number <span className="text-neutral-500 text-[11px]">(Optional)</span>
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 bg-neutral-950 border border-neutral-800 rounded-xl px-2.5 py-2 flex-shrink-0 shadow-inner">
+                            <CountryFlagIcon country={COUNTRY_CODES.find((c) => c.code === countryCode)?.country || 'IN'} />
+                            <select
+                              value={countryCode}
+                              onChange={(e) => setCountryCode(e.target.value)}
+                              className="bg-transparent text-xs font-mono font-medium text-white outline-none cursor-pointer pr-1"
+                            >
+                              {COUNTRY_CODES.map((c, i) => (
+                                <option key={i} value={c.code} className="bg-neutral-900 text-white font-mono">
+                                  {c.code} ({c.country})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder={COUNTRY_CODES.find((c) => c.code === countryCode)?.placeholder || '98765 43210'}
+                            className="flex-1 bg-neutral-950/80 hover:bg-neutral-950 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-mono shadow-inner"
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Custom RSVP Fields */}
-                    {parsedCustomFields.map((field, idx) => (
-                      <div key={idx} className="flex flex-col gap-1.5 font-tight">
-                        {field.type === 'text' ? (
-                          <>
-                            <label className="text-xs font-medium text-neutral-300">
-                              {field.name} {field.required && <span className="text-neutral-500">*</span>}
-                            </label>
-                            <input
-                              type="text"
-                              required={field.required}
-                              value={(answers[field.name] as string) || ''}
-                              onChange={(e) => setAnswers({ ...answers, [field.name]: e.target.value })}
-                              placeholder={`Enter ${field.name.toLowerCase()}`}
-                              className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-sm"
-                            />
-                          </>
-                        ) : (
-                          <div className="flex items-center gap-2.5 py-1">
-                            <input
-                              type="checkbox"
-                              id={`custom-check-${idx}`}
-                              required={field.required}
-                              checked={!!answers[field.name]}
-                              onChange={(e) => setAnswers({ ...answers, [field.name]: e.target.checked })}
-                              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-white focus:ring-0 cursor-pointer accent-white"
-                            />
-                            <label htmlFor={`custom-check-${idx}`} className="text-xs text-neutral-300 cursor-pointer font-tight">
-                              {field.name} {field.required && <span className="text-neutral-500">*</span>}
-                            </label>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-
-                    {/* Friends / Additional Participants */}
-                    <div className="flex flex-col gap-3 pt-2 font-tight border-t border-neutral-800/80">
+                    {/* Friends / Additional Participants Section */}
+                    <div className="flex flex-col gap-4 pt-1 font-tight">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono uppercase text-neutral-400 tracking-wider">
-                          Additional Friends ({friends.length})
-                        </span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-sm font-semibold text-white">
+                            Add Friends / Teammates
+                          </span>
+                          <span className="text-xs text-neutral-400">
+                            {friends.length === 0
+                              ? 'Booking for more people? Add friends to register together.'
+                              : `${friends.length} friend ${friends.length === 1 ? 'pass' : 'passes'} added (+₹${perTicketPrice * friends.length})`}
+                          </span>
+                        </div>
                         <button
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             setFriends([...friends, { name: '', email: '', phone: '' }]);
                           }}
-                          className="flex items-center gap-1.5 text-xs font-medium text-neutral-300 hover:text-white cursor-pointer py-1.5 px-3 rounded-lg border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 transition-all font-tight"
+                          className="flex items-center gap-1.5 text-xs font-medium text-neutral-200 hover:text-white cursor-pointer py-2 px-3.5 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 transition-all font-tight shadow-sm active:scale-95"
                         >
-                          <GoPlus className="w-3.5 h-3.5" /> Add Friend
+                          <GoPlus className="w-3.5 h-3.5" />
+                          <span>Add Friend {perTicketPrice > 0 ? `(+₹${perTicketPrice})` : ''}</span>
                         </button>
                       </div>
 
+                      {/* Friends List */}
                       {friends.map((friend, idx) => (
-                        <div key={idx} className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-4 flex flex-col gap-3 relative animate-fade-in font-tight">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newFriends = [...friends];
-                              newFriends.splice(idx, 1);
-                              setFriends(newFriends);
-                            }}
-                            className="absolute top-3.5 right-3.5 p-1 rounded-lg hover:bg-neutral-800 text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer"
-                            title="Remove Friend"
-                          >
-                            <GoX className="w-4 h-4" />
-                          </button>
-                          
-                          <span className="text-xs font-mono text-neutral-400 uppercase">Friend #{idx + 1}</span>
+                        <div key={idx} className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-3.5 relative animate-fade-in font-tight shadow-sm">
+                          <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2.5">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-indigo-400" />
+                              <span className="text-xs font-mono uppercase tracking-wider font-semibold text-neutral-200">
+                                Attendee #{idx + 2} (Friend Pass)
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-mono text-neutral-400">
+                                {isEventFree(event.price) ? 'Free' : `+₹${perTicketPrice}`}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newFriends = [...friends];
+                                  newFriends.splice(idx, 1);
+                                  setFriends(newFriends);
+                                }}
+                                className="p-1 rounded-md hover:bg-neutral-800 text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer"
+                                title="Remove Friend"
+                              >
+                                <GoX className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <input
-                              type="text"
-                              required
-                              value={friend.name}
-                              onChange={(e) => {
-                                const newFriends = [...friends];
-                                newFriends[idx].name = e.target.value;
-                                setFriends(newFriends);
-                              }}
-                              placeholder="Friend's full name *"
-                              className="w-full bg-neutral-950/80 border border-neutral-800 focus:border-neutral-600 rounded-lg px-3 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600 font-tight"
-                            />
-                            <input
-                              type="email"
-                              required
-                              value={friend.email}
-                              onChange={(e) => {
-                                const newFriends = [...friends];
-                                newFriends[idx].email = e.target.value;
-                                setFriends(newFriends);
-                              }}
-                              placeholder="Friend's email *"
-                              className="w-full bg-neutral-950/80 border border-neutral-800 focus:border-neutral-600 rounded-lg px-3 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600 font-tight"
-                            />
+                            <div className="flex flex-col gap-1">
+                              <label className="text-[11px] text-neutral-400 font-medium">Friend's Full Name *</label>
+                              <input
+                                type="text"
+                                required
+                                value={friend.name}
+                                onChange={(e) => {
+                                  const newFriends = [...friends];
+                                  newFriends[idx].name = e.target.value;
+                                  setFriends(newFriends);
+                                }}
+                                placeholder="Full name"
+                                className="w-full bg-neutral-950/80 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-inner"
+                              />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <label className="text-[11px] text-neutral-400 font-medium">Friend's Email *</label>
+                              <input
+                                type="email"
+                                required
+                                value={friend.email}
+                                onChange={(e) => {
+                                  const newFriends = [...friends];
+                                  newFriends[idx].email = e.target.value;
+                                  setFriends(newFriends);
+                                }}
+                                placeholder="friend@example.com"
+                                className="w-full bg-neutral-950/80 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2 text-xs text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-inner"
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
 
+                    {/* Custom RSVP Fields */}
+                    {parsedCustomFields.length > 0 && (
+                      <div className="p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex flex-col gap-3.5 shadow-sm">
+                        <span className="text-xs font-mono uppercase text-neutral-400 tracking-wider">
+                          Additional Information
+                        </span>
+                        {parsedCustomFields.map((field, idx) => (
+                          <div key={idx} className="flex flex-col gap-1.5 font-tight">
+                            {field.type === 'text' ? (
+                              <>
+                                <label className="text-xs font-medium text-neutral-300">
+                                  {field.name} {field.required && <span className="text-neutral-500">*</span>}
+                                </label>
+                                <input
+                                  type="text"
+                                  required={field.required}
+                                  value={(answers[field.name] as string) || ''}
+                                  onChange={(e) => setAnswers({ ...answers, [field.name]: e.target.value })}
+                                  placeholder={`Enter ${field.name.toLowerCase()}`}
+                                  className="w-full bg-neutral-950/80 hover:bg-neutral-950 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-tight shadow-inner"
+                                />
+                              </>
+                            ) : (
+                              <div className="flex items-center gap-2.5 py-1">
+                                <input
+                                  type="checkbox"
+                                  id={`custom-check-${idx}`}
+                                  required={field.required}
+                                  checked={!!answers[field.name]}
+                                  onChange={(e) => setAnswers({ ...answers, [field.name]: e.target.checked })}
+                                  className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-white focus:ring-0 cursor-pointer accent-white"
+                                />
+                                <label htmlFor={`custom-check-${idx}`} className="text-xs text-neutral-300 cursor-pointer font-tight">
+                                  {field.name} {field.required && <span className="text-neutral-500">*</span>}
+                                </label>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     {/* Coupon Code Section */}
                     {!isEventFree(event.price) && (
-                      <div className="flex flex-col gap-3 p-4 bg-neutral-900/80 border border-neutral-800 rounded-2xl w-full font-tight shadow-md">
+                      <div className="flex flex-col gap-3 p-4 bg-neutral-900/80 border border-neutral-800 rounded-2xl w-full font-tight shadow-sm">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-neutral-800 border border-neutral-700 text-neutral-300 shrink-0">
@@ -990,7 +1035,7 @@ function RegisterPageInner() {
                               <GoCheck className="w-4 h-4 font-bold" />
                               <span className="font-bold text-white tracking-wider">{appliedCoupon.code}</span>
                               <span className="text-[11px] text-emerald-400">
-                                (-₹{appliedCoupon.discountAmount} saved)
+                                (-₹{discountAmountNum} saved)
                               </span>
                             </div>
                             <button
@@ -1008,7 +1053,7 @@ function RegisterPageInner() {
                               value={inputCouponCode}
                               onChange={(e) => setInputCouponCode(e.target.value.toUpperCase())}
                               placeholder="Enter Code (e.g. INCEPT50)"
-                              className="flex-1 bg-neutral-950/90 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2 text-xs text-white uppercase font-mono font-bold outline-none transition-all placeholder:text-neutral-500 placeholder:normal-case tracking-wider"
+                              className="flex-1 bg-neutral-950/90 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2 text-xs text-white uppercase font-mono font-bold outline-none transition-all placeholder:text-neutral-500 placeholder:normal-case tracking-wider shadow-inner"
                             />
                             <button
                               type="button"
@@ -1033,15 +1078,17 @@ function RegisterPageInner() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-3 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 mt-2"
+                      className="w-full py-3.5 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 mt-1 flex items-center justify-center gap-2"
                     >
-                      {submitting
-                        ? 'Submitting...'
-                        : isFull
-                          ? 'Join Waitlist'
-                          : isEventFree(event.price) || (appliedCoupon && finalPriceNum === 0)
-                            ? 'Submit Registration'
-                            : 'Proceed to Payment'}
+                      {submitting ? (
+                        <span>Submitting...</span>
+                      ) : isFull ? (
+                        <span>Join Waitlist ({totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'})</span>
+                      ) : isEventFree(event.price) || (appliedCoupon && finalPriceNum === 0) ? (
+                        <span>Confirm Free Registration ({totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'})</span>
+                      ) : (
+                        <span>Proceed to Pay {formattedDisplayPrice} ({totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'})</span>
+                      )}
                     </button>
                   </form>
                 </>
@@ -1051,49 +1098,52 @@ function RegisterPageInner() {
                 <>
                   <div className="flex flex-col gap-1.5 animate-fade-in font-tight">
                     <button onClick={() => { setRsvpStep('form'); }} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors pb-1 text-left cursor-pointer">
-                      <GoArrowLeft className="w-3.5 h-3.5" /> Back to Registration Form
+                      <GoArrowLeft className="w-3.5 h-3.5" /> Back to Registration Details
                     </button>
                     <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
                       Scan &amp; Pay
                     </h1>
-                    <p className="text-xs text-neutral-400">Please complete the payment of <strong className="text-white font-mono">{formattedDisplayPrice}</strong> to register.</p>
+                    <p className="text-xs text-neutral-400">
+                      Please complete payment of <strong className="text-white font-mono">{formattedDisplayPrice}</strong> for <strong>{totalAttendees} {totalAttendees === 1 ? 'Attendee' : 'Attendees'}</strong> to secure entry passes.
+                    </p>
                   </div>
 
                   <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-6 flex flex-col items-center gap-5 shadow-xl animate-fade-in text-center font-tight">
                     
                     {/* Amount badge */}
-                    <div className="bg-neutral-950 border border-neutral-800 px-5 py-3 rounded-xl flex flex-col gap-1 max-w-[280px] w-full shadow-inner">
-                      <div className="flex items-center justify-between text-[10px] uppercase font-mono text-neutral-400">
+                    <div className="bg-neutral-950 border border-neutral-800 px-5 py-3.5 rounded-xl flex flex-col gap-1.5 max-w-[320px] w-full shadow-inner">
+                      <div className="flex items-center justify-between text-[11px] uppercase font-mono text-neutral-400">
                         <span>Total Amount Due</span>
-                        {totalAttendees > 1 && (
-                          <span className="text-white font-semibold font-mono">{totalAttendees} Members</span>
-                        )}
+                        <span className="text-white font-semibold font-mono">{totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'}</span>
                       </div>
+                      
                       <div className="flex items-baseline justify-center gap-2">
                         {appliedCoupon ? (
                           <>
                             <span className="text-xs line-through text-neutral-500 font-mono">₹{totalBasePrice}</span>
-                            <span className="text-xl font-bold text-emerald-400 font-mono">{formattedDisplayPrice}</span>
+                            <span className="text-2xl font-bold text-emerald-400 font-mono">{formattedDisplayPrice}</span>
                           </>
                         ) : (
                           <>
                             {(event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
                               <span className="text-sm line-through text-neutral-500 font-mono">₹{249 * totalAttendees}</span>
                             )}
-                            <span className="text-xl font-bold font-mono text-white">
+                            <span className="text-2xl font-bold font-mono text-white">
                               {formattedDisplayPrice}
                             </span>
                           </>
                         )}
                       </div>
+
                       {totalAttendees > 1 && !isEventFree(event.price) && (
-                        <span className="text-[10px] font-mono text-neutral-400">
+                        <span className="text-[11px] font-mono text-neutral-400">
                           (₹{perTicketPrice} × {totalAttendees} attendees)
                         </span>
                       )}
+
                       {appliedCoupon && (
-                        <span className="text-[10px] font-mono text-emerald-400 font-semibold">
-                          Code '{appliedCoupon.code}' Applied! (-₹{appliedCoupon.discountAmount})
+                        <span className="text-[11px] font-mono text-emerald-400 font-semibold">
+                          Code '{appliedCoupon.code}' Applied! (-₹{discountAmountNum})
                         </span>
                       )}
                     </div>
@@ -1112,7 +1162,7 @@ function RegisterPageInner() {
                         />
                       </div>
                       <span className="text-xs text-neutral-300 font-medium">
-                        Scan QR using GPay, PhonePe, Paytm or Bank App
+                        Scan QR using GPay, PhonePe, Paytm or Any UPI App
                       </span>
                     </div>
 
@@ -1129,7 +1179,7 @@ function RegisterPageInner() {
                     <CopyCode code="6302933597@hdfc" label="UPI ID" duration={3500} />
 
                     <p className="text-[11px] text-neutral-500 font-mono max-w-sm">
-                      Once scanning and paying is done, click the button below to add payment transaction details for host approval.
+                      Once scanning and paying is done, click below to submit payment transaction details for instant host verification.
                     </p>
 
                     <button
@@ -1137,7 +1187,7 @@ function RegisterPageInner() {
                       onClick={() => setRsvpStep('confirm-txn')}
                       className="w-full py-3 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer"
                     >
-                      Next Step: Confirm Payment
+                      Next Step: Confirm Payment Details
                     </button>
                   </div>
                 </>
@@ -1152,7 +1202,7 @@ function RegisterPageInner() {
                     <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
                       Confirm Transaction
                     </h1>
-                    <p className="text-xs text-neutral-400">Fill in details of the transaction you made to submit registration.</p>
+                    <p className="text-xs text-neutral-400">Fill in transaction details of your {formattedDisplayPrice} payment.</p>
                   </div>
 
                   <form onSubmit={handleTxnSubmit} className="flex flex-col gap-5 animate-fade-in bg-transparent border-0 p-0 shadow-none font-tight">
@@ -1242,8 +1292,9 @@ function RegisterPageInner() {
 
             </div>
 
-            {/* Right Side: Event Details Summary Card */}
-            <div className="lg:col-span-5 bg-neutral-900/90 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl flex flex-col font-tight">
+            {/* Right Side: Event Details & Dynamic Live Order Summary Card */}
+            <div className="lg:col-span-5 bg-neutral-900/90 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl flex flex-col font-tight sticky top-24">
+              
               {/* Event Cover Image at top (Clean 1:1 square container without overlay pills) */}
               {event.coverImage && (
                 <div className="w-full aspect-square relative overflow-hidden bg-neutral-950 border-b border-neutral-800">
@@ -1254,6 +1305,7 @@ function RegisterPageInner() {
                   />
                 </div>
               )}
+
               <div className="p-5 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase bg-neutral-800 border border-neutral-700 text-neutral-300 px-2.5 py-0.5 rounded-md">
@@ -1263,10 +1315,13 @@ function RegisterPageInner() {
                     Registration Pass
                   </span>
                 </div>
+
                 <h4 className="font-instrument-serif text-2xl font-normal text-white leading-snug">
                   {event.title}
                 </h4>
-                <div className="flex flex-col gap-3 text-xs text-neutral-400 pt-3 border-t border-neutral-800">
+
+                {/* Event Meta */}
+                <div className="flex flex-col gap-2.5 text-xs text-neutral-400 pt-3 border-t border-neutral-800/80">
                   <div className="flex items-start gap-2.5">
                     <GoCalendar className="w-4 h-4 text-neutral-400 flex-shrink-0 mt-0.5" />
                     <div className="flex flex-col">
@@ -1278,18 +1333,47 @@ function RegisterPageInner() {
                     <GoLocation className="w-4 h-4 text-neutral-400 flex-shrink-0 mt-0.5" />
                     <span className="text-neutral-300 break-words leading-relaxed">{event.location || 'Online / Virtual'}</span>
                   </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-neutral-800/80">
-                    <span className="font-mono text-neutral-400 text-[11px] uppercase tracking-wider">Price</span>
+                </div>
+
+                {/* Live Order Calculation Summary */}
+                <div className="flex flex-col gap-2 pt-3 border-t border-neutral-800/80">
+                  <span className="text-[11px] font-mono uppercase text-neutral-400 tracking-wider">
+                    Live Order Summary
+                  </span>
+                  
+                  <div className="flex items-center justify-between text-xs text-neutral-300">
+                    <span>1 × Primary Pass (You)</span>
+                    <span className="font-mono">{isEventFree(event.price) ? 'Free' : `₹${perTicketPrice}`}</span>
+                  </div>
+
+                  {friends.length > 0 && (
+                    <div className="flex items-center justify-between text-xs text-neutral-300 animate-fade-in">
+                      <span>{friends.length} × Friend {friends.length === 1 ? 'Pass' : 'Passes'}</span>
+                      <span className="font-mono">{isEventFree(event.price) ? 'Free' : `+₹${perTicketPrice * friends.length}`}</span>
+                    </div>
+                  )}
+
+                  {appliedCoupon && discountAmountNum > 0 && (
+                    <div className="flex items-center justify-between text-xs text-emerald-400 font-mono animate-fade-in">
+                      <span>Coupon '{appliedCoupon.code}'</span>
+                      <span>-₹{discountAmountNum}</span>
+                    </div>
+                  )}
+
+                  {/* Total Due Row */}
+                  <div className="flex items-center justify-between pt-2.5 border-t border-neutral-800 text-sm font-semibold">
+                    <span className="text-white">Total Due ({totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'})</span>
                     <div className="flex items-baseline gap-1.5">
-                      {(event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
-                        <span className="text-xs line-through text-neutral-500 font-mono">₹249</span>
+                      {!isEventFree(event.price) && (event.price === '199' || event.price === '₹199' || (event.title && event.title.toLowerCase().includes('incept'))) && (
+                        <span className="text-xs line-through text-neutral-500 font-mono">₹{249 * totalAttendees}</span>
                       )}
-                      <span className="text-sm font-semibold font-mono text-white">
-                        {event.price ? (event.price.startsWith('₹') ? event.price : `₹${event.price}`) : 'Free'}
+                      <span className="text-base font-bold font-mono text-white">
+                        {formattedDisplayPrice}
                       </span>
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
 
