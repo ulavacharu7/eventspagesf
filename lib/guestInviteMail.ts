@@ -285,7 +285,7 @@ export async function sendGuestInviteMail({
     globalGuestMailTracker.set(dedupKey, now);
 
     const resendApiKey = process.env.RESEND_API_KEY || 're_xxxxxxxxx';
-    const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+    const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@app.redlix.co.in';
     const resend = new Resend(resendApiKey);
 
     // Generate PDF Pass (The ONLY attachment!)

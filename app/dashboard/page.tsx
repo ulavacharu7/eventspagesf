@@ -1563,7 +1563,7 @@ export default function DashboardPage() {
 
                       {/* Email Header Info */}
                       <div className="p-4 border-b border-white/10 bg-[#141417] flex flex-col gap-1">
-                        <span className="text-xs text-white/40">From: Student Forge &lt;noreply@events.studentforge.in&gt;</span>
+                        <span className="text-xs text-white/40">From: Student Forge &lt;noreply@app.redlix.co.in&gt;</span>
                         <h4 className="text-sm font-semibold text-white mt-0.5">{broadcastSubject || 'Subject preview...'}</h4>
                       </div>
 

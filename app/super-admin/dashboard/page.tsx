@@ -1389,7 +1389,7 @@ export default function SuperAdminDashboardPage() {
 
                   {/* Header info */}
                   <div className="p-3.5 border-b border-[#252536] bg-[#14141d] flex flex-col gap-1">
-                    <span className="text-[11px] text-neutral-400 font-mono">From: Student Forge &lt;noreply@events.studentforge.in&gt;</span>
+                    <span className="text-[11px] text-neutral-400 font-mono">From: Student Forge &lt;noreply@app.redlix.co.in&gt;</span>
                     <h4 className="text-xs font-bold text-white mt-0.5">{broadcastSubject || 'Subject preview...'}</h4>
                   </div>
 

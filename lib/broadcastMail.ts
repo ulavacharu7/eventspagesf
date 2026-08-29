@@ -68,7 +68,7 @@ export async function sendBroadcastMail({
     globalBroadcastTracker.set(dedupKey, now);
 
     const resendApiKey = process.env.RESEND_API_KEY;
-    const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@events.studentforge.in';
+    const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@app.redlix.co.in';
 
     // Process body content: convert URLs to clickable blue links & space paragraphs
     const formattedBodyHtml = formatBroadcastBodyHtml(bodyHtml);
