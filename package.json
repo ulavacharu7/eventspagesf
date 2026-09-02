@@ -11,6 +11,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@lottiefiles/dotlottie-react": "^0.19.16",
     "@prisma/adapter-pg": "^7.9.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/pg": "^8.20.2",
