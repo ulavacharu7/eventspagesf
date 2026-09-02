@@ -177,17 +177,17 @@ export default function HelpPage() {
           <div className="flex flex-col gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/10">
             <h4 className="text-white font-medium text-sm">Official Legal Documentation:</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <a href="/privacy" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
-                📄 Statutory Privacy Policy (DPDPA 2023)
+              <a href="/privacy" className="text-neutral-300 hover:text-white underline font-medium">
+                Statutory Privacy Policy (DPDPA 2023)
               </a>
-              <a href="/cookies" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
-                🍪 Cookies &amp; Storage Policy
+              <a href="/cookies" className="text-neutral-300 hover:text-white underline font-medium">
+                Cookies &amp; Storage Policy
               </a>
-              <a href="/payment-terms" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
-                💳 Payment Terms &amp; Refund Policy
+              <a href="/payment-terms" className="text-neutral-300 hover:text-white underline font-medium">
+                Payment Terms &amp; Refund Policy
               </a>
-              <a href="/terms" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
-                ⚖️ Terms of Service (Contract Act)
+              <a href="/terms" className="text-neutral-300 hover:text-white underline font-medium">
+                Terms of Service (Contract Act)
               </a>
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function HelpPage() {
           <div className="flex flex-col gap-2">
             <h3 className="text-white text-base font-medium">User Rights &amp; Grievance Redressal</h3>
             <p>
-              You hold the right to access, update, or request the erasure of your personal records. For data inquiry requests, please contact our grievance officer at <code>info@studentforge.in</code> or call <strong>+91 6304218064</strong> / <strong>+91 6309917327</strong>.
+              You hold the right to access, update, or request the erasure of your personal records. For data inquiry requests, please contact our grievance officer at <code>info@studentforge.in</code> or call <strong>+91 6304218064</strong>, <strong>+91 6309917327</strong>.
             </p>
           </div>
         </div>

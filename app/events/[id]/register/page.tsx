@@ -1292,15 +1292,15 @@ function RegisterPageInner() {
                     </button>
 
                     {/* Payment Support Helpline Notice */}
-                    <div className="p-3 rounded-xl bg-neutral-900/90 border border-neutral-800 text-[11px] text-neutral-400 flex flex-col gap-1 mt-1">
-                      <div className="flex items-center gap-1.5 text-neutral-300 font-medium">
-                        <span>💬 Facing issues with payment or ticket confirmation?</span>
+                    <div className="p-2.5 rounded-xl bg-neutral-900/90 border border-neutral-800 text-[11px] text-neutral-400 flex flex-col gap-1 mt-1">
+                      <div className="text-neutral-300 font-medium">
+                        Facing issues with payment or ticket confirmation?
                       </div>
                       <div className="flex flex-wrap items-center gap-2 text-neutral-300 font-mono text-[11px]">
                         <span>Helpline:</span>
-                        <a href="tel:+916304218064" className="text-amber-400 hover:underline">+91 6304218064</a>
-                        <span>•</span>
-                        <a href="tel:+916309917327" className="text-amber-400 hover:underline">+91 6309917327</a>
+                        <a href="tel:+916304218064" className="text-white hover:underline">+91 6304218064</a>
+                        <span>,</span>
+                        <a href="tel:+916309917327" className="text-white hover:underline">+91 6309917327</a>
                       </div>
                     </div>
                   </form>
