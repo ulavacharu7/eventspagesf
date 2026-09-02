@@ -342,7 +342,11 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
         JSON.stringify({ active: true, expiresAt, discount: 20, code: 'FLASH20' })
       );
     } catch {}
-    router.push(`/events/${eventId}/register?coupon=FLASH20`);
+    if (!user) {
+      router.push(`/auth?redirect=${encodeURIComponent(`/events/${eventId}/register?coupon=FLASH20`)}`);
+    } else {
+      router.push(`/events/${eventId}/register?coupon=FLASH20`);
+    }
   };
 
   const formatOfferTimer = (secs: number) => {
@@ -598,7 +602,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   <button
                     type="button"
                     onClick={() => {
-                      if (!user) router.push('/auth');
+                      if (!user) router.push(`/auth?redirect=${encodeURIComponent(`/events/${event.id}/register`)}`);
                       else router.push(`/events/${event.id}/register`);
                     }}
                     className="w-full py-3.5 bg-white hover:bg-neutral-200 text-neutral-950 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-pointer shadow-md active:scale-[0.99] flex items-center justify-center gap-1.5 font-tight group"
@@ -831,7 +835,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               <button
                 type="button"
                 onClick={() => {
-                  if (!user) router.push('/auth');
+                  if (!user) router.push(`/auth?redirect=${encodeURIComponent(`/events/${event.id}/register`)}`);
                   else router.push(`/events/${event.id}/register`);
                 }}
                 className="w-full py-2.5 bg-white text-neutral-950 text-xs font-semibold rounded-xl text-center flex items-center justify-center gap-1 font-tight cursor-pointer active:scale-95 transition-all"

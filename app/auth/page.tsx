@@ -102,13 +102,12 @@ function AuthContent() {
       });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || 'Registration failed');
-
+      const redirectUrl = searchParams.get('redirect') || searchParams.get('callbackUrl') || '/';
       localStorage.setItem('student_forge_user', JSON.stringify(data.user));
       setSuccessMsg('Account created successfully! Redirecting...');
       setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
+        window.location.href = redirectUrl;
+      }, 800);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('An error occurred');
@@ -222,11 +221,12 @@ function AuthContent() {
 
       if (!res.ok) throw new Error(data.error || 'Invalid credentials');
 
+      const redirectUrl = searchParams.get('redirect') || searchParams.get('callbackUrl') || '/';
       localStorage.setItem('student_forge_user', JSON.stringify(data.user));
       setSuccessMsg('Signed in successfully! Redirecting...');
       setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
+        window.location.href = redirectUrl;
+      }, 800);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('An error occurred');
