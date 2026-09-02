@@ -43,6 +43,25 @@ export async function POST(request: Request) {
       }) || null;
     }
 
+    // 3. Fallback for system flash discount
+    if (!coupon && (sanitizedInput === 'FLASH20' || sanitizedInput === 'SAVE20')) {
+      coupon = {
+        id: 'flash-20-system',
+        code: sanitizedInput,
+        eventId: null,
+        eventTitle: 'Special Flash Offer (₹20 OFF)',
+        discountType: 'FIXED_AMOUNT',
+        discountValue: 20,
+        maxUses: null,
+        usedCount: 0,
+        minOrderAmount: 20,
+        expiresAt: null,
+        isActive: true,
+        organizerEmail: null,
+        createdAt: new Date(),
+      };
+    }
+
     if (!coupon) {
       return NextResponse.json({ error: `Invalid coupon code '${sanitizedInput}'` }, { status: 404 });
     }

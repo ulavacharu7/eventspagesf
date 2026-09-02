@@ -239,6 +239,109 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
     }
   }, [event?.customFields]);
 
+  // 10-Second Delay Trigger + 3-Minute (180s) Flash Offer (₹20 OFF)
+  const [showOffer, setShowOffer] = useState(false);
+  const [offerSecondsLeft, setOfferSecondsLeft] = useState(180);
+
+  useEffect(() => {
+    if (!event || registered || eventEnded) return;
+
+    // Check if event is paid
+    const priceStr = (event.price || '').toLowerCase().trim();
+    const isFree = !priceStr || priceStr.includes('free') || priceStr === '0' || priceStr === '₹0';
+    if (isFree) return;
+
+    const storageKey = `sf_flash_offer_${eventId}`;
+    const dismissedKey = `sf_flash_offer_dismissed_${eventId}`;
+
+    if (typeof window !== 'undefined' && sessionStorage.getItem(dismissedKey)) {
+      return;
+    }
+
+    let existingExpiresAt: number | null = null;
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.expiresAt && parsed.expiresAt > Date.now()) {
+          existingExpiresAt = parsed.expiresAt;
+        }
+      }
+    } catch {}
+
+    let timerId: any = null;
+    let countdownInterval: any = null;
+
+    if (existingExpiresAt) {
+      const diffSecs = Math.max(0, Math.floor((existingExpiresAt - Date.now()) / 1000));
+      if (diffSecs > 0) {
+        setOfferSecondsLeft(diffSecs);
+        setShowOffer(true);
+        countdownInterval = setInterval(() => {
+          const nowDiff = Math.max(0, Math.floor((existingExpiresAt! - Date.now()) / 1000));
+          setOfferSecondsLeft(nowDiff);
+          if (nowDiff <= 0) {
+            setShowOffer(false);
+            clearInterval(countdownInterval);
+          }
+        }, 1000);
+      }
+    } else {
+      // 10 seconds delay trigger
+      timerId = setTimeout(() => {
+        const expiresAt = Date.now() + 180 * 1000; // 3 minutes
+        try {
+          localStorage.setItem(
+            storageKey,
+            JSON.stringify({ active: true, expiresAt, discount: 20, code: 'FLASH20' })
+          );
+        } catch {}
+
+        setOfferSecondsLeft(180);
+        setShowOffer(true);
+
+        countdownInterval = setInterval(() => {
+          const nowDiff = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+          setOfferSecondsLeft(nowDiff);
+          if (nowDiff <= 0) {
+            setShowOffer(false);
+            clearInterval(countdownInterval);
+          }
+        }, 1000);
+      }, 10000); // 10s
+    }
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      if (countdownInterval) clearInterval(countdownInterval);
+    };
+  }, [event, eventId, registered, eventEnded]);
+
+  const handleDismissOffer = () => {
+    setShowOffer(false);
+    try {
+      sessionStorage.setItem(`sf_flash_offer_dismissed_${eventId}`, 'true');
+    } catch {}
+  };
+
+  const handleClaimOffer = () => {
+    const storageKey = `sf_flash_offer_${eventId}`;
+    const expiresAt = Date.now() + Math.max(offerSecondsLeft, 60) * 1000;
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({ active: true, expiresAt, discount: 20, code: 'FLASH20' })
+      );
+    } catch {}
+    router.push(`/events/${eventId}/register?coupon=FLASH20`);
+  };
+
+  const formatOfferTimer = (secs: number) => {
+    const mins = Math.floor(secs / 60);
+    const rem = secs % 60;
+    return `${String(mins).padStart(2, '0')}:${String(rem).padStart(2, '0')}`;
+  };
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#111113] text-neutral-100 flex flex-col justify-between antialiased font-tight">
@@ -734,6 +837,81 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
           </div>
         </div>
       </div>
+
+      {/* 10-Second 3-Minute ₹20 Flash Offer Floating Card */}
+      {showOffer && !registered && !eventEnded && (
+        <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50 max-w-[340px] sm:max-w-[360px] w-[calc(100%-2rem)] sm:w-auto animate-fade-in font-sans">
+          <div className="relative overflow-hidden p-5 rounded-2xl bg-[#141417]/95 backdrop-blur-2xl border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex flex-col gap-4 text-white">
+            
+            {/* Ambient Top Glow */}
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-20 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+            {/* Top Bar: Flash Pill + Timer Capsule + Close Button */}
+            <div className="flex items-center justify-between gap-2 z-10">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] font-semibold tracking-wider uppercase">
+                  Flash Discount
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-neutral-200 text-xs font-mono font-medium">
+                  <GoClock className="w-3 h-3 text-neutral-400" />
+                  <span>{formatOfferTimer(offerSecondsLeft)}</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDismissOffer}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label="Close offer"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Middle Content: Clean Headline & Discount Highlight */}
+            <div className="flex flex-col gap-1.5 z-10">
+              <div className="flex items-baseline justify-between">
+                <h3 className="text-base font-semibold text-white tracking-tight">
+                  Instant ₹20 Savings
+                </h3>
+                <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-white/10 text-neutral-300 border border-white/10">
+                  FLASH20
+                </span>
+              </div>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Save ₹20 on your event pass. Claim your code now before the timer expires.
+              </p>
+            </div>
+
+            {/* Bottom Actions: Expansive Clean CTA */}
+            <div className="flex flex-col gap-2 pt-0.5 z-10">
+              <button
+                type="button"
+                onClick={handleClaimOffer}
+                className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-100 text-neutral-950 font-semibold text-xs transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer group"
+              >
+                <span>Claim Offer &amp; Book Pass</span>
+                <GoChevronRight className="w-3.5 h-3.5 text-neutral-600 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDismissOffer}
+                className="text-[11px] text-neutral-500 hover:text-neutral-400 text-center transition-colors cursor-pointer py-0.5"
+              >
+                No thanks, continue with regular price
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       <Footer />
     </main>

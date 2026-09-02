@@ -4,148 +4,125 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Student Forge Technologies Private Limited',
+  title: 'Privacy Policy | Student Forge',
   description:
-    'Statutory Privacy Policy of Student Forge Technologies Private Limited compliant with the Digital Personal Data Protection Act, 2023 (DPDPA), Information Technology Act, 2000, and SPDI Rules, 2011.',
+    'Clear and simple Privacy Policy explaining how Student Forge protects and handles your personal information.',
 };
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="relative min-h-screen bg-[#161618] text-white flex flex-col justify-between antialiased font-sans selection:bg-neutral-800 selection:text-white overflow-x-hidden">
+    <main
+      className="relative min-h-screen bg-[#161618] text-white flex flex-col justify-between antialiased selection:bg-neutral-800 selection:text-white overflow-x-hidden"
+      style={{ fontFamily: "'Poppins', sans-serif" }}
+    >
       <Navbar />
 
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 z-10 relative">
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 z-10 relative">
         
         {/* Header */}
         <div className="flex flex-col gap-2 pb-6 border-b border-[#26262a]">
-          <span className="text-[11px] font-mono uppercase tracking-widest text-[#71717a]">
-            Legal &amp; Regulatory Compliance &bull; Republic of India
+          <span className="text-[11px] uppercase tracking-wider text-[#71717a] font-medium">
+            Student Forge &bull; Privacy Policy
           </span>
           
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
             Privacy Policy
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#8a8a90] leading-relaxed">
-            Statutory privacy notice pursuant to the Digital Personal Data Protection Act, 2023 (DPDPA), the Information Technology Act, 2000 (Section 43A), and the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011 (SPDI Rules).
+          <p className="text-xs sm:text-sm text-[#8a8a90] leading-relaxed text-justify">
+            Your privacy matters to us. This page explains what information we collect, why we need it, and how we keep it safe in plain, simple language.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono text-[#5a5a64] pt-1">
-            <span>Last Updated: September 2026</span>
-            <span>&bull;</span>
-            <span>Student Forge Technologies Private Limited</span>
+          <div className="text-[11px] text-[#5a5a64] pt-1">
+            Last Updated: September 2026
           </div>
         </div>
 
-        {/* Support Note */}
+        {/* Quick Support Box */}
         <div className="my-6 p-4 rounded-xl bg-white/[0.02] border border-[#26262a] text-xs text-[#8a8a90] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <span>Need assistance with privacy or ticketing data? Contact support:</span>
-          <div className="flex items-center gap-2 font-mono text-xs text-neutral-300">
+          <span>Have a question about your account or personal data?</span>
+          <div className="flex items-center gap-2 text-xs text-neutral-300">
             <a href="tel:+916304218064" className="hover:text-white transition-colors">+91 6304218064</a>
             <span>,</span>
             <a href="tel:+916309917327" className="hover:text-white transition-colors">+91 6309917327</a>
           </div>
         </div>
 
-        {/* Policy Body */}
-        <div className="flex flex-col gap-8 text-xs sm:text-sm text-[#a1a1aa] leading-relaxed pt-2">
+        {/* Policy Sections */}
+        <div className="flex flex-col gap-8 text-xs sm:text-sm text-[#a1a1aa] leading-relaxed pt-2 text-justify">
 
-          {/* 1 */}
+          {/* Section 1 */}
           <section className="flex flex-col gap-2">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              1. Corporate Entity &amp; Data Fiduciary
+            <h2 className="text-sm sm:text-base font-medium text-white tracking-tight">
+              1. What Information We Collect
             </h2>
             <p>
-              This portal (<strong className="text-white">events.studentforge.in</strong>) is operated by <strong className="text-white">Student Forge Technologies Private Limited</strong>, an incorporated company based in Hyderabad, Telangana, India. Under the Digital Personal Data Protection Act, 2023 (DPDPA 2023), the Company acts as the Data Fiduciary for personal data collected through this platform. Technical infrastructure and hosting are managed with Studio Redlix.
+              We only collect information necessary to issue your tickets and run events smoothly:
             </p>
-          </section>
-
-          {/* 2 */}
-          <section className="flex flex-col gap-2">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              2. Categories of Personal Data Collected
-            </h2>
-            <ul className="list-disc pl-5 flex flex-col gap-1.5 text-xs sm:text-sm">
-              <li><strong className="text-neutral-200">Identity &amp; Contact:</strong> Name, verified email address, phone number, college/institution affiliation.</li>
-              <li><strong className="text-neutral-200">Payment References:</strong> Payer account name, payment method (UPI), 12-digit Bank UTR / Transaction ID, coupon codes, and discount values. (We do not store card numbers, CVVs, or UPI PINs; transactions are processed through banking networks).</li>
-              <li><strong className="text-neutral-200">Event Details:</strong> Dietary options (Veg/Non-Veg) and check-in scan timestamps.</li>
-              <li><strong className="text-neutral-200">Technical Logs:</strong> IP addresses and access logs for security and fraud prevention under Section 43A of the IT Act, 2000.</li>
+            <ul className="list-disc pl-5 flex flex-col gap-1.5">
+              <li><strong className="text-white">Contact Info:</strong> Your name, email address, phone number, and college/organization.</li>
+              <li><strong className="text-white">Payment Details:</strong> Payer name, UPI transaction ID (UTR), and coupon codes used. We never store bank PINs, card CVVs, or bank passwords.</li>
+              <li><strong className="text-white">Event Preferences:</strong> Food preferences (Veg/Non-Veg) and attendance check-in timestamps.</li>
             </ul>
           </section>
 
-          {/* 3 */}
+          {/* Section 2 */}
           <section className="flex flex-col gap-2">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              3. Purpose and Lawful Basis of Processing
+            <h2 className="text-sm sm:text-base font-medium text-white tracking-tight">
+              2. How We Use Your Information
             </h2>
-            <p>
-              Under Section 4 and 6 of the DPDPA 2023, data is processed based on explicit consent for specified purposes:
-            </p>
-            <ul className="list-disc pl-5 flex flex-col gap-1 text-xs sm:text-sm">
-              <li>Generating and delivering admission passes with cryptographically unique QR codes.</li>
-              <li>Validating payments against bank UTR records to prevent fraud.</li>
-              <li>Sending transactional updates, ticket passes, and schedule notices.</li>
-              <li>Statutory accounting and tax compliance under Indian laws.</li>
+            <ul className="list-disc pl-5 flex flex-col gap-1.5">
+              <li>Generating your event admission passes with scannable QR codes.</li>
+              <li>Sending ticket confirmations, PDFs, venue reminders, and schedule updates.</li>
+              <li>Verifying UPI payments against bank transaction records to confirm your booking.</li>
+              <li>Preventing spam, bot registrations, and duplicate accounts.</li>
             </ul>
           </section>
 
-          {/* 4 */}
+          {/* Section 3 */}
           <section className="flex flex-col gap-2">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              4. Data Disclosure &amp; Sharing
+            <h2 className="text-sm sm:text-base font-medium text-white tracking-tight">
+              3. We Never Sell Your Data
             </h2>
             <p>
-              We do not sell, monetize, or trade personal data. Data is shared strictly on a need-to-know basis with event organizers for admission management, certified cloud infrastructure providers under data processing terms, and statutory authorities when legally required by Indian judicial orders.
+              We do not sell, rent, or trade your personal information to third-party advertisers or marketing agencies. Your data is only shared with the organizers of the specific event you registered for so they can admit you at the venue.
             </p>
           </section>
 
-          {/* 5 */}
+          {/* Section 4 */}
           <section className="flex flex-col gap-2">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              5. Security and Encryption
+            <h2 className="text-sm sm:text-base font-medium text-white tracking-tight">
+              4. Data Security &amp; Protection
             </h2>
             <p>
-              In compliance with Rule 8 of the SPDI Rules, 2011, we employ TLS 1.3 encryption in transit, AES-256 database storage encryption, role-based access controls, and digital signature checks on QR entry passes.
+              We use industry-standard encryption (TLS/HTTPS) to protect data during transmission and encrypted database storage to safeguard your records against unauthorized access.
             </p>
           </section>
 
-          {/* 6 */}
+          {/* Section 5 */}
           <section className="flex flex-col gap-2">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              6. Rights of the Data Principal
+            <h2 className="text-sm sm:text-base font-medium text-white tracking-tight">
+              5. Your Rights
             </h2>
             <p>
-              Under the DPDPA 2023, you hold the right to access a summary of your data, request correction of inaccurate records, request erasure (subject to statutory tax retention limits), nominate a representative, and seek grievance redressal.
+              You have full control over your data. You can request to view, update, or delete your account information at any time by contacting our support team.
             </p>
           </section>
 
-          {/* 7 */}
-          <section className="flex flex-col gap-2">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              7. Data Retention
-            </h2>
-            <p>
-              Personal data is retained only for as long as necessary for event operations or to satisfy statutory accounting and tax retention periods under the Companies Act, 2013 and GST Act, 2017.
-            </p>
-          </section>
-
-          {/* 8 */}
-          <section className="flex flex-col gap-3 p-4 rounded-xl bg-white/[0.02] border border-[#26262a]">
-            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
-              8. Grievance Officer &amp; Redressal
+          {/* Section 6 */}
+          <section className="flex flex-col gap-2 p-4 rounded-xl bg-white/[0.02] border border-[#26262a]">
+            <h2 className="text-sm sm:text-base font-medium text-white tracking-tight">
+              6. Privacy Support &amp; Grievances
             </h2>
             <p className="text-xs text-[#8a8a90]">
-              In accordance with the IT Act, 2000 and DPDPA 2023, contact our Grievance Officer for privacy inquiries:
+              If you have any privacy questions, data requests, or concerns, please reach out to us:
             </p>
-            <div className="flex flex-col gap-1 text-xs font-mono text-neutral-300 pt-1">
+            <div className="flex flex-col gap-1 text-xs text-neutral-300 pt-1">
               <span>Student Forge Technologies Private Limited</span>
-              <span>Hyderabad, Telangana – 500081, India</span>
-              <span>Helpline: <a href="tel:+916304218064" className="hover:text-white">+91 6304218064</a>, <a href="tel:+916309917327" className="hover:text-white">+91 6309917327</a></span>
+              <span>Hyderabad, Telangana, India</span>
+              <span>Phone: <a href="tel:+916304218064" className="hover:text-white">+91 6304218064</a>, <a href="tel:+916309917327" className="hover:text-white">+91 6309917327</a></span>
               <span>Email: <a href="mailto:events.studentforge@gmail.com" className="hover:text-white">events.studentforge@gmail.com</a></span>
             </div>
-            <p className="text-[11px] text-[#5a5a64] pt-1">
-              Statutory timeline: Inquiries acknowledged within 24 hours and addressed within 30 days.
-            </p>
           </section>
 
         </div>

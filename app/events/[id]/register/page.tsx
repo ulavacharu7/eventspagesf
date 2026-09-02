@@ -400,6 +400,84 @@ function RegisterPageInner() {
     setCouponError('');
   };
 
+  // Flash Offer Timer on Checkout
+  const [flashOfferSeconds, setFlashOfferSeconds] = useState<number | null>(null);
+
+  // Auto-apply flash coupon from query or active localStorage offer
+  useEffect(() => {
+    if (!event) return;
+
+    const urlCoupon = searchParams?.get('coupon');
+    const storageKey = `sf_flash_offer_${event.id}`;
+    let candidateCode = urlCoupon ? urlCoupon.trim().toUpperCase() : null;
+
+    let expiresAt: number | null = null;
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.expiresAt && parsed.expiresAt > Date.now()) {
+          expiresAt = parsed.expiresAt;
+          if (!candidateCode) {
+            candidateCode = parsed.code || 'FLASH20';
+          }
+        }
+      }
+    } catch {}
+
+    let interval: any = null;
+    if (expiresAt) {
+      const diff = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+      if (diff > 0) {
+        setFlashOfferSeconds(diff);
+        interval = setInterval(() => {
+          const nowDiff = Math.max(0, Math.floor((expiresAt! - Date.now()) / 1000));
+          setFlashOfferSeconds(nowDiff);
+          if (nowDiff <= 0) {
+            clearInterval(interval);
+            setFlashOfferSeconds(0);
+          }
+        }, 1000);
+      }
+    }
+
+    if (candidateCode) {
+      setInputCouponCode(candidateCode);
+      const perTicketNum = parseFloat(event.price.replace(/[^0-9.]/g, '')) || 0;
+      const memberCount = 1 + (friends ? friends.length : 0);
+      const totalOriginalPrice = perTicketNum * memberCount;
+
+      fetch('/api/coupons/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: candidateCode,
+          eventId: event.id,
+          originalPrice: totalOriginalPrice,
+        }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.valid) {
+            setAppliedCoupon(data);
+            setInputCouponCode(data.code);
+            setCouponError('');
+          }
+        })
+        .catch((e) => console.error('Auto apply coupon failed:', e));
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [event, searchParams]);
+
+  const formatFlashTimer = (secs: number) => {
+    const mins = Math.floor(secs / 60);
+    const rem = secs % 60;
+    return `${String(mins).padStart(2, '0')}:${String(rem).padStart(2, '0')}`;
+  };
+
   // Success states
   const [ticket, setTicket] = useState<any>(null);
 
@@ -1016,6 +1094,21 @@ function RegisterPageInner() {
                     {/* Coupon Code Section */}
                     {!isEventFree(event.price) && (
                       <div className="flex flex-col gap-3 p-4 bg-neutral-900/80 border border-neutral-800 rounded-2xl w-full font-tight shadow-sm">
+                        
+                        {/* Active Flash Offer Timer Banner */}
+                        {flashOfferSeconds !== null && flashOfferSeconds > 0 && appliedCoupon?.code === 'FLASH20' && (
+                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-xs font-sans">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                              <span className="font-semibold text-white">Flash Offer Active (₹20 OFF)</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-300 bg-black/40 px-2 py-0.5 rounded-md border border-emerald-800/50">
+                              <span>Expires in:</span>
+                              <span className="font-bold text-white">{formatFlashTimer(flashOfferSeconds)}</span>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-neutral-800 border border-neutral-700 text-neutral-300 shrink-0">
