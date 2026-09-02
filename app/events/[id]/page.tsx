@@ -19,7 +19,9 @@ function getValidEventImageUrl(coverImage?: string | null, eventTitle?: string |
 
   const trimmed = coverImage.trim();
   if (trimmed.startsWith('data:')) {
-    return fallback;
+    return eventId 
+      ? `https://events.studentforge.in/api/events/${eventId}/og-image`
+      : fallback;
   }
 
   const firstUrl = trimmed.split(',')[0].trim();
