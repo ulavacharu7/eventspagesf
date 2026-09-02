@@ -441,7 +441,7 @@ export default function EventEssentials() {
             </a>
             <span className="text-neutral-600">•</span>
             <a
-              href="mailto:info@studentforge.in"
+              href="mailto:events.studentforge@gmail.com"
               className="text-neutral-400 hover:text-white transition"
             >
               Support

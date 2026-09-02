@@ -195,7 +195,7 @@ export default function HelpPage() {
           <div className="flex flex-col gap-2">
             <h3 className="text-white text-base font-medium">User Rights &amp; Grievance Redressal</h3>
             <p>
-              You hold the right to access, update, or request the erasure of your personal records. For data inquiry requests, please contact our grievance officer at <code>info@studentforge.in</code> or call <strong>+91 6304218064</strong>, <strong>+91 6309917327</strong>.
+              You hold the right to access, update, or request the erasure of your personal records. For data inquiry requests, please contact our grievance officer at <code>events.studentforge@gmail.com</code> or call <strong>+91 6304218064</strong>, <strong>+91 6309917327</strong>.
             </p>
           </div>
         </div>

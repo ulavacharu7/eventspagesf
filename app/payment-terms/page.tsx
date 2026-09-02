@@ -133,7 +133,7 @@ export default function PaymentTermsPage() {
               <span>Student Forge Technologies Private Limited</span>
               <span>Hyderabad, Telangana – 500081, India</span>
               <span>Helpline: <a href="tel:+916304218064" className="hover:text-white">+91 6304218064</a>, <a href="tel:+916309917327" className="hover:text-white">+91 6309917327</a> (Mon–Sun, 9 AM – 9 PM IST)</span>
-              <span>Email: <a href="mailto:info@studentforge.in" className="hover:text-white">info@studentforge.in</a></span>
+              <span>Email: <a href="mailto:events.studentforge@gmail.com" className="hover:text-white">events.studentforge@gmail.com</a></span>
             </div>
           </section>
 

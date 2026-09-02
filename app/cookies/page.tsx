@@ -104,7 +104,7 @@ export default function CookiesPolicyPage() {
             </p>
             <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-neutral-300 pt-1">
               <span>Helpline: <a href="tel:+916304218064" className="hover:text-white">+91 6304218064</a>, <a href="tel:+916309917327" className="hover:text-white">+91 6309917327</a></span>
-              <span>Email: <a href="mailto:info@studentforge.in" className="hover:text-white">info@studentforge.in</a></span>
+              <span>Email: <a href="mailto:events.studentforge@gmail.com" className="hover:text-white">events.studentforge@gmail.com</a></span>
             </div>
           </section>
 

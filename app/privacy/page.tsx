@@ -141,7 +141,7 @@ export default function PrivacyPolicyPage() {
               <span>Student Forge Technologies Private Limited</span>
               <span>Hyderabad, Telangana – 500081, India</span>
               <span>Helpline: <a href="tel:+916304218064" className="hover:text-white">+91 6304218064</a>, <a href="tel:+916309917327" className="hover:text-white">+91 6309917327</a></span>
-              <span>Email: <a href="mailto:info@studentforge.in" className="hover:text-white">info@studentforge.in</a></span>
+              <span>Email: <a href="mailto:events.studentforge@gmail.com" className="hover:text-white">events.studentforge@gmail.com</a></span>
             </div>
             <p className="text-[11px] text-[#5a5a64] pt-1">
               Statutory timeline: Inquiries acknowledged within 24 hours and addressed within 30 days.

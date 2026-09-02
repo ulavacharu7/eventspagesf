@@ -78,7 +78,7 @@ const Footer: React.FC<FooterProps> = ({ isLight = false }) => {
             </a>
 
             <a
-              href="mailto:info@studentforge.in"
+              href="mailto:events.studentforge@gmail.com"
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${iconClass}`}
               aria-label="Email"
             >
@@ -101,8 +101,8 @@ const Footer: React.FC<FooterProps> = ({ isLight = false }) => {
             +91 6309917327
           </a>
           <span>•</span>
-          <a href="mailto:info@studentforge.in" className="text-neutral-400 hover:text-white transition-colors">
-            info@studentforge.in
+          <a href="mailto:events.studentforge@gmail.com" className="text-neutral-400 hover:text-white transition-colors">
+            events.studentforge@gmail.com
           </a>
         </div>
 
