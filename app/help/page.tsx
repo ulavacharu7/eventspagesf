@@ -97,6 +97,23 @@ export default function HelpPage() {
               <li>The host organizer will review the transaction reference code in their bank records and approve your ticket entry pass.</li>
             </ol>
           </div>
+          <div className="flex flex-col gap-2">
+            <h3 className="text-white text-base font-medium">Payment Support &amp; Verification Desk</h3>
+            <p>
+              If your payment was debited but your ticket is not visible immediately, or if you face any payment app issues, contact our direct support lines:
+            </p>
+            <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-amber-300 pt-1">
+              <a href="tel:+916304218064" className="hover:underline flex items-center gap-1 font-bold">
+                📞 +91 6304218064
+              </a>
+              <a href="tel:+916309917327" className="hover:underline flex items-center gap-1 font-bold">
+                📞 +91 6309917327
+              </a>
+              <a href="/payment-terms" className="text-indigo-400 hover:underline">
+                View Official Payment &amp; Refund Policy &rarr;
+              </a>
+            </div>
+          </div>
         </div>
       ),
     },
@@ -108,7 +125,7 @@ export default function HelpPage() {
       content: (
         <div className="flex flex-col gap-6 text-sm text-[#8a8a96] leading-relaxed font-normal">
           <p>
-            Once an organizer approves your registration, a cryptographically signed ticket is generated for your account.
+            Once your registration is approved, a cryptographically signed ticket is generated for your account.
           </p>
           
           <div className="flex flex-col gap-2">
@@ -148,29 +165,37 @@ export default function HelpPage() {
           <div className="flex flex-col gap-2">
             <h3 className="text-white text-base font-medium">Governing Legal Framework</h3>
             <p>
-              Our data processing operations are strictly governed by:
+              Our data processing operations are strictly governed by Indian Laws:
             </p>
             <ul className="list-disc pl-5 flex flex-col gap-1.5 mt-1">
-              <li><strong>Information Technology Act, 2000 (and amendments):</strong> Ensuring secure transaction logging, verification security, and network protection guidelines.</li>
+              <li><strong>Information Technology Act, 2000 (and SPDI Rules 2011):</strong> Ensuring secure transaction logging, verification security, and network protection guidelines.</li>
               <li><strong>Digital Personal Data Protection (DPDP) Act, 2023:</strong> Guaranteeing transparent consent and protection for student and participant records.</li>
+              <li><strong>Consumer Protection Act, 2019 &amp; RBI Guidelines:</strong> Ensuring transparent pricing in INR and consumer refund protections.</li>
             </ul>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h3 className="text-white text-base font-medium">Consent & Processing Purposes</h3>
-            <p>
-              In compliance with the DPDP Act, 2023:
-            </p>
-            <ul className="list-disc pl-5 flex flex-col gap-1.5 mt-1">
-              <li>By registering your account or RSVPing for an event, you grant explicit consent for Student Forge Technologies Private Limited to store and process your name, verified email address, transaction reference codes, and ticket check-in details.</li>
-              <li>Data is processed solely for event organization, ticketing passes, verification checks, check-in operations, and critical notifications.</li>
-            </ul>
+          <div className="flex flex-col gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/10">
+            <h4 className="text-white font-medium text-sm">Official Legal Documentation:</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <a href="/privacy" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
+                📄 Statutory Privacy Policy (DPDPA 2023)
+              </a>
+              <a href="/cookies" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
+                🍪 Cookies &amp; Storage Policy
+              </a>
+              <a href="/payment-terms" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
+                💳 Payment Terms &amp; Refund Policy
+              </a>
+              <a href="/terms" className="text-indigo-400 hover:text-indigo-300 underline font-medium">
+                ⚖️ Terms of Service (Contract Act)
+              </a>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <h3 className="text-white text-base font-medium">User Rights & Redressal</h3>
+            <h3 className="text-white text-base font-medium">User Rights &amp; Grievance Redressal</h3>
             <p>
-              You hold the right to access, update, or request the erasure of your personal records. For data inquiry requests, please contact our grievance officer at <code>info@studentforge.in</code>.
+              You hold the right to access, update, or request the erasure of your personal records. For data inquiry requests, please contact our grievance officer at <code>info@studentforge.in</code> or call <strong>+91 6304218064</strong> / <strong>+91 6309917327</strong>.
             </p>
           </div>
         </div>

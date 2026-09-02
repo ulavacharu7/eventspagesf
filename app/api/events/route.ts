@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
       const formattedEvents = events.map((e) => ({
         ...e,
-        requireApproval: e.requireApproval || (e.title ? e.title.toLowerCase().includes('incept') : false),
+        requireApproval: e.requireApproval === true,
       }));
 
       return NextResponse.json({ events: formattedEvents });
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
 
     const formattedEvents = events.map((e) => ({
       ...e,
-      requireApproval: e.requireApproval || (e.title ? e.title.toLowerCase().includes('incept') : false),
+      requireApproval: e.requireApproval === true,
     }));
 
     const payload = { events: formattedEvents };
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const isApprovalRequired = body.requireApproval === true || (body.title ? body.title.toLowerCase().includes('incept') : false);
+    const isApprovalRequired = body.requireApproval === true;
 
     const event = await prisma.event.create({
       data: {

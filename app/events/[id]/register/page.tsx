@@ -472,6 +472,10 @@ function RegisterPageInner() {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isFull) {
+      alert('Registration is closed. This event has reached its maximum seat capacity.');
+      return;
+    }
     if (!name || !email) {
       alert('Name and Email are required.');
       return;
@@ -772,7 +776,7 @@ function RegisterPageInner() {
                   <div className="flex flex-col gap-1.5 animate-fade-in">
                     <div className="flex items-center justify-between">
                       <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
-                        {isFull ? 'Join Event Waitlist' : 'Complete your Registration'}
+                        {isFull ? 'Registration Closed' : 'Complete your Registration'}
                       </h1>
                       <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-neutral-300">
                         {totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'}
@@ -780,20 +784,20 @@ function RegisterPageInner() {
                     </div>
                     <p className="text-xs text-neutral-400 font-tight">
                       {isFull
-                        ? 'Event capacity reached. Fill in your details to join the waitlist.'
+                        ? 'This event has reached its maximum seat capacity. Registrations are no longer accepted.'
                         : 'Fill in your details and add friend passes below. All entry passes are generated instantly.'}
                     </p>
                   </div>
 
                   {isFull && (
-                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3 animate-fade-in font-tight">
-                      <GoClock className="w-5 h-5 flex-shrink-0 text-amber-400" />
+                    <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-3 animate-fade-in font-tight">
+                      <GoClock className="w-5 h-5 flex-shrink-0 text-red-400" />
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-semibold text-amber-200">
+                        <span className="font-semibold text-red-200">
                           Capacity Limit Reached ({registrationsCount}/{maxCapacity || 40} Seats Filled)
                         </span>
-                        <span className="text-[11px] text-amber-300/80">
-                          0 tickets left. Submitting this form will place you on the waitlist.
+                        <span className="text-[11px] text-red-300/80">
+                          All seats have been filled. Registration is currently closed.
                         </span>
                       </div>
                     </div>
@@ -1077,13 +1081,13 @@ function RegisterPageInner() {
                     {/* Submit CTA Button */}
                     <button
                       type="submit"
-                      disabled={submitting}
-                      className="w-full py-3.5 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 mt-1 flex items-center justify-center gap-2"
+                      disabled={submitting || isFull}
+                      className="w-full py-3.5 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1 flex items-center justify-center gap-2"
                     >
                       {submitting ? (
                         <span>Submitting...</span>
                       ) : isFull ? (
-                        <span>Join Waitlist ({totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'})</span>
+                        <span>Registration Closed · All Seats Filled</span>
                       ) : isEventFree(event.price) || (appliedCoupon && finalPriceNum === 0) ? (
                         <span>Confirm Free Registration ({totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'})</span>
                       ) : (
@@ -1286,6 +1290,19 @@ function RegisterPageInner() {
                     >
                       {submitting ? 'Submitting Details...' : 'Complete Registration & Submit'}
                     </button>
+
+                    {/* Payment Support Helpline Notice */}
+                    <div className="p-3 rounded-xl bg-neutral-900/90 border border-neutral-800 text-[11px] text-neutral-400 flex flex-col gap-1 mt-1">
+                      <div className="flex items-center gap-1.5 text-neutral-300 font-medium">
+                        <span>💬 Facing issues with payment or ticket confirmation?</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 text-neutral-300 font-mono text-[11px]">
+                        <span>Helpline:</span>
+                        <a href="tel:+916304218064" className="text-amber-400 hover:underline">+91 6304218064</a>
+                        <span>•</span>
+                        <a href="tel:+916309917327" className="text-amber-400 hover:underline">+91 6309917327</a>
+                      </div>
+                    </div>
                   </form>
                 </>
               )}

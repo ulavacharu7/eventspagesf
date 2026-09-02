@@ -126,7 +126,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
   const getDisplayRemaining = (actual: number | null): number | null => {
     if (actual === null) return null;
     if (actual <= 0) return 0;
-    return Math.max(1, 30 - registrationsCount);
+    return actual;
   };
 
   const displayTicketsLeft = getDisplayRemaining(actualRemaining);
@@ -482,16 +482,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                     </a>
                   </div>
                 ) : isFull ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!user) router.push('/auth');
-                      else router.push(`/events/${event.id}/register?waitlist=true`);
-                    }}
-                    className="w-full py-3 bg-neutral-100 hover:bg-white text-neutral-950 text-xs font-semibold rounded-xl transition-colors cursor-pointer shadow-sm font-tight"
-                  >
-                    {user ? 'Join Waitlist' : 'Sign In to Join Waitlist'}
-                  </button>
+                  <div className="w-full py-3 bg-neutral-850 border border-neutral-750 text-neutral-400 text-xs font-semibold rounded-xl text-center cursor-not-allowed font-tight shadow-sm bg-neutral-900/90">
+                    Registration Closed · All Seats Filled
+                  </div>
                 ) : (
                   <button
                     type="button"
@@ -722,16 +715,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                 View Pass
               </a>
             ) : isFull ? (
-              <button
-                type="button"
-                onClick={() => {
-                  if (!user) router.push('/auth');
-                  else router.push(`/events/${event.id}/register?waitlist=true`);
-                }}
-                className="w-full py-2.5 bg-neutral-100 text-neutral-950 text-xs font-semibold rounded-xl text-center font-tight"
-              >
-                Join Waitlist
-              </button>
+              <div className="w-full py-2.5 bg-neutral-800 border border-neutral-700 text-neutral-400 text-xs font-semibold rounded-xl text-center cursor-not-allowed font-tight">
+                Sold Out
+              </div>
             ) : (
               <button
                 type="button"

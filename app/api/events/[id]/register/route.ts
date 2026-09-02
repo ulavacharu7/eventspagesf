@@ -47,6 +47,29 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Registration is closed because this event has already concluded.' }, { status: 400 });
     }
 
+    // Check seat capacity limit
+    const parseCapacity = (capStr?: string | null): number | null => {
+      if (!capStr) return null;
+      const clean = capStr.toLowerCase().trim();
+      if (clean.includes('unlimited') || clean === '0' || clean === '') return null;
+      const match = capStr.match(/\d+/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        return isNaN(num) || num <= 0 ? null : num;
+      }
+      return null;
+    };
+
+    const maxCap = parseCapacity(event.capacity);
+    if (maxCap !== null) {
+      const currentCount = await prisma.registration.count({
+        where: { eventId }
+      });
+      if (currentCount >= maxCap) {
+        return NextResponse.json({ error: 'Registration is closed. All seats have been filled.' }, { status: 400 });
+      }
+    }
+
     // Determine if price is free (either original free or coupon discounted to free)
     const numericDiscount = discountApplied ? parseFloat(String(discountApplied)) : 0;
     const basePriceNum = parseFloat(event.price.replace(/[^0-9.]/g, '')) || 0;
@@ -89,7 +112,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
     const ticketCode = `TKT-${randomPart}`;
 
-    const isApprovalRequired = event.requireApproval || (event.title ? event.title.toLowerCase().includes('incept') : false);
+    const isApprovalRequired = event.requireApproval === true;
     const status = isApprovalRequired ? 'PENDING' : 'APPROVED';
 
     const registration = await prisma.registration.create({
