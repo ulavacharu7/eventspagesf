@@ -7,8 +7,6 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { EventData } from '@/lib/eventsStore';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
-import { ShinyButton } from '@/components/ui/shiny-button';
-import { AntiMetalButton } from '@/components/ui/anti-metal-button';
 import { 
   GoArrowLeft, GoCalendar, GoLocation, GoCheck, 
   GoPerson, GoMail, GoDeviceMobile, GoTag, GoClock,
@@ -405,7 +403,7 @@ function RegisterPageInner() {
 
   // Auto-apply flash coupon from query or active localStorage offer
   useEffect(() => {
-    if (!event) return;
+    if (!event || isEventCompleted(event)) return;
 
     const urlCoupon = searchParams?.get('coupon');
     const storageKey = `sf_flash_offer_${event.id}`;
@@ -829,38 +827,38 @@ function RegisterPageInner() {
         }
       `}} />
 
-      <div className="w-full max-w-5xl mx-auto pt-16 sm:pt-20 md:pt-24 pb-16 px-4 sm:px-6 flex-1 flex flex-col gap-6 font-tight">
+      <div className="w-full max-w-5xl mx-auto pt-16 sm:pt-20 md:pt-24 pb-20 px-4 sm:px-6 flex-1 flex flex-col gap-6 font-tight">
         
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs text-neutral-400 font-tight pb-4 border-b border-neutral-800/80 mb-2">
-          <a href="/" className="hover:text-white transition-colors">Home</a>
-          <span className="text-neutral-600">/</span>
-          <a href="/events" className="hover:text-white transition-colors">Events</a>
-          <span className="text-neutral-600">/</span>
-          <a href={`/events/${event.id}`} className="hover:text-white transition-colors truncate max-w-[150px] sm:max-w-xs">{event.title}</a>
-          <span className="text-neutral-600">/</span>
-          <span className="text-white font-medium">Register</span>
+        <nav className="flex items-center gap-1.5 sm:gap-2 text-xs text-neutral-400 font-tight pb-4 border-b border-neutral-800/80 mb-2 flex-wrap min-w-0">
+          <a href="/" className="hover:text-white transition-colors shrink-0">Home</a>
+          <span className="text-neutral-600 shrink-0">/</span>
+          <a href="/events" className="hover:text-white transition-colors shrink-0">Events</a>
+          <span className="text-neutral-600 shrink-0">/</span>
+          <a href={`/events/${event.id}`} className="hover:text-white transition-colors truncate max-w-[140px] sm:max-w-xs">{event.title}</a>
+          <span className="text-neutral-600 shrink-0">/</span>
+          <span className="text-white font-medium shrink-0">Register</span>
         </nav>
 
         {!ticket ? (
           /* Registration Form / Payment Flow Grid */
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-start">
             
             {/* Left Side: Form inputs */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
+            <div className="lg:col-span-7 flex flex-col gap-5 sm:gap-6">
               
               {rsvpStep === 'form' && (
                 <>
                   <div className="flex flex-col gap-1.5 animate-fade-in">
-                    <div className="flex items-center justify-between">
-                      <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <h1 className="font-instrument-serif text-2xl sm:text-3xl md:text-4xl text-white font-normal tracking-[-0.5px] leading-tight">
                         {isFull ? 'Registration Closed' : 'Complete your Registration'}
                       </h1>
-                      <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-neutral-300">
+                      <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-neutral-300 w-fit shrink-0">
                         {totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'}
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-400 font-tight">
+                    <p className="text-xs text-neutral-400 font-tight leading-relaxed">
                       {isFull
                         ? 'This event has reached its maximum seat capacity. Registrations are no longer accepted.'
                         : 'Fill in your details and add friend passes below. All entry passes are generated instantly.'}
@@ -868,13 +866,13 @@ function RegisterPageInner() {
                   </div>
 
                   {isFull && (
-                    <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-3 animate-fade-in font-tight">
-                      <GoClock className="w-5 h-5 flex-shrink-0 text-red-400" />
-                      <div className="flex flex-col gap-0.5">
+                    <div className="p-3.5 sm:p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-start sm:items-center gap-3 animate-fade-in font-tight">
+                      <GoClock className="w-5 h-5 shrink-0 text-red-400 mt-0.5 sm:mt-0" />
+                      <div className="flex flex-col gap-0.5 min-w-0">
                         <span className="font-semibold text-red-200">
                           Capacity Limit Reached ({registrationsCount}/{maxCapacity || 40} Seats Filled)
                         </span>
-                        <span className="text-[11px] text-red-300/80">
+                        <span className="text-[11px] text-red-300/80 leading-relaxed">
                           All seats have been filled. Registration is currently closed.
                         </span>
                       </div>
@@ -884,15 +882,15 @@ function RegisterPageInner() {
                   <form onSubmit={handleFormSubmit} className="flex flex-col gap-5 animate-fade-in bg-transparent border-0 p-0 shadow-none">
                     
                     {/* Primary Attendee Box */}
-                    <div className="p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex flex-col gap-4 shadow-sm">
-                      <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                          <span className="text-xs font-semibold text-white uppercase tracking-wider font-mono">
+                    <div className="p-4 sm:p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex flex-col gap-4 shadow-sm">
+                      <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3 gap-2 flex-wrap sm:flex-nowrap">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                          <span className="text-xs font-semibold text-white uppercase tracking-wider font-mono truncate">
                             Primary Attendee (You)
                           </span>
                         </div>
-                        <span className="text-xs font-mono text-neutral-400">
+                        <span className="text-xs font-mono text-neutral-400 shrink-0">
                           {isEventFree(event.price) ? 'Free' : `₹${perTicketPrice}`}
                         </span>
                       </div>
@@ -933,7 +931,7 @@ function RegisterPageInner() {
                           <GoDeviceMobile className="w-3.5 h-3.5 text-neutral-400" /> Phone Number <span className="text-neutral-500 text-[11px]">(Optional)</span>
                         </label>
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-2 bg-neutral-950 border border-neutral-800 rounded-xl px-2.5 py-2 flex-shrink-0 shadow-inner">
+                          <div className="flex items-center gap-1.5 sm:gap-2 bg-neutral-950 border border-neutral-800 rounded-xl px-2.5 py-2.5 shrink-0 shadow-inner">
                             <CountryFlagIcon country={COUNTRY_CODES.find((c) => c.code === countryCode)?.country || 'IN'} />
                             <select
                               value={countryCode}
@@ -952,15 +950,15 @@ function RegisterPageInner() {
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             placeholder={COUNTRY_CODES.find((c) => c.code === countryCode)?.placeholder || '98765 43210'}
-                            className="flex-1 bg-neutral-950/80 hover:bg-neutral-950 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-mono shadow-inner"
+                            className="flex-1 min-w-0 bg-neutral-950/80 hover:bg-neutral-950 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none transition-all placeholder:text-neutral-600 font-mono shadow-inner"
                           />
                         </div>
                       </div>
                     </div>
 
                     {/* Friends / Additional Participants Section */}
-                    <div className="flex flex-col gap-4 pt-1 font-tight">
-                      <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-3.5 sm:gap-4 pt-1 font-tight">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
                         <div className="flex flex-col gap-0.5">
                           <span className="text-sm font-semibold text-white">
                             Add Friends / Teammates
@@ -977,7 +975,7 @@ function RegisterPageInner() {
                             e.preventDefault();
                             setFriends([...friends, { name: '', email: '', phone: '' }]);
                           }}
-                          className="flex items-center gap-1.5 text-xs font-medium text-neutral-200 hover:text-white cursor-pointer py-2 px-3.5 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 transition-all font-tight shadow-sm active:scale-95"
+                          className="flex items-center justify-center gap-1.5 text-xs font-medium text-neutral-200 hover:text-white cursor-pointer py-2 px-3.5 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 transition-all font-tight shadow-sm active:scale-95 w-full sm:w-auto shrink-0"
                         >
                           <GoPlus className="w-3.5 h-3.5" />
                           <span>Add Friend {perTicketPrice > 0 ? `(+₹${perTicketPrice})` : ''}</span>
@@ -986,15 +984,15 @@ function RegisterPageInner() {
 
                       {/* Friends List */}
                       {friends.map((friend, idx) => (
-                        <div key={idx} className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-5 flex flex-col gap-3.5 relative animate-fade-in font-tight shadow-sm">
-                          <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2.5">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-indigo-400" />
-                              <span className="text-xs font-mono uppercase tracking-wider font-semibold text-neutral-200">
+                        <div key={idx} className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-4 sm:p-5 flex flex-col gap-3.5 relative animate-fade-in font-tight shadow-sm">
+                          <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2.5 gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
+                              <span className="text-xs font-mono uppercase tracking-wider font-semibold text-neutral-200 truncate">
                                 Attendee #{idx + 2} (Friend Pass)
                               </span>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 shrink-0">
                               <span className="text-xs font-mono text-neutral-400">
                                 {isEventFree(event.price) ? 'Free' : `+₹${perTicketPrice}`}
                               </span>
@@ -1051,7 +1049,7 @@ function RegisterPageInner() {
 
                     {/* Custom RSVP Fields */}
                     {parsedCustomFields.length > 0 && (
-                      <div className="p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex flex-col gap-3.5 shadow-sm">
+                      <div className="p-4 sm:p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex flex-col gap-3.5 shadow-sm">
                         <span className="text-xs font-mono uppercase text-neutral-400 tracking-wider">
                           Additional Information
                         </span>
@@ -1093,23 +1091,23 @@ function RegisterPageInner() {
 
                     {/* Coupon Code Section */}
                     {!isEventFree(event.price) && (
-                      <div className="flex flex-col gap-3 p-4 bg-neutral-900/80 border border-neutral-800 rounded-2xl w-full font-tight shadow-sm">
+                      <div className="flex flex-col gap-3 p-3.5 sm:p-4 bg-neutral-900/80 border border-neutral-800 rounded-2xl w-full font-tight shadow-sm">
                         
                         {/* Active Flash Offer Timer Banner */}
                         {flashOfferSeconds !== null && flashOfferSeconds > 0 && appliedCoupon?.code === 'FLASH20' && (
-                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-xs font-sans">
+                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-xs font-sans gap-2 flex-wrap sm:flex-nowrap">
                             <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                               <span className="font-semibold text-white">Flash Offer Active (₹20 OFF)</span>
                             </div>
-                            <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-300 bg-black/40 px-2 py-0.5 rounded-md border border-emerald-800/50">
+                            <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-300 bg-black/40 px-2 py-0.5 rounded-md border border-emerald-800/50 shrink-0">
                               <span>Expires in:</span>
                               <span className="font-bold text-white">{formatFlashTimer(flashOfferSeconds)}</span>
                             </div>
                           </div>
                         )}
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-neutral-800 border border-neutral-700 text-neutral-300 shrink-0">
                               <GoTag className="w-3.5 h-3.5" />
@@ -1120,43 +1118,43 @@ function RegisterPageInner() {
                           </div>
 
                           {appliedCoupon && (
-                            <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-950 border border-emerald-800 text-emerald-400">
+                            <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-950 border border-emerald-800 text-emerald-400 shrink-0">
                               -{appliedCoupon.discountType === 'PERCENTAGE' ? `${appliedCoupon.discountValue}%` : `₹${appliedCoupon.discountValue}`} OFF
                             </span>
                           )}
                         </div>
 
                         {appliedCoupon ? (
-                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 transition-all">
-                            <div className="flex items-center gap-2 font-mono text-xs text-emerald-400">
-                              <GoCheck className="w-4 h-4 font-bold" />
-                              <span className="font-bold text-white tracking-wider">{appliedCoupon.code}</span>
-                              <span className="text-[11px] text-emerald-400">
+                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 transition-all gap-2">
+                            <div className="flex items-center gap-2 font-mono text-xs text-emerald-400 min-w-0">
+                              <GoCheck className="w-4 h-4 font-bold shrink-0" />
+                              <span className="font-bold text-white tracking-wider truncate">{appliedCoupon.code}</span>
+                              <span className="text-[11px] text-emerald-400 shrink-0">
                                 (-₹{discountAmountNum} saved)
                               </span>
                             </div>
                             <button
                               type="button"
                               onClick={handleRemoveCoupon}
-                              className="text-neutral-400 hover:text-white transition-colors cursor-pointer text-xs font-mono px-2 py-1 rounded-lg hover:bg-neutral-800"
+                              className="text-neutral-400 hover:text-white transition-colors cursor-pointer text-xs font-mono px-2 py-1 rounded-lg hover:bg-neutral-800 shrink-0"
                             >
                               Remove ✕
                             </button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2.5">
+                          <div className="flex items-center gap-2 sm:gap-2.5">
                             <input
                               type="text"
                               value={inputCouponCode}
                               onChange={(e) => setInputCouponCode(e.target.value.toUpperCase())}
                               placeholder="Enter Code (e.g. INCEPT50)"
-                              className="flex-1 bg-neutral-950/90 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3.5 py-2 text-xs text-white uppercase font-mono font-bold outline-none transition-all placeholder:text-neutral-500 placeholder:normal-case tracking-wider shadow-inner"
+                              className="flex-1 min-w-0 bg-neutral-950/90 border border-neutral-800 focus:border-neutral-600 rounded-xl px-3 sm:px-3.5 py-2 text-xs text-white uppercase font-mono font-bold outline-none transition-all placeholder:text-neutral-500 placeholder:normal-case tracking-wider shadow-inner"
                             />
                             <button
                               type="button"
                               onClick={() => handleApplyCoupon()}
                               disabled={couponLoading || !inputCouponCode.trim()}
-                              className="px-4 py-2 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold font-mono rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-40"
+                              className="px-3.5 sm:px-4 py-2 bg-white hover:bg-neutral-200 text-neutral-950 text-xs font-semibold font-mono rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-40"
                             >
                               {couponLoading ? 'Applying...' : 'Apply'}
                             </button>
@@ -1175,7 +1173,7 @@ function RegisterPageInner() {
                     <button
                       type="submit"
                       disabled={submitting || isFull}
-                      className="w-full py-3.5 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1 flex items-center justify-center gap-2"
+                      className="w-full py-3.5 px-4 sm:px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-xs sm:text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1 flex items-center justify-center gap-2 text-center"
                     >
                       {submitting ? (
                         <span>Submitting...</span>
@@ -1197,18 +1195,18 @@ function RegisterPageInner() {
                     <button onClick={() => { setRsvpStep('form'); }} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors pb-1 text-left cursor-pointer">
                       <GoArrowLeft className="w-3.5 h-3.5" /> Back to Registration Details
                     </button>
-                    <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
+                    <h1 className="font-instrument-serif text-2xl sm:text-3xl md:text-4xl text-white font-normal tracking-[-0.5px] leading-tight">
                       Scan &amp; Pay
                     </h1>
-                    <p className="text-xs text-neutral-400">
+                    <p className="text-xs text-neutral-400 leading-relaxed">
                       Please complete payment of <strong className="text-white font-mono">{formattedDisplayPrice}</strong> for <strong>{totalAttendees} {totalAttendees === 1 ? 'Attendee' : 'Attendees'}</strong> to secure entry passes.
                     </p>
                   </div>
 
-                  <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-6 flex flex-col items-center gap-5 shadow-xl animate-fade-in text-center font-tight">
+                  <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-5 sm:p-6 flex flex-col items-center gap-4 sm:gap-5 shadow-xl animate-fade-in text-center font-tight">
                     
                     {/* Amount badge */}
-                    <div className="bg-neutral-950 border border-neutral-800 px-5 py-3.5 rounded-xl flex flex-col gap-1.5 max-w-[320px] w-full shadow-inner">
+                    <div className="bg-neutral-950 border border-neutral-800 px-4 sm:px-5 py-3.5 rounded-xl flex flex-col gap-1.5 max-w-[320px] w-full shadow-inner mx-auto">
                       <div className="flex items-center justify-between text-[11px] uppercase font-mono text-neutral-400">
                         <span>Total Amount Due</span>
                         <span className="text-white font-semibold font-mono">{totalAttendees} {totalAttendees === 1 ? 'Pass' : 'Passes'}</span>
@@ -1247,7 +1245,7 @@ function RegisterPageInner() {
 
                     {/* QR Code Container */}
                     <div className="flex flex-col items-center gap-3 w-full">
-                      <div className="p-4 bg-white border-4 border-white rounded-2xl shadow-xl flex items-center justify-center select-none animate-fade-in w-[200px] h-[200px] shrink-0">
+                      <div className="p-3 sm:p-4 bg-white border-4 border-white rounded-2xl shadow-xl flex items-center justify-center select-none animate-fade-in w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] shrink-0 mx-auto">
                         <QRCodeSVG
                           value={qrPaymentValue}
                           size={168}
@@ -1258,7 +1256,7 @@ function RegisterPageInner() {
                           className="w-full h-full object-contain"
                         />
                       </div>
-                      <span className="text-xs text-neutral-300 font-medium">
+                      <span className="text-xs text-neutral-300 font-medium max-w-xs">
                         Scan QR using GPay, PhonePe, Paytm or Any UPI App
                       </span>
                     </div>
@@ -1266,23 +1264,25 @@ function RegisterPageInner() {
                     {/* Mobile Direct Pay Deep Link Button */}
                     <a
                       href={qrPaymentValue}
-                      className="w-full max-w-sm py-2.5 px-4 bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer font-tight"
+                      className="w-full max-w-sm py-2.5 px-4 bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer font-tight mx-auto"
                     >
                       <GoDeviceMobile className="w-4 h-4" />
                       <span>Pay Directly via Mobile UPI App</span>
                     </a>
 
                     {/* Copy UPI ID Bar */}
-                    <CopyCode code="6302933597@hdfc" label="UPI ID" duration={3500} />
+                    <div className="w-full max-w-sm mx-auto flex justify-center">
+                      <CopyCode code="6302933597@hdfc" label="UPI ID" duration={3500} />
+                    </div>
 
-                    <p className="text-[11px] text-neutral-500 font-mono max-w-sm">
+                    <p className="text-[11px] text-neutral-500 font-mono max-w-sm leading-relaxed">
                       Once scanning and paying is done, click below to submit payment transaction details for instant host verification.
                     </p>
 
                     <button
                       type="button"
                       onClick={() => setRsvpStep('confirm-txn')}
-                      className="w-full py-3 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer"
+                      className="w-full max-w-sm mx-auto py-3 px-5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-sm transition-all shadow-md active:scale-[0.99] font-tight cursor-pointer"
                     >
                       Next Step: Confirm Payment Details
                     </button>
@@ -1296,13 +1296,13 @@ function RegisterPageInner() {
                     <button onClick={() => { setRsvpStep('payment'); }} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors pb-1 text-left cursor-pointer">
                       <GoArrowLeft className="w-3.5 h-3.5" /> Back to Payment Scan
                     </button>
-                    <h1 className="font-instrument-serif text-3xl sm:text-4xl text-white font-normal tracking-[-0.5px]">
+                    <h1 className="font-instrument-serif text-2xl sm:text-3xl md:text-4xl text-white font-normal tracking-[-0.5px] leading-tight">
                       Confirm Transaction
                     </h1>
                     <p className="text-xs text-neutral-400">Fill in transaction details of your {formattedDisplayPrice} payment.</p>
                   </div>
 
-                  <form onSubmit={handleTxnSubmit} className="flex flex-col gap-5 animate-fade-in bg-transparent border-0 p-0 shadow-none font-tight">
+                  <form onSubmit={handleTxnSubmit} className="flex flex-col gap-4 sm:gap-5 animate-fade-in bg-transparent border-0 p-0 shadow-none font-tight">
                     
                     {/* Account Name */}
                     <div className="flex flex-col gap-1.5">
@@ -1321,12 +1321,12 @@ function RegisterPageInner() {
 
                     {/* Payment Method */}
                     <div className="flex flex-col gap-1.5">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
                         <label className="text-xs font-medium text-neutral-300">
                           Payment Method <span className="text-neutral-500">*</span>
                         </label>
                         {/* Official Payment Logos (GPay, PhonePe, UPI) */}
-                        <div className="flex items-center gap-1.5 select-none">
+                        <div className="flex items-center gap-1.5 flex-wrap select-none">
                           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-800 border border-neutral-700 text-[10px] font-bold text-white font-sans">
                             <svg className="w-3 h-3" viewBox="0 0 24 24">
                               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -1385,11 +1385,11 @@ function RegisterPageInner() {
                     </button>
 
                     {/* Payment Support Helpline Notice */}
-                    <div className="p-2.5 rounded-xl bg-neutral-900/90 border border-neutral-800 text-[11px] text-neutral-400 flex flex-col gap-1 mt-1">
+                    <div className="p-3 rounded-xl bg-neutral-900/90 border border-neutral-800 text-[11px] text-neutral-400 flex flex-col gap-1.5 mt-1">
                       <div className="text-neutral-300 font-medium">
                         Facing issues with payment or ticket confirmation?
                       </div>
-                      <div className="flex flex-wrap items-center gap-2 text-neutral-300 font-mono text-[11px]">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-neutral-300 font-mono text-[11px]">
                         <span>Helpline:</span>
                         <a href="tel:+916304218064" className="text-white hover:underline">+91 6304218064</a>
                         <span>,</span>
@@ -1403,11 +1403,11 @@ function RegisterPageInner() {
             </div>
 
             {/* Right Side: Event Details & Dynamic Live Order Summary Card */}
-            <div className="lg:col-span-5 bg-neutral-900/90 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl flex flex-col font-tight sticky top-24">
+            <div className="lg:col-span-5 bg-neutral-900/90 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl flex flex-col font-tight lg:sticky lg:top-24">
               
-              {/* Event Cover Image at top (Clean 1:1 square container without overlay pills) */}
+              {/* Event Cover Image at top */}
               {event.coverImage && (
-                <div className="w-full aspect-square relative overflow-hidden bg-neutral-950 border-b border-neutral-800">
+                <div className="w-full aspect-[16/9] sm:aspect-[4/3] lg:aspect-square relative overflow-hidden bg-neutral-950 border-b border-neutral-800">
                   <img 
                     src={event.coverImage} 
                     alt={event.title} 
@@ -1416,7 +1416,7 @@ function RegisterPageInner() {
                 </div>
               )}
 
-              <div className="p-5 flex flex-col gap-4">
+              <div className="p-4 sm:p-5 flex flex-col gap-3.5 sm:gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase bg-neutral-800 border border-neutral-700 text-neutral-300 px-2.5 py-0.5 rounded-md">
                     {event.ticketCode || 'TICKET'}
@@ -1426,21 +1426,21 @@ function RegisterPageInner() {
                   </span>
                 </div>
 
-                <h4 className="font-instrument-serif text-2xl font-normal text-white leading-snug">
+                <h4 className="font-instrument-serif text-xl sm:text-2xl font-normal text-white leading-snug break-words">
                   {event.title}
                 </h4>
 
                 {/* Event Meta */}
                 <div className="flex flex-col gap-2.5 text-xs text-neutral-400 pt-3 border-t border-neutral-800/80">
                   <div className="flex items-start gap-2.5">
-                    <GoCalendar className="w-4 h-4 text-neutral-400 flex-shrink-0 mt-0.5" />
-                    <div className="flex flex-col">
+                    <GoCalendar className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
+                    <div className="flex flex-col min-w-0">
                       <span className="text-white font-medium">{event.startDate}</span>
                       <span className="text-neutral-400 font-mono text-[11px]">{event.startTime}{event.endTime ? ` – ${event.endTime}` : ''}</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <GoLocation className="w-4 h-4 text-neutral-400 flex-shrink-0 mt-0.5" />
+                    <GoLocation className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
                     <span className="text-neutral-300 break-words leading-relaxed">{event.location || 'Online / Virtual'}</span>
                   </div>
                 </div>
@@ -1490,7 +1490,7 @@ function RegisterPageInner() {
           </div>
         ) : (
           /* HORIZONTAL BOARDING PASS TICKET SUCCESS SCREEN */
-          <div className="max-w-3xl w-full mx-auto flex flex-col items-center gap-6 py-6 animate-fade-in">
+          <div className="max-w-3xl w-full mx-auto flex flex-col items-center gap-5 sm:gap-6 py-4 sm:py-6 animate-fade-in">
             
             {/* Header info */}
             {ticket.status === 'PENDING' ? (
@@ -1504,7 +1504,7 @@ function RegisterPageInner() {
             ) : (
               <div className="flex flex-col items-center text-center gap-1 no-print -mt-4">
                 <div 
-                  className="w-[120px] h-[120px] flex items-center justify-center -mb-2"
+                  className="w-[110px] h-[110px] sm:w-[120px] sm:h-[120px] flex items-center justify-center -mb-2"
                   dangerouslySetInnerHTML={{
                     __html: `<dotlottie-wc src="https://lottie.host/3075f240-62a5-46db-8d64-5dda79afd538/4FE24H0UXC.lottie" style="width: 120px; height: 120px;" autoplay loop></dotlottie-wc>`
                   }}
@@ -1518,15 +1518,15 @@ function RegisterPageInner() {
             <div className="w-full bg-[#1c1c1f] border border-[#2e2e34] rounded-2xl shadow-2xl relative flex flex-col md:flex-row items-stretch overflow-hidden printable-ticket-card">
               
               {/* Left Side: Pass main information */}
-              <div className="flex-1 p-6 md:p-8 flex flex-col justify-between gap-6 min-w-0">
+              <div className="flex-1 p-5 sm:p-6 md:p-8 flex flex-col justify-between gap-5 sm:gap-6 min-w-0">
                 
                 {/* Event Name & Ticket ID Header */}
-                <div className="flex justify-between items-start gap-4">
+                <div className="flex justify-between items-start gap-3 sm:gap-4">
                   <div className="flex flex-col gap-1 min-w-0">
                     <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Event Name</span>
-                    <h3 className="font-instrument-serif text-xl md:text-2xl font-normal text-white leading-tight truncate">{event.title}</h3>
+                    <h3 className="font-instrument-serif text-lg sm:text-xl md:text-2xl font-normal text-white leading-tight break-words">{event.title}</h3>
                   </div>
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Ticket ID</span>
                     <span className="text-xs font-mono font-bold text-neutral-300">
                       {ticket.status === 'PENDING' ? (
@@ -1539,26 +1539,26 @@ function RegisterPageInner() {
                 </div>
 
                 {/* Details layout: Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3.5 border-t border-[#2e2e34] pt-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-3 sm:gap-x-4 gap-y-3.5 border-t border-[#2e2e34] pt-4 sm:pt-5">
                   <div className="flex flex-col gap-0.5">
                     <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Date &amp; Time</span>
-                    <span className="text-xs font-semibold text-white truncate">{event.startDate} at {event.startTime}</span>
+                    <span className="text-xs font-semibold text-white break-words">{event.startDate} at {event.startTime}</span>
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Location</span>
-                    <span className="text-xs font-semibold text-white truncate">{event.location}</span>
+                    <span className="text-xs font-semibold text-white break-words">{event.location}</span>
                   </div>
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-0.5 col-span-2 sm:col-span-1">
                     <span className="text-[9px] uppercase font-mono text-neutral-500 tracking-wider">Amount Paid</span>
                     <span className="text-xs font-bold" style={{ color: 'var(--event-highlight)' }}>{event.price || 'Free'}</span>
                   </div>
                 </div>
 
                 {/* Attendee Info Container */}
-                <div className="bg-[#222226] border border-[#2e2e34] rounded-xl p-4 flex flex-col gap-3">
+                <div className="bg-[#222226] border border-[#2e2e34] rounded-xl p-3.5 sm:p-4 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div 
-                      className="w-8 h-8 rounded-full bg-[#2e2e34] border border-[#3e3e46] flex items-center justify-center text-xs font-bold font-mono"
+                      className="w-8 h-8 rounded-full bg-[#2e2e34] border border-[#3e3e46] flex items-center justify-center text-xs font-bold font-mono shrink-0"
                       style={{ color: 'var(--event-highlight)' }}
                     >
                       {ticket.name?.substring(0, 2).toUpperCase() || 'SF'}
@@ -1590,10 +1590,10 @@ function RegisterPageInner() {
 
                   {/* Transaction ID if paid */}
                   {ticket.paymentTxnId && (
-                    <div className="border-t border-[#2e2e34] pt-2 mt-0.5 flex justify-between gap-4 text-[10px] text-neutral-500">
+                    <div className="border-t border-[#2e2e34] pt-2 mt-0.5 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 text-[10px] text-neutral-500">
                       <div>Method: <span className="text-neutral-300 font-semibold">{ticket.paymentMethod}</span></div>
                       <div>Account: <span className="text-neutral-300 font-semibold">{ticket.paymentAccountName}</span></div>
-                      <div className="truncate max-w-[180px]">Txn ID: <span className="text-neutral-300 font-mono font-semibold">{ticket.paymentTxnId}</span></div>
+                      <div className="truncate max-w-full sm:max-w-[180px]">Txn ID: <span className="text-neutral-300 font-mono font-semibold">{ticket.paymentTxnId}</span></div>
                     </div>
                   )}
                 </div>
@@ -1608,7 +1608,7 @@ function RegisterPageInner() {
               </div>
 
               {/* Right Side: QR Code Stub */}
-              <div className="w-full md:w-60 bg-[#1c1c1f] border-t md:border-t-0 border-[#2e2e34] md:border-l border-dashed p-6 md:p-8 flex flex-col items-center justify-center gap-4 text-center flex-shrink-0 printable-stub">
+              <div className="w-full md:w-60 bg-[#1c1c1f] border-t md:border-t-0 border-[#2e2e34] md:border-l border-dashed p-5 sm:p-6 md:p-8 flex flex-col items-center justify-center gap-3 sm:gap-4 text-center shrink-0 printable-stub">
                 {ticket.status === 'PENDING' ? (
                   <div className="relative p-3 bg-white/5 rounded-xl border border-dashed border-[#2e2e34] w-[140px] h-[140px] flex flex-col items-center justify-center text-center select-none animate-pulse">
                     <span className="text-xl mb-1 text-rose-500"><GoClock className="w-5 h-5" /></span>
@@ -1643,28 +1643,29 @@ function RegisterPageInner() {
 
             {/* Download & Print buttons */}
             {ticket.status !== 'PENDING' && (
-              <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-3 mb-4 no-print">
-                <AntiMetalButton
+              <div className="w-full max-w-md mx-auto flex flex-col sm:flex-row justify-center items-center gap-3 mb-2 no-print">
+                <button
+                  type="button"
                   onClick={downloadPDF}
-                  className="flex-1 w-full sm:w-auto"
-                  label={downloading ? 'Downloading...' : 'Download (PDF)'}
-                  accentFrom={extractedColor}
-                  accentTo={extractedColor}
-                />
-                <AntiMetalButton
+                  disabled={downloading}
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-semibold text-xs transition-all shadow-md active:scale-[0.98] cursor-pointer text-center disabled:opacity-50"
+                >
+                  {downloading ? 'Downloading...' : 'Download Ticket (PDF)'}
+                </button>
+                <button
+                  type="button"
                   onClick={() => window.print()}
-                  className="flex-1 w-full sm:w-auto"
-                  label="Print Ticket"
-                  accentFrom={extractedColor}
-                  accentTo={extractedColor}
-                />
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white font-semibold text-xs transition-all shadow-md active:scale-[0.98] cursor-pointer text-center"
+                >
+                  Print Ticket
+                </button>
               </div>
             )}
 
             {/* Back action */}
             <a
               href={`/events/${event.id}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#222226] border border-[#2e2e34] rounded-md text-xs text-neutral-300 hover:text-white hover:bg-[#2c2c32] transition-colors no-print"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#222226] border border-[#2e2e34] rounded-md text-xs text-neutral-300 hover:text-white hover:bg-[#2c2c32] transition-colors no-print cursor-pointer"
             >
               <GoArrowLeft className="w-3.5 h-3.5" /> Back to Event Details
             </a>
