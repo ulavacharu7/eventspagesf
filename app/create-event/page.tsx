@@ -6,8 +6,9 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PixelBlast from '@/components/PixelBlast';
 import Grainient from '@/components/Grainient';
-import { GoCalendar, GoGlobe, GoLocation, GoTag, GoPeople, GoCheck, GoUpload, GoTrash, GoX, GoInfo, GoSearch, GoPlus } from 'react-icons/go';
+import { GoCalendar, GoGlobe, GoLocation, GoTag, GoPeople, GoCheck, GoUpload, GoTrash, GoX, GoInfo, GoSearch, GoPlus, GoShield } from 'react-icons/go';
 import { DotmSquare5 } from '@/components/ui/dotm-square-5';
+import { isAuthorizedHost } from '@/lib/hostAuth';
 
 
 const themes = [
@@ -176,19 +177,28 @@ export default function CreateEventPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const activeTheme = themes[currentThemeIdx];
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const isLightBg = false;
 
-  // Protect route: user must be authenticated to host/create an event
+  // Protect route: only verified organizer emails can access event creation
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('student_forge_user');
       if (!storedUser) {
         router.push('/auth');
+        return;
+      }
+      const parsed = JSON.parse(storedUser);
+      if (!isAuthorizedHost(parsed?.email)) {
+        setIsAuthorized(false);
+      } else {
+        setIsAuthorized(true);
       }
     } catch (e) {
       console.error('Error checking authentication:', e);
+      setIsAuthorized(false);
     }
-  }, []);
+  }, [router]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -486,6 +496,42 @@ export default function CreateEventPage() {
 
   const filteredPopular = filterTz(popularTimezones);
   const filteredAll = filterTz(allTimezonesList);
+
+  if (isAuthorized === false) {
+    return (
+      <main className="relative min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased font-tight select-none">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center px-4 py-16">
+          <div className="max-w-md w-full bg-[#18181c] border border-white/10 rounded-2xl p-8 text-center flex flex-col items-center gap-5 shadow-2xl animate-fade-in">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <GoShield className="w-7 h-7" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="font-instrument-serif text-2xl text-white font-normal">Hosting Access Restricted</h2>
+              <p className="text-xs text-white/60 leading-relaxed">
+                Event hosting on Student Forge is restricted to authorized organizer accounts (<strong>events.studentforge@gmail.com</strong>, <strong>rishirohank.studentforge@gmail.com</strong>).
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 w-full mt-2">
+              <a
+                href="/dashboard"
+                className="flex-1 py-2.5 px-4 bg-white text-[#101010] text-xs font-semibold rounded-xl text-center hover:opacity-90 active:scale-95 transition-all shadow-md"
+              >
+                Go to Dashboard
+              </a>
+              <a
+                href="/events"
+                className="flex-1 py-2.5 px-4 bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-xl text-center hover:bg-white/10 active:scale-95 transition-all"
+              >
+                Explore Events
+              </a>
+            </div>
+          </div>
+        </div>
+        <Footer isLight={false} />
+      </main>
+    );
+  }
 
   return (
     <main className={`relative min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased ${getFontFamilyClass(currentFont)} font-tight select-none overflow-x-hidden`}>

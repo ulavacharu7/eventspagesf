@@ -13,6 +13,7 @@ import { EventData } from '@/lib/eventsStore';
 import { QRCodeSVG } from 'qrcode.react';
 import { formatBroadcastBodyHtml } from '@/lib/formatMailBody';
 import Footer from '@/components/Footer';
+import { isAuthorizedHost } from '@/lib/hostAuth';
 
 interface UserSession { id: string; name: string; email: string; profileImage?: string | null; }
 interface RegUser {
@@ -624,6 +625,7 @@ export default function DashboardPage() {
   };
 
   const myEvents = events;
+  const canHost = isAuthorizedHost(user?.email);
 
   if (!authChecked || !user) return null;
 
@@ -688,7 +690,6 @@ export default function DashboardPage() {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
         {/* Sidebar */}
         <aside className="hidden sm:flex w-64 flex-shrink-0 bg-[#131316]/95 backdrop-blur-2xl border-r border-white/10 flex-col py-6 px-3.5 justify-between sticky top-[57px] h-[calc(100vh-57px)] select-none">
           <div className="flex flex-col gap-1.5">
@@ -827,13 +828,23 @@ export default function DashboardPage() {
 
           {/* Bottom Sidebar Widget */}
           <div className="flex flex-col gap-3 pt-4 border-t border-white/10">
-            <a
-              href="/create-event"
-              className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-neutral-100 text-[#101010] text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
-            >
-              <GoPlus className="w-4 h-4" />
-              <span>Create Event</span>
-            </a>
+            {canHost ? (
+              <a
+                href="/create-event"
+                className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-neutral-100 text-[#101010] text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                <GoPlus className="w-4 h-4" />
+                <span>Create Event</span>
+              </a>
+            ) : (
+              <div
+                title="Event hosting is restricted to authorized Student Forge organizer accounts"
+                className="w-full py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-white/40 text-xs font-medium flex items-center justify-center gap-2 cursor-not-allowed select-none opacity-60"
+              >
+                <GoShield className="w-3.5 h-3.5 text-white/30" />
+                <span>Hosting Locked</span>
+              </div>
+            )}
             <div className="flex items-center justify-between px-2 text-[10px] font-mono text-white/40">
               <span>Student Forge</span>
               <span className="text-white/30">v1.0.0</span>
@@ -935,13 +946,23 @@ export default function DashboardPage() {
                       <GoPerson className="w-3.5 h-3.5 text-indigo-400" />
                       <span>Invite Guest</span>
                     </button>
-                    <a
-                      href="/create-event"
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white text-[#101010] text-xs font-semibold rounded-[8px] hover:opacity-90 active:scale-95 transition-all shadow-sm"
-                    >
-                      <GoPlus className="w-3.5 h-3.5" />
-                      <span>New Event</span>
-                    </a>
+                    {canHost ? (
+                      <a
+                        href="/create-event"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white text-[#101010] text-xs font-semibold rounded-[8px] hover:opacity-90 active:scale-95 transition-all shadow-sm"
+                      >
+                        <GoPlus className="w-3.5 h-3.5" />
+                        <span>New Event</span>
+                      </a>
+                    ) : (
+                      <div
+                        title="Hosting is restricted to authorized Student Forge organizer accounts"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.04] border border-white/10 text-white/40 text-xs font-medium rounded-[8px] cursor-not-allowed select-none opacity-60"
+                      >
+                        <GoShield className="w-3.5 h-3.5 text-white/30" />
+                        <span>Hosting Locked</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -958,13 +979,28 @@ export default function DashboardPage() {
                       <h3 className="font-instrument-serif text-xl sm:text-2xl text-white font-normal">No events yet</h3>
                       <p className="text-xs text-white/50 font-normal">Events you create will appear here.</p>
                     </div>
-                    <a
-                      href="/create-event"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#101010] text-xs font-semibold rounded-[8px] hover:opacity-90 active:scale-95 transition-all shadow-sm"
-                    >
-                      <GoPlus className="w-3.5 h-3.5" />
-                      <span>Create Your First Event</span>
-                    </a>
+                    {canHost ? (
+                      <a
+                        href="/create-event"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#101010] text-xs font-semibold rounded-[8px] hover:opacity-90 active:scale-95 transition-all shadow-sm"
+                      >
+                        <GoPlus className="w-3.5 h-3.5" />
+                        <span>Create Your First Event</span>
+                      </a>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 mt-1">
+                        <div
+                          title="Hosting is restricted to authorized Student Forge organizer accounts"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/[0.04] border border-white/10 text-white/40 text-xs font-medium rounded-xl cursor-not-allowed select-none opacity-70"
+                        >
+                          <GoShield className="w-3.5 h-3.5 text-white/30" />
+                          <span>Hosting Restricted to Verified Organizers</span>
+                        </div>
+                        <p className="text-[11px] text-white/30 max-w-sm text-center">
+                          Event creation is limited to authorized accounts (events.studentforge@gmail.com, rishirohank.studentforge@gmail.com).
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col gap-4">

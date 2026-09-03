@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { cacheGet, cacheSet, cacheDel } from '@/lib/redis';
+import { isAuthorizedHost } from '@/lib/hostAuth';
 
 const CACHE_KEY = 'events:all';
 const CACHE_TTL = 60; // 60 seconds
@@ -64,6 +65,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const createdByEmail = body.createdByEmail ? body.createdByEmail.trim().toLowerCase() : null;
+
+    if (!isAuthorizedHost(createdByEmail)) {
+      return NextResponse.json(
+        { error: 'Event hosting is restricted to authorized Student Forge organizer accounts.' },
+        { status: 403 }
+      );
+    }
+
     const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
     const isApprovalRequired = body.requireApproval === true;
 
