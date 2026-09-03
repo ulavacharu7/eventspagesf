@@ -54,18 +54,11 @@ export async function sendBroadcastMail({
   bodyHtml,
 }: BroadcastMailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
-    const cleanTo = (to || '').trim().toLowerCase();
-    const cleanSubj = (subject || '').trim().toLowerCase();
-    const dedupKey = `${cleanTo}:${cleanSubj}`;
-
-    const now = Date.now();
-    const lastSent = globalBroadcastTracker.get(dedupKey);
-    // 15-minute deduplication guard (900,000ms)
-    if (lastSent && now - lastSent < 900000) {
-      console.warn(`[Global Broadcast Guard] Blocked duplicate broadcast mail to ${cleanTo} ("${subject}")`);
-      return { success: true, messageId: 'dedup-blocked' };
+    const cleanTo = (to || '').trim();
+    if (!cleanTo || !cleanTo.includes('@')) {
+      console.warn(`[sendBroadcastMail] Invalid recipient email address: "${to}"`);
+      return { success: false, error: 'Invalid recipient email address' };
     }
-    globalBroadcastTracker.set(dedupKey, now);
 
     const resendApiKey = process.env.RESEND_API_KEY;
     const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@app.redlix.co.in';
@@ -166,17 +159,17 @@ export async function sendBroadcastMail({
         const resend = new Resend(resendApiKey);
         const data = await resend.emails.send({
           from: `Student Forge <${resendFromEmail}>`,
-          to,
+          to: cleanTo,
           subject,
           html: fullHtml,
         });
 
         if (data.data?.id) {
-          console.log(`[Resend Success] Email sent to ${to} (ID: ${data.data.id})`);
+          console.log(`[Resend Success] Email sent to ${cleanTo} (ID: ${data.data.id})`);
           return { success: true, messageId: data.data.id };
         }
 
-        console.warn(`[Resend Error] API key or request invalid (${JSON.stringify(data.error)}). Falling back to Gmail SMTP...`);
+        console.warn(`[Resend Error] Delivery failed (${JSON.stringify(data.error)}). Falling back to Gmail SMTP...`);
       } catch (resendErr: any) {
         console.warn(`[Resend Exception] ${resendErr?.message}. Falling back to Gmail SMTP...`);
       }
@@ -184,7 +177,7 @@ export async function sendBroadcastMail({
 
     // 2. Fallback to Nodemailer SMTP (Gmail SMTP)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      console.log(`[Gmail SMTP Fallback] Sending broadcast email to ${to} via Gmail SMTP (${process.env.EMAIL_USER})...`);
+      console.log(`[Gmail SMTP Fallback] Sending broadcast email to ${cleanTo} via Gmail SMTP (${process.env.EMAIL_USER})...`);
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -194,15 +187,15 @@ export async function sendBroadcastMail({
       });
       const info = await transporter.sendMail({
         from: `"Student Forge Admin" <${process.env.EMAIL_USER}>`,
-        to,
+        to: cleanTo,
         subject,
         html: fullHtml,
       });
+      console.log(`[Gmail SMTP Success] Broadcast email sent to ${cleanTo} (ID: ${info.messageId})`);
       return { success: true, messageId: info.messageId };
     }
 
-    console.log(`[Mock Send] Broadcast email to ${to}: "${subject}"`);
-    return { success: true, messageId: `mock-${Date.now()}` };
+    return { success: false, error: 'No email service configured' };
   } catch (err: any) {
     console.error('sendBroadcastMail error:', err);
     return { success: false, error: err?.message || 'Failed to send broadcast email' };

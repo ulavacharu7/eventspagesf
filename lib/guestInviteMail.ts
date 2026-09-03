@@ -270,19 +270,12 @@ export async function sendGuestInviteMail({
   originUrl,
 }: GuestInviteMailParams) {
   try {
-    const cleanTo = (to || '').trim().toLowerCase();
-    const subjectText = `Official Guest & Speaker Invitation: ${event.title}`;
-    const cleanSubj = subjectText.trim().toLowerCase();
-    const dedupKey = `${cleanTo}:${cleanSubj}`;
-
-    const now = Date.now();
-    const lastSent = globalGuestMailTracker.get(dedupKey);
-    // 15-minute deduplication guard (900,000ms)
-    if (lastSent && now - lastSent < 900000) {
-      console.warn(`[Global Guest Mail Guard] Blocked duplicate guest invite to ${cleanTo} ("${subjectText}")`);
-      return { success: true, messageId: 'dedup-blocked' };
+    const cleanTo = (to || '').trim();
+    if (!cleanTo || !cleanTo.includes('@')) {
+      console.warn(`[sendGuestInviteMail] Invalid recipient email address: "${to}"`);
+      return { success: false, error: 'Invalid recipient email address' };
     }
-    globalGuestMailTracker.set(dedupKey, now);
+    const subjectText = `Official Guest & Speaker Invitation: ${event.title}`;
 
     const resendApiKey = process.env.RESEND_API_KEY || 're_xxxxxxxxx';
     const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@app.redlix.co.in';
@@ -412,14 +405,14 @@ export async function sendGuestInviteMail({
       try {
         const { data, error } = await resend.emails.send({
           from: `StudentForge Events <${resendFromEmail}>`,
-          to: [to],
+          to: [cleanTo],
           subject,
           html: htmlBody,
           attachments, // Contains ONLY the 1 PDF attachment file!
         });
 
         if (data?.id) {
-          console.log(`[Resend Success] Guest invite sent to ${to} (ID: ${data.id})`);
+          console.log(`[Resend Success] Guest invite sent to ${cleanTo} (ID: ${data.id})`);
           return { success: true, messageId: data.id };
         }
 
@@ -431,7 +424,7 @@ export async function sendGuestInviteMail({
 
     // 2. Fallback to Nodemailer Gmail SMTP
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      console.log(`[Gmail SMTP Fallback] Sending guest invite to ${to} via Gmail SMTP (${process.env.EMAIL_USER})...`);
+      console.log(`[Gmail SMTP Fallback] Sending guest invite to ${cleanTo} via Gmail SMTP (${process.env.EMAIL_USER})...`);
       const nodemailerModule = await import('nodemailer');
       const transporter = nodemailerModule.default.createTransport({
         service: 'gmail',
@@ -443,12 +436,13 @@ export async function sendGuestInviteMail({
 
       const info = await transporter.sendMail({
         from: `"Student Forge Events" <${process.env.EMAIL_USER}>`,
-        to,
+        to: cleanTo,
         subject,
         html: htmlBody,
         attachments,
       });
 
+      console.log(`[Gmail SMTP Success] Guest invite sent to ${cleanTo} (ID: ${info.messageId})`);
       return { success: true, messageId: info.messageId };
     }
 

@@ -74,6 +74,7 @@ export async function POST(request: Request) {
     // Always log code to terminal for easy development testing
     console.log('\n\x1b[43m\x1b[30m%s\x1b[0m', ` [SANDBOX MODE] VERIFICATION CODE FOR ${email}: ${code} `);
 
+    const cleanEmail = email.trim();
     let deliverySuccess = false;
 
     // 1. Attempt delivery via Resend
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
       try {
         const sendResult = await resend.emails.send({
           from: `Student Forge <${resendFromEmail}>`,
-          to: email,
+          to: cleanEmail,
           subject: 'Confirm Your Email - Student Forge',
           text: `Your verification code is: ${code}`,
           html: mailHtml,
@@ -89,19 +90,19 @@ export async function POST(request: Request) {
 
         if (sendResult.data?.id) {
           deliverySuccess = true;
-          console.log(`[Resend Success] OTP sent to ${email} (ID: ${sendResult.data.id})`);
+          console.log(`[Resend Success] OTP sent to ${cleanEmail} (ID: ${sendResult.data.id})`);
         } else if (sendResult.error) {
-          console.warn('Resend primary delivery error:', sendResult.error.message);
+          console.warn('[Resend Error] Primary delivery failed:', sendResult.error.message);
         }
       } catch (mailError: any) {
-        console.warn('Resend mail delivery catch error:', mailError.message);
+        console.warn('[Resend Exception] Mail delivery error:', mailError.message);
       }
     }
 
     // 2. Fallback to Nodemailer Gmail SMTP
     if (!deliverySuccess && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       try {
-        console.log(`[Gmail SMTP Fallback] Sending verification code to ${email} via Gmail SMTP...`);
+        console.log(`[Gmail SMTP Fallback] Sending verification code to ${cleanEmail} via Gmail SMTP...`);
         const nodemailerModule = await import('nodemailer');
         const transporter = nodemailerModule.default.createTransport({
           service: 'gmail',
@@ -111,15 +112,15 @@ export async function POST(request: Request) {
           },
         });
 
-        await transporter.sendMail({
+        const info = await transporter.sendMail({
           from: `"Student Forge" <${process.env.EMAIL_USER}>`,
-          to: email,
+          to: cleanEmail,
           subject: 'Confirm Your Email - Student Forge',
           text: `Your verification code is: ${code}`,
           html: mailHtml,
         });
         deliverySuccess = true;
-        console.log(`[Gmail SMTP Success] OTP sent successfully to ${email}`);
+        console.log(`[Gmail SMTP Success] OTP sent successfully to ${cleanEmail} (ID: ${info.messageId})`);
       } catch (smtpErr: any) {
         console.error('[Gmail SMTP Error] Failed to send verification code:', smtpErr?.message);
       }
@@ -127,9 +128,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      email,
+      email: cleanEmail,
       code,
-      message: `Verification code sent to ${email}`
+      deliverySuccess,
+      message: `Verification code sent to ${cleanEmail}`
     });
   } catch (error: any) {
     console.error('Send code API error:', error);

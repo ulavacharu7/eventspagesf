@@ -252,18 +252,11 @@ if (!(globalThis as any)._sentEventMailTracker) {
 // ─── Main Export ──────────────────────────────────────────────────────────────
 export async function sendEventMail({ to, subject, event, registration, type, originUrl }: SendMailParams) {
   try {
-    const cleanTo = (to || '').trim().toLowerCase();
-    const cleanSubj = (subject || '').trim().toLowerCase();
-    const dedupKey = `${cleanTo}:${cleanSubj}`;
-
-    const now = Date.now();
-    const lastSent = globalEventMailTracker.get(dedupKey);
-    // 15-minute deduplication guard (900,000ms)
-    if (lastSent && now - lastSent < 900000) {
-      console.warn(`[Global Event Mail Guard] Blocked duplicate mail to ${cleanTo} ("${subject}")`);
-      return { success: true, messageId: 'dedup-blocked' };
+    const cleanTo = (to || '').trim();
+    if (!cleanTo || !cleanTo.includes('@')) {
+      console.warn(`[sendEventMail] Invalid recipient email address: "${to}"`);
+      return { success: false, error: 'Invalid recipient email address' };
     }
-    globalEventMailTracker.set(dedupKey, now);
 
     const resendApiKey = process.env.RESEND_API_KEY || 're_xxxxxxxxx';
     const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@app.redlix.co.in';
@@ -439,7 +432,7 @@ export async function sendEventMail({ to, subject, event, registration, type, or
       try {
         const resendResult = await resend.emails.send({
           from: `Student Forge <${resendFromEmail}>`,
-          to,
+          to: cleanTo,
           subject,
           text: isPending
             ? `Pending Approval: Your registration for ${event.title} is awaiting organizer approval.`
@@ -449,11 +442,11 @@ export async function sendEventMail({ to, subject, event, registration, type, or
         });
 
         if (resendResult.data?.id) {
-          console.log(`[Resend Success] Email sent successfully to ${to} (${type})`);
+          console.log(`[Resend Success] Email sent successfully to ${cleanTo} (${type}) - ID: ${resendResult.data.id}`);
           return { success: true, messageId: resendResult.data.id };
         }
 
-        console.warn(`[Resend Error] API key or request invalid (${JSON.stringify(resendResult.error)}). Falling back to Gmail SMTP...`);
+        console.warn(`[Resend Error] Delivery failed (${JSON.stringify(resendResult.error)}). Falling back to Gmail SMTP...`);
       } catch (resendErr: any) {
         console.warn(`[Resend Exception] ${resendErr?.message}. Falling back to Gmail SMTP...`);
       }
@@ -461,7 +454,7 @@ export async function sendEventMail({ to, subject, event, registration, type, or
 
     // ── 2. Fallback to Nodemailer Gmail SMTP ──────────────────────────────────
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      console.log(`[Gmail SMTP Fallback] Sending event email to ${to} via ${process.env.EMAIL_USER}...`);
+      console.log(`[Gmail SMTP Fallback] Sending event email to ${cleanTo} via ${process.env.EMAIL_USER}...`);
       const nodemailerModule = await import('nodemailer');
       const transporter = nodemailerModule.default.createTransport({
         service: 'gmail',
@@ -473,7 +466,7 @@ export async function sendEventMail({ to, subject, event, registration, type, or
 
       const info = await transporter.sendMail({
         from: `"Student Forge" <${process.env.EMAIL_USER}>`,
-        to,
+        to: cleanTo,
         subject,
         text: isPending
           ? `Pending Approval: Your registration for ${event.title} is awaiting organizer approval.`
@@ -482,6 +475,7 @@ export async function sendEventMail({ to, subject, event, registration, type, or
         attachments, // Contains ONLY the 1 PDF attachment file!
       });
 
+      console.log(`[Gmail SMTP Success] Event email sent successfully to ${cleanTo} (ID: ${info.messageId})`);
       return { success: true, messageId: info.messageId };
     }
 
