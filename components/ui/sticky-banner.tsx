@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils";
 
 export const StickyBanner = ({
   className,
+  closeButtonClassName,
   children,
   hideOnScroll = false,
   autoDismissSeconds = 15,
 }: {
   className?: string;
+  closeButtonClassName?: string;
   children: React.ReactNode;
   hideOnScroll?: boolean;
   autoDismissSeconds?: number;
@@ -41,7 +43,7 @@ export const StickyBanner = ({
       {open && (
         <motion.div
           className={cn(
-            "sticky inset-x-0 top-0 z-50 flex min-h-12 w-full items-center justify-center bg-[#0d0e12] px-4 py-2 border-b border-white/10 shadow-md",
+            "sticky inset-x-0 top-0 z-50 flex min-h-11 w-full items-center justify-center px-4 py-2 shadow-md",
             className,
           )}
           initial={{
@@ -67,7 +69,10 @@ export const StickyBanner = ({
           <motion.button
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer rounded-full p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors focus:outline-none focus:ring-1 focus:ring-white/20"
+            className={cn(
+              "absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer rounded-full p-1.5 transition-colors focus:outline-none",
+              closeButtonClassName || "text-zinc-400 hover:text-white hover:bg-white/10"
+            )}
             onClick={() => setOpen(false)}
             aria-label="Dismiss banner"
           >
