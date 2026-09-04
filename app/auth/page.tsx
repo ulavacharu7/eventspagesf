@@ -39,8 +39,17 @@ function AuthContent() {
     setError('');
     setSuccessMsg('');
 
-    if (!email || !email.includes('@')) {
+    const cleanEmail = email ? email.trim().toLowerCase() : '';
+
+    if (!cleanEmail || !cleanEmail.includes('@')) {
       setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (!cleanEmail.endsWith('@gmail.com')) {
+      setError(
+        'Only @gmail.com email addresses are allowed for registration. For assistance or alternative domain approval, please contact support: +91 6304218064, +91 6309917327 or events.studentforge@gmail.com'
+      );
       return;
     }
 
@@ -49,7 +58,7 @@ function AuthContent() {
       const res = await fetch('/api/auth/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email: cleanEmail })
       });
       const data = await res.json();
 
@@ -304,9 +313,23 @@ function AuthContent() {
           
           {/* Feedback Messages */}
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-[12px] text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
-              <span>{error}</span>
+            <div className="p-3.5 bg-rose-500/10 border border-rose-500/25 rounded-2xl text-xs text-rose-300 flex flex-col gap-2">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{error}</span>
+              </div>
+              {error.includes('6304218064') && (
+                <div className="pt-2 border-t border-rose-500/20 flex flex-col gap-1 text-[11px] text-rose-200">
+                  <span className="font-semibold text-white">Support Helplines:</span>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <a href="tel:+916304218064" className="text-sky-400 hover:text-sky-300 underline font-mono">+91 6304218064</a>
+                    <span className="text-white/30">•</span>
+                    <a href="tel:+916309917327" className="text-sky-400 hover:text-sky-300 underline font-mono">+91 6309917327</a>
+                    <span className="text-white/30">•</span>
+                    <a href="mailto:events.studentforge@gmail.com" className="text-sky-400 hover:text-sky-300 underline">events.studentforge@gmail.com</a>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -384,18 +407,24 @@ function AuthContent() {
               {signupStep === 1 && (
                 <form onSubmit={handleSendVerificationCode} className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[11px] font-mono text-white/40 pl-1">Email Address</span>
+                    <div className="flex items-center justify-between pl-1">
+                      <span className="text-[11px] font-mono text-white/40">Email Address</span>
+                      <span className="text-[10px] font-mono text-emerald-400/80">@gmail.com only</span>
+                    </div>
                     <div className="relative">
                       <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                       <input
                         type="email"
-                        placeholder="student@university.edu"
+                        placeholder="yourname@gmail.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="h-11 w-full rounded-full border border-white/10 bg-[#0d0d0f] pl-10 pr-4 text-xs sm:text-sm text-white placeholder-white/30 outline-none transition-all focus:border-white/30 focus:bg-[#111114] font-tight"
                       />
                     </div>
+                    <span className="text-[10px] text-white/40 pl-1 font-tight">
+                      For institutional or non-Gmail accounts, please contact support.
+                    </span>
                   </div>
 
                   <button

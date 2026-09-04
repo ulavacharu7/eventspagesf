@@ -6,15 +6,26 @@ export async function POST(request: Request) {
   try {
     const { email, checkUserExists } = await request.json();
 
-    if (!email || !email.includes('@')) {
+    const cleanEmail = email ? email.trim().toLowerCase() : '';
+    if (!cleanEmail || !cleanEmail.includes('@')) {
       return NextResponse.json(
         { error: 'Please enter a valid email address' },
         { status: 400 }
       );
     }
 
+    if (!checkUserExists && !cleanEmail.endsWith('@gmail.com')) {
+      return NextResponse.json(
+        {
+          error:
+            'Only @gmail.com email addresses are allowed for registration. For assistance or alternative domain approval, please contact support: +91 6304218064, +91 6309917327 or events.studentforge@gmail.com',
+        },
+        { status: 400 }
+      );
+    }
+
     if (checkUserExists) {
-      const user = await prisma.user.findUnique({ where: { email } });
+      const user = await prisma.user.findUnique({ where: { email: cleanEmail } });
       if (!user) {
         return NextResponse.json(
           { error: 'No account found with this email address' },
@@ -72,9 +83,8 @@ export async function POST(request: Request) {
     `;
 
     // Always log code to terminal for easy development testing
-    console.log('\n\x1b[43m\x1b[30m%s\x1b[0m', ` [SANDBOX MODE] VERIFICATION CODE FOR ${email}: ${code} `);
+    console.log('\n\x1b[43m\x1b[30m%s\x1b[0m', ` [SANDBOX MODE] VERIFICATION CODE FOR ${cleanEmail}: ${code} `);
 
-    const cleanEmail = email.trim();
     let deliverySuccess = false;
 
     // 1. Attempt delivery via Resend

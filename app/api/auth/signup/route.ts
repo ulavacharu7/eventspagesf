@@ -6,12 +6,24 @@ export async function POST(request: Request) {
   try {
     const { name, email, password } = await request.json();
 
-    if (!name || !email || !password) {
+    const cleanEmail = email ? email.trim().toLowerCase() : '';
+
+    if (!name || !cleanEmail || !password) {
       return NextResponse.json({ error: 'Please provide all required fields' }, { status: 400 });
     }
 
+    if (!cleanEmail.endsWith('@gmail.com')) {
+      return NextResponse.json(
+        {
+          error:
+            'Only @gmail.com email addresses are allowed for registration. For assistance or alternative domain approval, please contact support: +91 6304218064, +91 6309917327 or events.studentforge@gmail.com',
+        },
+        { status: 400 }
+      );
+    }
+
     // Check if user already exists
-    const existing = await prisma.user.findUnique({ where: { email } });
+    const existing = await prisma.user.findUnique({ where: { email: cleanEmail } });
     if (existing) {
       return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 });
     }
@@ -19,7 +31,7 @@ export async function POST(request: Request) {
     const hashed = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashed },
+      data: { name: name.trim(), email: cleanEmail, password: hashed },
     });
 
     return NextResponse.json({
