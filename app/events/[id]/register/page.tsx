@@ -766,7 +766,7 @@ function RegisterPageInner() {
 
   // BLOCK REGISTRATION IF REGISTRATION IS FROZEN / OPENING ON SEP 10, 2026
   const freezeStatus = isEventRegistrationFrozen(event);
-  if (freezeStatus.isFrozen && !registrationSuccess && !isExistingUserRegistered) {
+  if (freezeStatus.isFrozen && !ticket) {
     return (
       <main className="min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased font-tight">
         <Navbar />
