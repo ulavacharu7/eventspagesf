@@ -13,7 +13,7 @@ import {
   GoPlus, GoX, GoCopy
 } from 'react-icons/go';
 import { DotmSquare5 } from '@/components/ui/dotm-square-5';
-import { isEventCompleted } from '@/lib/utils';
+import { isEventCompleted, isEventRegistrationFrozen } from '@/lib/utils';
 import { CopyCode } from '@/components/ui/copy-code-button';
 import AdmitOneTicket from '@/components/ui/admit-one-ticket';
 
@@ -567,6 +567,11 @@ function RegisterPageInner() {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const freezeInfo = isEventRegistrationFrozen(event);
+    if (freezeInfo.isFrozen) {
+      alert(`Registrations for this workshop are currently paused and will open on ${freezeInfo.unfreezeDate}.`);
+      return;
+    }
     if (isFull) {
       alert('Registration is closed. This event has reached its maximum seat capacity.');
       return;
@@ -753,6 +758,45 @@ function RegisterPageInner() {
           >
             <GoArrowLeft className="w-4 h-4" /> Return to Event Details
           </a>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  // BLOCK REGISTRATION IF REGISTRATION IS FROZEN / OPENING ON SEP 10, 2026
+  const freezeStatus = isEventRegistrationFrozen(event);
+  if (freezeStatus.isFrozen && !registrationSuccess && !isExistingUserRegistered) {
+    return (
+      <main className="min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased font-tight">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center gap-6 py-20 px-4 text-center max-w-md mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shadow-xl">
+            <GoClock className="w-8 h-8" />
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-amber-500/10 border border-amber-500/25 text-amber-300 w-fit mx-auto">
+              Registration Opening Soon
+            </span>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Opens {freezeStatus.unfreezeDate}</h1>
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-tight">
+              Registrations for <strong className="text-white">&quot;{event.title}&quot;</strong> are currently paused and will officially go live on <strong className="text-amber-300">{freezeStatus.unfreezeDate}</strong>.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full mt-2">
+            <a
+              href={`/events/${event.id}`}
+              className="w-full sm:flex-1 py-2.5 px-4 bg-white text-neutral-950 text-xs font-semibold rounded-xl text-center hover:bg-neutral-200 transition-all shadow-md"
+            >
+              Return to Event Details
+            </a>
+            <a
+              href="/events"
+              className="w-full sm:flex-1 py-2.5 px-4 bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-xl text-center hover:bg-white/10 transition-all"
+            >
+              Explore Events
+            </a>
+          </div>
         </div>
         <Footer />
       </main>

@@ -99,3 +99,43 @@ export function isEventCompleted(event: {
   return false;
 }
 
+export interface EventFreezeInfo {
+  isFrozen: boolean;
+  unfreezeDate: string;
+  reason: string;
+}
+
+/**
+ * Checks whether an event's registration is temporarily frozen/paused.
+ * For "LangChain & Agentic AI – 2-Day Hands-On Workshop", registration is frozen until Sep 10, 2026.
+ */
+export function isEventRegistrationFrozen(event: { title?: string | null; id?: string | null } | null | undefined): EventFreezeInfo {
+  if (!event || !event.title) {
+    return { isFrozen: false, unfreezeDate: '', reason: '' };
+  }
+
+  const title = event.title.toLowerCase();
+
+  // Match LangChain & Agentic AI Workshop
+  const isLangChainWorkshop =
+    (title.includes('langchain') && title.includes('agentic')) ||
+    (title.includes('langchain') && title.includes('workshop')) ||
+    title.includes('agentic ai') ||
+    title.includes('langchain');
+
+  if (isLangChainWorkshop) {
+    // Unfreezes on Sep 10, 2026 (IST 00:00:00)
+    const unfreezeTimestamp = new Date('2026-09-10T00:00:00+05:30').getTime();
+    if (Date.now() < unfreezeTimestamp) {
+      return {
+        isFrozen: true,
+        unfreezeDate: 'Sep 10, 2026',
+        reason: 'Registrations will open on September 10, 2026',
+      };
+    }
+  }
+
+  return { isFrozen: false, unfreezeDate: '', reason: '' };
+}
+
+

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { enqueueRegistrationMail } from '@/lib/mailQueue';
-import { isEventCompleted } from '@/lib/utils';
+import { isEventCompleted, isEventRegistrationFrozen } from '@/lib/utils';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -45,6 +45,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // BLOCK REGISTRATIONS FOR COMPLETED EVENTS
     if (isEventCompleted(event)) {
       return NextResponse.json({ error: 'Registration is closed because this event has already concluded.' }, { status: 400 });
+    }
+
+    // BLOCK REGISTRATIONS IF FROZEN (e.g. LangChain & Agentic AI Workshop before Sep 10, 2026)
+    const freezeStatus = isEventRegistrationFrozen(event);
+    if (freezeStatus.isFrozen) {
+      return NextResponse.json(
+        { error: `Registration for this workshop is paused and will officially open on ${freezeStatus.unfreezeDate}.` },
+        { status: 403 }
+      );
     }
 
     // Check seat capacity limit

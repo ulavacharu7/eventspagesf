@@ -19,7 +19,7 @@ import {
 } from 'react-icons/go';
 import { useViewerCount } from '@/lib/useViewerCount';
 import { DotmSquare5 } from '@/components/ui/dotm-square-5';
-import { isEventCompleted } from '@/lib/utils';
+import { isEventCompleted, isEventRegistrationFrozen } from '@/lib/utils';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -138,6 +138,9 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
       event.title.toLowerCase().includes('student forge') ||
       event.title.toLowerCase().includes('platform launch')
     ));
+
+  const freezeInfo = useMemo(() => isEventRegistrationFrozen(event), [event]);
+  const isFrozen = freezeInfo.isFrozen;
 
   useEffect(() => {
     if (!initialEvent && eventId) {
@@ -594,6 +597,20 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                       View Ticket Pass
                     </a>
                   </div>
+                ) : isFrozen ? (
+                  <div className="flex flex-col gap-2 font-tight">
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full py-3.5 bg-neutral-800/90 border border-neutral-700/80 text-neutral-300 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-not-allowed shadow-none select-none flex items-center justify-center gap-2 font-tight"
+                    >
+                      <GoClock className="w-4 h-4 text-amber-400" />
+                      <span>Registration Opens {freezeInfo.unfreezeDate}</span>
+                    </button>
+                    <p className="text-[11px] text-amber-400/90 text-center font-tight">
+                      Registrations are currently paused and will open on {freezeInfo.unfreezeDate}.
+                    </p>
+                  </div>
                 ) : isFull ? (
                   <div className="w-full py-3.5 bg-neutral-900 border border-neutral-800 text-neutral-400 text-xs font-semibold rounded-xl text-center cursor-not-allowed font-tight shadow-sm">
                     Registration Closed · All Seats Filled
@@ -612,7 +629,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   </button>
                 )}
 
-                {!registered && !eventEnded && (
+                {!registered && !eventEnded && !isFrozen && (
                   <p className="text-[11px] text-neutral-400 text-center leading-relaxed font-tight pt-0.5">
                     {event.requireApproval
                       ? 'Requires host approval after registration'
@@ -827,6 +844,11 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               >
                 View Pass
               </a>
+            ) : isFrozen ? (
+              <div className="w-full py-2.5 bg-neutral-800 border border-neutral-700 text-neutral-300 text-xs font-medium rounded-xl text-center cursor-not-allowed select-none flex items-center justify-center gap-1.5 font-tight">
+                <GoClock className="w-3.5 h-3.5 text-amber-400" />
+                <span>Opens Sep 10</span>
+              </div>
             ) : isFull ? (
               <div className="w-full py-2.5 bg-neutral-800 border border-neutral-700 text-neutral-400 text-xs font-semibold rounded-xl text-center cursor-not-allowed font-tight">
                 Sold Out
@@ -849,7 +871,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
       </div>
 
       {/* 10-Second 3-Minute ₹20 Flash Offer Floating Card */}
-      {showOffer && !registered && !eventEnded && (
+      {showOffer && !registered && !eventEnded && !isFrozen && (
         <div className="fixed bottom-24 sm:bottom-6 right-4 sm:right-6 left-4 sm:left-auto max-w-[340px] sm:max-w-[360px] mx-auto sm:mx-0 z-50 animate-fade-in font-sans">
           <div className="p-5 sm:p-6 rounded-3xl bg-[#161618] border border-[#2e2e34] shadow-[0_25px_60px_rgba(0,0,0,0.85)] flex flex-col items-center gap-4 sm:gap-5 text-white text-center">
             

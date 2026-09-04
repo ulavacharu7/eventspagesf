@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { GoLocation, GoCalendar, GoPlus, GoArrowRight, GoSearch } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
-import { isEventCompleted } from '@/lib/utils';
+import { isEventCompleted, isEventRegistrationFrozen } from '@/lib/utils';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 
 const themes = [
@@ -248,6 +248,12 @@ const EventsList: React.FC = () => {
                   {/* Top: 1200x1200 1:1 Aspect-Square Poster Container */}
                   <div className="relative w-full aspect-square bg-[#131316] border border-white/10 group-hover:border-white/20 rounded-[14px] overflow-hidden select-none flex-shrink-0 mb-3.5 shadow-sm">
                     <EventImage event={event} />
+                    {isEventRegistrationFrozen(event).isFrozen && (
+                      <div className="absolute top-2.5 right-2.5 z-20 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/30 text-amber-300 text-[10px] font-semibold tracking-wide flex items-center gap-1 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                        <span>Opens Sep 10</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Body: Event Details */}
