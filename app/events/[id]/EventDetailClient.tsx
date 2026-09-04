@@ -16,12 +16,14 @@ import {
   GoCopy,
   GoChevronRight,
   GoTag,
+  GoPeople,
 } from 'react-icons/go';
 import { useViewerCount } from '@/lib/useViewerCount';
 import { DotmSquare5 } from '@/components/ui/dotm-square-5';
 import { isEventCompleted, isEventRegistrationFrozen } from '@/lib/utils';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { UserAvatars, User } from '@/components/ui/user-avatars';
 
 const GoogleCalendarLogo = ({ className = "w-4 h-4" }: { className?: string }) => {
   const [hasError, setHasError] = useState(false);
@@ -101,11 +103,23 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
   const [loading, setLoading] = useState(!initialEvent);
   const [registered, setRegistered] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [registrations, setRegistrations] = useState<any[]>([]);
   const [registrationsCount, setRegistrationsCount] = useState<number>(0);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [copiedToast, setCopiedToast] = useState(false);
   const [copiedAddressToast, setCopiedAddressToast] = useState(false);
   const viewerCount = useViewerCount(eventId);
+
+  const guestUsers: User[] = useMemo(() => {
+    if (registrations && registrations.length > 0) {
+      return registrations.map((r, idx) => ({
+        id: r.id || idx,
+        name: r.name || 'Attendee',
+        image: r.image || r.profileImage || null,
+      }));
+    }
+    return [];
+  }, [registrations]);
 
   const parseCapacity = (capStr?: string): number | null => {
     if (!capStr) return null;
@@ -171,6 +185,7 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
         .then((r) => r.json())
         .then((data) => {
           const regs = data.registrations || [];
+          setRegistrations(regs);
           setRegistrationsCount(regs.length);
           if (currentUserEmail) {
             const isReg = regs.some((r: any) => r.email === currentUserEmail);
@@ -213,14 +228,20 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
     }
   };
 
-  const isInceptEvent = event?.title ? event.title.toLowerCase().includes('incept') : false;
+  const titleLower = event?.title ? event.title.toLowerCase() : '';
+  const isInceptEvent = titleLower.includes('incept');
+  const isSecondEpisodeOrLater =
+    titleLower.includes('ep') ||
+    titleLower.includes('episode') ||
+    titleLower.includes('02') ||
+    titleLower.includes('ii') ||
+    titleLower.includes('- 2') ||
+    titleLower.includes('-2');
+
   const isIncept01PartnersEvent = event?.title
-    ? (event.title.toLowerCase().includes('incept') &&
-      (event.title.toLowerCase().includes('01') || event.title.toLowerCase().includes('edition - 01') || event.title.toLowerCase().includes('edition 1') || event.title.toLowerCase().includes('edition-01')) &&
-      !event.title.toLowerCase().includes('episode - i i') &&
-      !event.title.toLowerCase().includes('episode ii') &&
-      !event.title.toLowerCase().includes('episode - 2') &&
-      !event.title.toLowerCase().includes('episode 2'))
+    ? (titleLower.includes('incept') &&
+      (titleLower.includes('01') || titleLower.includes('edition - 01') || titleLower.includes('edition 1') || titleLower.includes('edition-01')) &&
+      !isSecondEpisodeOrLater)
     : false;
 
   const eventEnded = event ? isEventCompleted(event) : false;
@@ -465,6 +486,12 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                   </div>
                 </div>
               )}
+              {isFrozen && (
+                <div className="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-neutral-200 text-[11px] font-medium tracking-tight flex items-center gap-1.5 shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-neutral-400" />
+                  <span>Opens {freezeInfo.unfreezeDate}</span>
+                </div>
+              )}
             </div>
 
             {/* Google Calendar Quick Link */}
@@ -477,6 +504,30 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
               <GoogleCalendarLogo className="w-4 h-4 shrink-0" />
               <span>Add to Google Calendar</span>
             </a>
+
+            {/* Guest List / Attendees Section (Only visible for signed-in and registered users) */}
+            {Boolean(user && registered && guestUsers.length > 0) && (
+              <div className="w-full p-4 sm:p-5 rounded-2xl bg-[#141416]/90 border border-white/[0.08] backdrop-blur-sm flex flex-col gap-3 font-tight">
+                <div className="flex items-center gap-2">
+                  <GoPeople className="w-4 h-4 text-neutral-400" />
+                  <h4 className="text-sm font-medium text-white tracking-tight">
+                    Guest List
+                  </h4>
+                </div>
+
+                <div className="pt-1">
+                  <UserAvatars
+                    users={guestUsers}
+                    size={48}
+                    overlap={58}
+                    maxVisible={6}
+                    focusScale={1.2}
+                    tooltipPlacement="top"
+                    className="py-1"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Title, Host, Date/Location List, and Registration Box */}
@@ -602,12 +653,12 @@ export default function EventDetailClient({ eventId, initialEvent }: EventDetail
                     <button
                       type="button"
                       disabled
-                      className="w-full py-3.5 bg-neutral-800/90 border border-neutral-700/80 text-neutral-300 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-not-allowed shadow-none select-none flex items-center justify-center gap-2 font-tight"
+                      className="w-full py-3.5 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-not-allowed shadow-none select-none flex items-center justify-center gap-2 font-tight"
                     >
-                      <GoClock className="w-4 h-4 text-amber-400" />
+                      <GoClock className="w-4 h-4 text-neutral-400" />
                       <span>Registration Opens {freezeInfo.unfreezeDate}</span>
                     </button>
-                    <p className="text-[11px] text-amber-400/90 text-center font-tight">
+                    <p className="text-[11px] text-neutral-400 text-center font-tight">
                       Registrations are currently paused and will open on {freezeInfo.unfreezeDate}.
                     </p>
                   </div>

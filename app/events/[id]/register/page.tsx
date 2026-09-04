@@ -771,16 +771,16 @@ function RegisterPageInner() {
       <main className="min-h-screen bg-[#131313] text-white flex flex-col justify-between antialiased font-tight">
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center gap-6 py-20 px-4 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 shadow-xl">
             <GoClock className="w-8 h-8" />
           </div>
           <div className="flex flex-col gap-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-amber-500/10 border border-amber-500/25 text-amber-300 w-fit mx-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium tracking-tight bg-white/5 border border-white/10 text-neutral-300 w-fit mx-auto">
               Registration Opening Soon
             </span>
             <h1 className="text-2xl font-bold text-white tracking-tight">Opens {freezeStatus.unfreezeDate}</h1>
             <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-tight">
-              Registrations for <strong className="text-white">&quot;{event.title}&quot;</strong> are currently paused and will officially go live on <strong className="text-amber-300">{freezeStatus.unfreezeDate}</strong>.
+              Registrations for <strong className="text-white">&quot;{event.title}&quot;</strong> are currently paused and will officially go live on <strong className="text-white">{freezeStatus.unfreezeDate}</strong>.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full mt-2">

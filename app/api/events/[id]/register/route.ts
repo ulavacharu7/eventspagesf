@@ -194,7 +194,24 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       where: { eventId },
       orderBy: { createdAt: 'desc' },
     });
-    return NextResponse.json({ registrations });
+
+    const emails = registrations.map((r) => r.email).filter(Boolean);
+    let userImageMap = new Map<string, string | null>();
+
+    if (emails.length > 0) {
+      const users = await prisma.user.findMany({
+        where: { email: { in: emails } },
+        select: { email: true, profileImage: true },
+      });
+      userImageMap = new Map(users.map((u) => [u.email, u.profileImage]));
+    }
+
+    const regsWithImages = registrations.map((r) => ({
+      ...r,
+      image: userImageMap.get(r.email) || null,
+    }));
+
+    return NextResponse.json({ registrations: regsWithImages });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch registrations' }, { status: 500 });
   }

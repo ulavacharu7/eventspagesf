@@ -13,7 +13,7 @@ import {
   GoX,
 } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
-import { isEventCompleted } from '@/lib/utils';
+import { isEventCompleted, getEventStartTimestamp } from '@/lib/utils';
 
 // ── Category definitions ─────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -235,28 +235,46 @@ export default function ExplorePage() {
     ).length;
 
   // Filter events for the "Featured Events" grid
-  const filteredEvents = events.filter((e) => {
-    const matchesSearch =
-      !searchQuery ||
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.ticketCode.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredEvents = events
+    .filter((e) => {
+      const matchesSearch =
+        !searchQuery ||
+        e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.ticketCode.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory =
-      !activeCategory ||
-      (() => {
-        const cat = CATEGORIES.find((c) => c.id === activeCategory);
-        if (!cat) return true;
-        return cat.keywords.some(
-          (kw) =>
-            e.title.toLowerCase().includes(kw) ||
-            (e.description || '').toLowerCase().includes(kw) ||
-            (e.calendarType || '').toLowerCase().includes(kw)
-        );
-      })();
+      const matchesCategory =
+        !activeCategory ||
+        (() => {
+          const cat = CATEGORIES.find((c) => c.id === activeCategory);
+          if (!cat) return true;
+          return cat.keywords.some(
+            (kw) =>
+              e.title.toLowerCase().includes(kw) ||
+              (e.description || '').toLowerCase().includes(kw) ||
+              (e.calendarType || '').toLowerCase().includes(kw)
+          );
+        })();
 
-    return matchesSearch && matchesCategory;
-  });
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      const isCompletedA = isEventCompleted(a);
+      const isCompletedB = isEventCompleted(b);
+
+      if (!isCompletedA && isCompletedB) return -1;
+      if (isCompletedA && !isCompletedB) return 1;
+
+      const timeA = getEventStartTimestamp(a);
+      const timeB = getEventStartTimestamp(b);
+      if (!isCompletedA && !isCompletedB) {
+        if (timeA === 0 && timeB === 0) return 0;
+        if (timeA === 0) return 1;
+        if (timeB === 0) return -1;
+        return timeA - timeB;
+      }
+      return timeB - timeA;
+    });
 
   const displayedEvents = filteredEvents.slice(0, 12);
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { GoLocation, GoCalendar, GoPlus, GoArrowRight, GoSearch } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
-import { isEventCompleted, isEventRegistrationFrozen } from '@/lib/utils';
+import { isEventCompleted, isEventRegistrationFrozen, getEventStartTimestamp } from '@/lib/utils';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 
 const themes = [
@@ -88,12 +88,26 @@ const EventsList: React.FC = () => {
   const upcomingCount = events.filter((e) => !isEventCompleted(e)).length;
   const pastCount = events.filter((e) => isEventCompleted(e)).length;
 
-  const tabFilteredEvents = events.filter((e) => {
-    if (activeTab === 'upcoming') {
-      return !isEventCompleted(e);
-    }
-    return isEventCompleted(e);
-  });
+  const tabFilteredEvents = events
+    .filter((e) => {
+      if (activeTab === 'upcoming') {
+        return !isEventCompleted(e);
+      }
+      return isEventCompleted(e);
+    })
+    .sort((a, b) => {
+      const timeA = getEventStartTimestamp(a);
+      const timeB = getEventStartTimestamp(b);
+      // Upcoming events: earliest date first (e.g. Sep 2 before Sep 6 before Sep 10 before Sep 18)
+      if (activeTab === 'upcoming') {
+        if (timeA === 0 && timeB === 0) return 0;
+        if (timeA === 0) return 1;
+        if (timeB === 0) return -1;
+        return timeA - timeB;
+      }
+      // Past events: most recent date first
+      return timeB - timeA;
+    });
 
   const filteredEvents = tabFilteredEvents.filter((e) => {
     const q = searchQuery.toLowerCase().trim();
@@ -249,8 +263,8 @@ const EventsList: React.FC = () => {
                   <div className="relative w-full aspect-square bg-[#131316] border border-white/10 group-hover:border-white/20 rounded-[14px] overflow-hidden select-none flex-shrink-0 mb-3.5 shadow-sm">
                     <EventImage event={event} />
                     {isEventRegistrationFrozen(event).isFrozen && (
-                      <div className="absolute top-2.5 right-2.5 z-20 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/30 text-amber-300 text-[10px] font-semibold tracking-wide flex items-center gap-1 shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      <div className="absolute top-2.5 right-2.5 z-20 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-neutral-200 text-[11px] font-medium tracking-tight flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-neutral-400" />
                         <span>Opens Sep 10</span>
                       </div>
                     )}

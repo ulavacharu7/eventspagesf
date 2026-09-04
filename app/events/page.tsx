@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { GoLocation, GoCalendar, GoSearch, GoPlus, GoArrowRight, GoChevronRight } from 'react-icons/go';
 import { EventData } from '@/lib/eventsStore';
-import { isEventCompleted } from '@/lib/utils';
+import { isEventCompleted, getEventStartTimestamp } from '@/lib/utils';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 
 const themes = [
@@ -89,12 +89,40 @@ export default function EventsPage() {
       .catch(() => setIsLoaded(true));
   }, []);
 
-  const displayedEvents = events.filter((e) => {
-    if (activeTab === 'upcoming') {
-      return !isEventCompleted(e);
-    }
-    return true;
-  });
+  const displayedEvents = events
+    .filter((e) => {
+      if (activeTab === 'upcoming') {
+        return !isEventCompleted(e);
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      const isCompletedA = isEventCompleted(a);
+      const isCompletedB = isEventCompleted(b);
+
+      if (activeTab === 'upcoming') {
+        const timeA = getEventStartTimestamp(a);
+        const timeB = getEventStartTimestamp(b);
+        if (timeA === 0 && timeB === 0) return 0;
+        if (timeA === 0) return 1;
+        if (timeB === 0) return -1;
+        return timeA - timeB;
+      }
+
+      // 'all' tab: upcoming first (earliest start date first), then past events
+      if (!isCompletedA && isCompletedB) return -1;
+      if (isCompletedA && !isCompletedB) return 1;
+
+      const timeA = getEventStartTimestamp(a);
+      const timeB = getEventStartTimestamp(b);
+      if (!isCompletedA && !isCompletedB) {
+        if (timeA === 0 && timeB === 0) return 0;
+        if (timeA === 0) return 1;
+        if (timeB === 0) return -1;
+        return timeA - timeB;
+      }
+      return timeB - timeA;
+    });
 
   const filteredEvents = displayedEvents.filter((e) =>
     e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
